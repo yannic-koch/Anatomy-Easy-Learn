@@ -10,17 +10,17 @@ if (MAINTENANCE_MODE && !isAdmin) {
   const container = document.getElementById("app-container");
   if (container) {
     container.innerHTML = `
-      <div style="text-align: center; padding: 40px 20px; font-family: sans-serif;">
-        <div style="font-size: 50px; margin-bottom: 10px;">🛠️</div>
-        <h2 style="color: #e67e22; margin-bottom: 10px;">Under Maintenance</h2>
-        <p style="color: #555; font-size: 1.1em; max-width: 400px; margin: 0 auto;">
-          The <strong>Anatomy Trainer Ultimate Pro</strong> is currently being updated and expanded.
-        </p>
-        <p style="color: #888; font-size: 0.9em; margin-top: 20px;">
-          Please check back later.
-        </p>
-      </div>
-    `;
+  <div style="text-align: center; padding: 50px 20px; font-family: sans-serif;">
+    <div style="font-size: 60px; margin-bottom: 15px;">🛠️</div>
+    <h2 style="color: #e67e22; margin-bottom: 12px; font-weight: 700;">Under Maintenance</h2>
+    <p style="color: #4a5568; font-size: 1.1em; max-width: 440px; margin: 0 auto 20px auto; line-height: 1.5;">
+      Upgrading the database for a better training experience.
+    </p>
+    <div style="display: inline-block; background-color: #edf2f7; color: #4a5568; padding: 10px 20px; border-radius: 20px; font-size: 0.9em; font-weight: 600;">
+      ⚡ System update in progress — back online soon!
+    </div>
+  </div>
+`;
   }
 } else {
   // ==========================================
