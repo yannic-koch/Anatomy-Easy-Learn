@@ -155,7 +155,11 @@ function checkWriteAnswer() {
   const correct = q.muskel[q.kat];
 
   const ignoreWords = ["und", "im", "am", "der", "die", "das", "an", "von", "m", "musculus", "p", "pars"];
-  const clean = text => text.toLowerCase().match(/\w+/g)?.filter(w => !ignoreWords.includes(w)) || [];
+  const clean = text => {
+    if (!text) return [];
+    const matched = text.toLowerCase().match(/\w+/g);
+    return matched ? matched.filter(w => !ignoreWords.includes(w)) : [];
+  };
   
   const userWords = clean(userAns);
   const correctWords = clean(correct);
