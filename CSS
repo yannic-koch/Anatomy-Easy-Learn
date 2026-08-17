@@ -130,12 +130,3 @@ input[type="text"], input[type="number"] {
   background: #f8d7da;
   color: #721c24;
 }
-
-canvas {
-  border: 1px solid #ccc;
-  background: #fff;
-  width: 100%;
-  height: 300px;
-  margin-top: 10px;
-  border-radius: 6px;
-}
