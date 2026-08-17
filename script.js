@@ -1,3 +1,36 @@
+// ==========================================
+// 🛠️ WARTUNGSMODUS & ADMIN-SPERRE
+// ==========================================
+const MAINTENANCE_MODE = true; // auf 'false' setzen, wenn du fertig bist
+
+const urlParams = new URLSearchParams(window.location.search);
+const isAdmin = urlParams.get('admin') === 'true';
+
+if (MAINTENANCE_MODE && !isAdmin) {
+  document.addEventListener("DOMContentLoaded", () => {
+    const container = document.getElementById("app-container");
+    if (container) {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 40px 20px; font-family: sans-serif;">
+          <div style="font-size: 50px; margin-bottom: 10px;">🛠️</div>
+          <h2 style="color: #e67e22; margin-bottom: 10px;">Wartungsarbeiten</h2>
+          <p style="color: #555; font-size: 1.1em; max-width: 400px; margin: 0 auto;">
+            Der <strong>Anatomie Trainer Ultimate Pro</strong> wird aktuell überarbeitet und erweitert.
+          </p>
+          <p style="color: #888; font-size: 0.9em; margin-top: 20px;">
+            Bitte versuche es später erneut.
+          </p>
+        </div>
+      `;
+    }
+  });
+
+  // Stoppt die komplette Skript-Ausführung ab hier für normale Besucher
+  throw new Error("Wartungsmodus aktiv – Skriptausführung abgebrochen.");
+}
+// ==========================================
+// AB HIER DEIN BESTEHENDER CODE
+// ==========================================
 // --- DATENBANK ---
 const muskelDaten = [
   { muskel: "M. supraspinatus", gruppe: "Schultergelenk (Dorsal)", ursprung: "Fossa supraspinata der Scapula", ansatz: "Tuberculum majus des Humerus", innervation: "N. suprascapularis (C4–C6)", funktion: "Abduktion des Oberarms" },
