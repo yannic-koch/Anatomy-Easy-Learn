@@ -11,13 +11,11 @@ if (MAINTENANCE_MODE && !isAdmin) {
   if (container) {
 container.innerHTML = `
   <style>
-    /* Drehung im Uhrzeigersinn */
     @keyframes spinCW {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
 
-    /* Drehung gegen den Uhrzeigersinn */
     @keyframes spinCCW {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(-360deg); }
@@ -26,10 +24,9 @@ container.innerHTML = `
     .maintenance-container {
       text-align: center;
       padding: 50px 20px;
-      font-family: sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
     }
 
-    /* Layout für die 3 Zahnräder nebeneinander */
     .gears-wrapper {
       display: inline-flex;
       align-items: center;
@@ -48,14 +45,14 @@ container.innerHTML = `
     .gear-left {
       font-size: 45px;
       line-height: 1;
-      margin-right: -12px; /* Schiebt das linke Zahnrad ans mittlere */
+      margin-right: -12px;
       animation: spinCCW 4s linear infinite;
     }
 
     .gear-right {
       font-size: 45px;
       line-height: 1;
-      margin-left: -12px; /* Schiebt das rechte Zahnrad ans mittlere */
+      margin-left: -12px;
       animation: spinCCW 4s linear infinite;
     }
   </style>
