@@ -2,7 +2,7 @@
 // 🛠️ MAINTENANCE MODE & ADMIN ACCESS
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
-  const MAINTENANCE_MODE = false; // Auf 'false' setzen, um den Trainer direkt anzuzeigen
+  const MAINTENANCE_MODE = false; // Auf 'false' setzen für den normalen Betrieb
 
   const urlParams = new URLSearchParams(window.location.search);
   const isAdmin = urlParams.get('admin') === 'true';
@@ -17,20 +17,17 @@ document.addEventListener("DOMContentLoaded", function () {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
         }
-
         .maintenance-container {
           text-align: center;
           padding: 50px 20px;
           font-family: system-ui, -apple-system, sans-serif;
         }
-
         .gears-box {
           position: relative;
           width: 100px;
           height: 100px;
           margin: 0 auto 20px auto;
         }
-
         .gear-single {
           width: 100px;
           height: 100px;
@@ -38,7 +35,6 @@ document.addEventListener("DOMContentLoaded", function () {
           transform-origin: 50% 50%;
           animation: spinCW 6s linear infinite;
         }
-
         .gear-img {
           width: 100%;
           height: 100%;
@@ -54,7 +50,6 @@ document.addEventListener("DOMContentLoaded", function () {
             <img src="${gearImageUrl}" class="gear-img" alt="Gear" />
           </div>
         </div>
-
         <h2 style="color: #2d3748; margin-bottom: 8px; font-weight: 700; font-size: 1.8em;">Under Maintenance</h2>
         <p style="color: #718096; font-size: 1.05em; max-width: 420px; margin: 0 auto 24px auto; line-height: 1.5;">
           Upgrading the database for a better training experience.
@@ -298,7 +293,6 @@ function initAnatomyApp() {
     container.innerHTML = html;
   }
 
-  // KORRIGIERTE EINZEL- UND FREITEXTPROFE-FUNKTION
   window.checkWriteAnswer = function() {
     const q = sessionList[currentIndex];
     const inputEl = document.getElementById('write-answer');
