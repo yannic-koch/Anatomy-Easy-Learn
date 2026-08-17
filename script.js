@@ -28,7 +28,7 @@ if (MAINTENANCE_MODE && !isAdmin) {
 }
 
 // ==========================================
-// DATABASE
+// DATABASE (Deutsch)
 // ==========================================
 const muskelDaten = [
   { muskel: "M. supraspinatus", gruppe: "Schultergelenk (Dorsal)", ursprung: "Fossa supraspinata der Scapula", ansatz: "Tuberculum majus des Humerus", innervation: "N. suprascapularis (C4–C6)", funktion: "Abduktion des Oberarms" },
@@ -49,26 +49,26 @@ const muskelDaten = [
 let sessionList = [];
 let currentIndex = 0;
 let userAnswers = {};
-let currentMode = ""; // "PRACTICE" or "EXAM"
+let currentMode = ""; // "PRACTICE" oder "EXAM"
 let selectedMatchingPairs = {};
 
 const container = document.getElementById("app-container");
 
-// --- MAIN MENU RENDER ---
+// --- HAUPTMENÜ ANZEIGEN ---
 function renderMenu() {
   const gruppen = [...new Set(muskelDaten.map(m => m.gruppe))].sort();
 
   let html = `
-    <h1>🦴 Anatomy Trainer Ultimate Pro</h1>
+    <h1>🦴 Anatomie Trainer Ultimate Pro</h1>
     <div class="main-layout">
       
-      <!-- BOX 1: MUSCLE SELECTION -->
+      <!-- BOX 1: MUSKELAUSWAHL -->
       <div class="box">
-        <h3>1. Muscle Selection</h3>
+        <h3>1. Muskelauswahl</h3>
         <div style="margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
-          <button class="btn btn-menu" onclick="selectAllMuscles(true)">Select All</button>
-          <button class="btn btn-menu" onclick="selectAllMuscles(false)">Deselect All</button>
-          <button class="btn btn-menu" onclick="selectRandomMuscles()">🎲 Random (5-13)</button>
+          <button class="btn btn-menu" onclick="selectAllMuscles(true)">Alle auswählen</button>
+          <button class="btn btn-menu" onclick="selectAllMuscles(false)">Alle abwählen</button>
+          <button class="btn btn-menu" onclick="selectRandomMuscles()">🎲 Zufall (5-13)</button>
         </div>
         
         ${gruppen.map(g => `
@@ -85,28 +85,28 @@ function renderMenu() {
         `).join('')}
       </div>
 
-      <!-- BOX 2: SETTINGS & CONTENT -->
+      <!-- BOX 2: EINSTELLUNGEN & INHALTE -->
       <div class="box">
-        <h3>2. Settings & Content</h3>
-        <strong>Categories:</strong>
-        <label><input type="checkbox" id="kat-ursprung" checked> Origin (Ursprung)</label>
-        <label><input type="checkbox" id="kat-ansatz" checked> Insertion (Ansatz)</label>
+        <h3>2. Einstellungen & Inhalte</h3>
+        <strong>Kategorien:</strong>
+        <label><input type="checkbox" id="kat-ursprung" checked> Ursprung</label>
+        <label><input type="checkbox" id="kat-ansatz" checked> Ansatz</label>
         <label><input type="checkbox" id="kat-innervation" checked> Innervation</label>
-        <label><input type="checkbox" id="kat-funktion" checked> Function (Funktion)</label>
+        <label><input type="checkbox" id="kat-funktion" checked> Funktion</label>
         
         <hr style="margin: 10px 0;">
-        <strong>Question Types:</strong>
-        <label><input type="checkbox" id="type-write" checked> Free Text (Typing)</label>
+        <strong>Fragetypen:</strong>
+        <label><input type="checkbox" id="type-write" checked> Freitext (Eintippen)</label>
         <label><input type="checkbox" id="type-single" checked> Single Choice</label>
-        <label><input type="checkbox" id="type-match" checked> Matching</label>
+        <label><input type="checkbox" id="type-match" checked> Zuordnung (Matching)</label>
         
         <hr style="margin: 10px 0;">
-        <label>Max Questions (0 = all): 
+        <label>Max. Fragen (0 = alle): 
           <input type="number" id="limit-input" value="10" min="0">
         </label>
         
-        <button class="btn" style="margin-top:15px; background: #2ecc71;" onclick="startSession('PRACTICE')">🚀 PRACTICE MODE (Instant Feedback)</button>
-        <button class="btn" style="margin-top:10px; background: #8e44ad;" onclick="startSession('EXAM')">📝 EXAM MODE (Results at End)</button>
+        <button class="btn" style="margin-top:15px; background: #2ecc71;" onclick="startSession('PRACTICE')">🚀 ÜBUNGSMODUS (Direktes Feedback)</button>
+        <button class="btn" style="margin-top:10px; background: #8e44ad;" onclick="startSession('EXAM')">📝 PRÜFUNGSMODUS (Auswertung am Ende)</button>
       </div>
 
     </div>
@@ -114,7 +114,7 @@ function renderMenu() {
   container.innerHTML = html;
 }
 
-// --- HELPER FUNCTIONS FOR SELECTION ---
+// --- HILFSFUNKTIONEN FÜR DIE AUSWAHL ---
 function selectAllMuscles(status) {
   document.querySelectorAll('.m-check').forEach(cb => cb.checked = status);
 }
@@ -133,7 +133,7 @@ function selectRandomMuscles() {
   checkboxes.slice(0, randomCount).forEach(cb => cb.checked = true);
 }
 
-// --- START SESSION ---
+// --- SESSION STARTEN ---
 function startSession(mode, customPool = null) {
   currentMode = mode;
 
@@ -153,7 +153,7 @@ function startSession(mode, customPool = null) {
     if (document.getElementById('type-match').checked) selectedTypes.push('match');
 
     if (!selectedMuscles.length || !selectedKats.length || !selectedTypes.length) {
-      alert("Please select at least one muscle, one category, and one question type!");
+      alert("Bitte wähle mindestens einen Muskel, eine Kategorie und einen Fragetyp aus!");
       return;
     }
 
@@ -178,7 +178,7 @@ function startSession(mode, customPool = null) {
   showQuestion();
 }
 
-// --- DISPLAY QUESTION ---
+// --- FRAGE ANZEIGEN ---
 function showQuestion() {
   if (currentIndex >= sessionList.length) {
     finishSession();
@@ -190,20 +190,20 @@ function showQuestion() {
 
   let html = `
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <button class="btn btn-menu" onclick="renderMenu()">◀ Menu</button>
-      <span>Question ${currentIndex + 1} of ${sessionList.length} [${currentMode}]</span>
+      <button class="btn btn-menu" onclick="renderMenu()">◀ Menü</button>
+      <span>Frage ${currentIndex + 1} von ${sessionList.length} [${currentMode}]</span>
     </div>
     <div class="progress-bar"><div class="progress-fill" style="width: ${progressPct}%;"></div></div>
   `;
 
   if (q.type === 'write') {
     html += `
-      <h2>Muscle: ${q.muskel.muskel}</h2>
-      <p><em>Category: ${q.kat.toUpperCase()} (${q.muskel.gruppe})</em></p>
+      <h2>Muskel: ${q.muskel.muskel}</h2>
+      <p><em>Kategorie: ${q.kat.toUpperCase()} (${q.muskel.gruppe})</em></p>
       <br>
-      <label>Type your answer:</label>
+      <label>Antwort eingeben:</label>
       <input type="text" id="write-answer" autofocus autocomplete="off">
-      <button class="btn" onclick="checkWriteAnswer()">Check Answer</button>
+      <button class="btn" onclick="checkWriteAnswer()">Antwort prüfen</button>
     `;
   } else if (q.type === 'single') {
     const correct = q.muskel[q.kat];
@@ -213,16 +213,16 @@ function showQuestion() {
     options.sort(() => Math.random() - 0.5);
 
     html += `
-      <h2>Muscle: ${q.muskel.muskel}</h2>
-      <p><em>Category: ${q.kat.toUpperCase()} (${q.muskel.gruppe})</em></p>
+      <h2>Muskel: ${q.muskel.muskel}</h2>
+      <p><em>Kategorie: ${q.kat.toUpperCase()} (${q.muskel.gruppe})</em></p>
       <br>
-      <p>Select the correct answer:</p>
+      <p>Wähle die richtige Antwort:</p>
       ${options.map((opt) => `
         <label class="option-item">
           <input type="radio" name="single-opt" value="${opt.replace(/"/g, '&quot;')}"> ${opt}
         </label>
       `).join('')}
-      <button class="btn" onclick="checkSingleAnswer()">Check Selection</button>
+      <button class="btn" onclick="checkSingleAnswer()">Auswahl prüfen</button>
     `;
   } else if (q.type === 'match') {
     const currentCategory = q.kat;
@@ -236,22 +236,22 @@ function showQuestion() {
     q.matchingSubSet = subSet;
 
     html += `
-      <h2>🔗 Matching / Assignment</h2>
-      <p><em>Category: ${currentCategory.toUpperCase()}</em></p>
-      <p>Match each muscle with its correct value:</p>
+      <h2>🔗 Zuordnung / Matching</h2>
+      <p><em>Kategorie: ${currentCategory.toUpperCase()}</em></p>
+      <p>Ordne jedem Muskel den passenden Wert zu:</p>
       
       <div style="display:flex; flex-direction:column; gap:12px; margin: 15px 0;">
         ${leftSide.map((m) => `
           <div style="background:#edf2f7; padding:10px; border-radius:6px;">
             <strong>${m.muskel}</strong> ➔ 
             <select class="match-select" data-muskel="${m.muskel}" style="width:100%; padding:6px; margin-top:5px;">
-              <option value="">-- Please Select --</option>
+              <option value="">-- Bitte wählen --</option>
               ${rightSide.map(val => `<option value="${val.replace(/"/g, '&quot;')}">${val}</option>`).join('')}
             </select>
           </div>
         `).join('')}
       </div>
-      <button class="btn" onclick="checkMatchAnswer()">Check Matching</button>
+      <button class="btn" onclick="checkMatchAnswer()">Zuordnung prüfen</button>
     `;
   }
 
@@ -259,13 +259,13 @@ function showQuestion() {
   container.innerHTML = html;
 }
 
-// --- EVALUATIONS ---
+// --- AUSWERTUNGEN ---
 function checkWriteAnswer() {
   const q = sessionList[currentIndex];
   const userAns = document.getElementById('write-answer').value.trim();
   const correct = q.muskel[q.kat];
 
-  const ignoreWords = ["und", "im", "am", "der", "die", "das", "an", "von", "m", "musculus", "p", "pars", "and", "in", "of", "the"];
+  const ignoreWords = ["und", "im", "am", "der", "die", "das", "an", "von", "m", "musculus", "p", "pars"];
   const clean = text => {
     if (!text) return [];
     const matched = text.toLowerCase().match(/\w+/g);
@@ -284,7 +284,7 @@ function checkWriteAnswer() {
 function checkSingleAnswer() {
   const q = sessionList[currentIndex];
   const selected = document.querySelector('input[name="single-opt"]:checked');
-  const userAns = selected ? selected.value : "No selection made";
+  const userAns = selected ? selected.value : "Keine Auswahl getroffen";
   const correct = q.muskel[q.kat];
   const isCorrect = userAns === correct;
 
@@ -305,7 +305,7 @@ function checkMatchAnswer() {
     const mObj = muskelDaten.find(m => m.muskel === muskelName);
     const correctVal = mObj[q.kat];
 
-    userSummary.push(`${muskelName}: ${selectedVal || 'No choice'}`);
+    userSummary.push(`${muskelName}: ${selectedVal || 'Keine Wahl'}`);
     correctSummary.push(`${muskelName}: ${correctVal}`);
 
     if (selectedVal === correctVal) {
@@ -317,7 +317,7 @@ function checkMatchAnswer() {
   saveAndRoute(userSummary.join(' | '), correctSummary.join(' | '), isCorrect);
 }
 
-// --- ROUTING & SAVING ---
+// --- ROUTING & SPEICHERN ---
 function saveAndRoute(userAns, correctAns, isCorrect) {
   userAnswers[currentIndex] = { user: userAns, correct: correctAns, success: isCorrect };
 
@@ -325,13 +325,13 @@ function saveAndRoute(userAns, correctAns, isCorrect) {
     const feedbackArea = document.getElementById("feedback-area");
     feedbackArea.className = `feedback ${isCorrect ? 'correct' : 'wrong'}`;
     feedbackArea.innerHTML = isCorrect 
-      ? `✓ Correct! Well done.` 
-      : `✗ Incorrect!<br><strong>Correct Answer:</strong><br>${correctAns}`;
+      ? `✓ Richtig! Gut gemacht.` 
+      : `✗ Falsch!<br><strong>Richtige Antwort:</strong><br>${correctAns}`;
     
     const nextBtn = document.createElement("button");
     nextBtn.className = "btn";
     nextBtn.style.marginTop = "10px";
-    nextBtn.innerText = "Next ➡";
+    nextBtn.innerText = "Nächste Frage ➡";
     nextBtn.onclick = () => { currentIndex++; showQuestion(); };
     feedbackArea.appendChild(nextBtn);
   } else {
@@ -340,7 +340,7 @@ function saveAndRoute(userAns, correctAns, isCorrect) {
   }
 }
 
-// --- SUMMARY & REPETITION ---
+// --- AUSWERTUNG & WIEDERHOLUNG ---
 function finishSession() {
   const total = sessionList.length;
   const correctCount = Object.values(userAnswers).filter(a => a.success).length;
@@ -348,15 +348,15 @@ function finishSession() {
   const wrongQuestions = sessionList.filter((_, i) => !userAnswers[i] || !userAnswers[i].success);
 
   let html = `
-    <h1>🏁 Session Results</h1>
-    <h2>Score: ${correctCount} of ${total} correct.</h2>
+    <h1>🏁 Ergebnis der Session</h1>
+    <h2>Ergebnis: ${correctCount} von ${total} richtig.</h2>
     <br>
   `;
 
   if (wrongQuestions.length > 0) {
     html += `
       <button class="btn" style="background:#e67e22; margin-bottom: 20px;" onclick="startRepetition()">
-        🔄 Repeat Incorrect Questions (${wrongQuestions.length})
+        🔄 Falsche Fragen wiederholen (${wrongQuestions.length})
       </button>
     `;
   }
@@ -364,18 +364,18 @@ function finishSession() {
   html += `
     <div style="max-height: 450px; overflow-y: auto;">
       ${sessionList.map((q, i) => {
-        const ans = userAnswers[i] || { user: "No answer", correct: "-", success: false };
+        const ans = userAnswers[i] || { user: "Keine Antwort", correct: "-", success: false };
         return `
           <div class="box" style="margin-bottom: 10px; border-left: 5px solid ${ans.success ? '#2ecc71' : '#e74c3c'};">
-            <strong>Question ${i+1}: ${q.muskel ? q.muskel.muskel : 'Matching Task'}</strong> [${q.type.toUpperCase()}]<br>
-            <small>Category: ${q.kat.toUpperCase()}</small><br>
-            <span style="color: ${ans.success ? 'green' : 'red'};">Your Answer: ${ans.user}</span><br>
-            ${!ans.success ? `<span style="color: darkgreen;">Correct Solution: ${ans.correct}</span>` : ''}
+            <strong>Frage ${i+1}: ${q.muskel ? q.muskel.muskel : 'Zuordnungsaufgabe'}</strong> [${q.type.toUpperCase()}]<br>
+            <small>Kategorie: ${q.kat.toUpperCase()}</small><br>
+            <span style="color: ${ans.success ? 'green' : 'red'};">Deine Antwort: ${ans.user}</span><br>
+            ${!ans.success ? `<span style="color: darkgreen;">Richtige Lösung: ${ans.correct}</span>` : ''}
           </div>
         `;
       }).join('')}
     </div>
-    <button class="btn" style="margin-top:15px;" onclick="renderMenu()">Main Menu</button>
+    <button class="btn" style="margin-top:15px;" onclick="renderMenu()">Hauptmenü</button>
   `;
 
   window.lastWrongQuestions = wrongQuestions;
@@ -387,5 +387,5 @@ function startRepetition() {
   startSession('PRACTICE', window.lastWrongQuestions);
 }
 
-// --- INITIALIZATION ---
+// --- INITIALISIERUNG ---
 renderMenu();
