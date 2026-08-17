@@ -2,9 +2,8 @@
 // 🛠️ MAINTENANCE MODE & ADMIN ACCESS
 // ==========================================
 (function () {
-  const MAINTENANCE_MODE = true; // Auf 'false' setzen zum Deaktivieren
+  const MAINTENANCE_MODE = true;
 
-  // Admin-Prüfung sofort ausführen
   const urlParams = new URLSearchParams(window.location.search);
   const isAdmin = urlParams.get("admin") === "true";
 
@@ -13,57 +12,53 @@
     return;
   }
 
-  // Erstelle das Overlay direkt im DOM
   function showMaintenancePage() {
-    // Falls das Overlay schon existiert, nicht doppelt erstellen
+    if (!document.body) return;
     if (document.getElementById("maintenance-overlay")) return;
 
     const overlay = document.createElement("div");
     overlay.id = "maintenance-overlay";
     
-    // Zwingt die Ansicht vollflächig über alles
-    overlay.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: #f7fafc;
-      z-index: 999999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: system-ui, -apple-system, sans-serif;
-    `;
+    overlay.style.cssText = 
+      "position: fixed;" +
+      "top: 0;" +
+      "left: 0;" +
+      "width: 100vw;" +
+      "height: 100vh;" +
+      "background-color: #f7fafc;" +
+      "z-index: 999999;" +
+      "display: flex;" +
+      "align-items: center;" +
+      "justify-content: center;" +
+      "font-family: system-ui, -apple-system, sans-serif;";
 
     overlay.innerHTML = `
       <div style="text-align: center; padding: 20px;">
-        
         <div style="position: relative; width: 160px; height: 140px; margin: 0 auto 20px auto;">
-          <svg viewBox="0 0 160 140" style="width: 100%; height: 100%; overflow: visible;">
+          <svg viewBox="0 0 160 140" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="width: 100%; height: 100%; overflow: visible;">
             <defs>
               <g id="gear-shape">
                 <path d="M50 34c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zm43.6 12.1l-6.4-1.1c-.5-2.2-1.3-4.3-2.3-6.2l3.9-5.1c1.2-1.6.9-3.8-.6-5.1l-6.3-6.3c-1.3-1.4-3.5-1.7-5.1-.6l-5.1 3.9c-2-.1-4-.9-6.2-2.3l-1.1-6.4C64.2 5.2 62.4 3.9 60.3 3.9h-8.9c-2.1 0-3.9 1.3-4.3 3.3l-1.1 6.4c-2.2.5-4.3 1.3-6.2 2.3l-5.1-3.9c-1.6-1.2-3.8-.9-5.1.6l-6.3 6.3c-1.4 1.3-1.7 3.5-.6 5.1l3.9 5.1c-1 2-1.8 4.1-2.3 6.2l-6.4 1.1c-2 .4-3.3 2.2-3.3 4.3v8.9c0 2.1 1.3 3.9 3.3 4.3l6.4 1.1c.5 2.2 1.3 4.3 2.3 6.2l-3.9 5.1c-1.2 1.6-.9 3.8.6 5.1l6.3 6.3c1.3 1.4 3.5 1.7 5.1.6l5.1-3.9c2 1 4.1 1.8 6.2 2.3l1.1 6.4c.4 2 2.2 3.3 4.3 3.3h8.9c2.1 0 3.9-1.3 4.3-3.3l1.1-6.4c2.2-.5 4.3-1.3 6.2-2.3l5.1 3.9c1.6 1.2 3.8.9 5.1-.6l6.3-6.3c1.4-1.3 1.7-3.5.6-5.1l-3.9-5.1c1-2 1.8-4.1 2.3-6.2l6.4-1.1c2-.4 3.3-2.2 3.3-4.3v-8.9c0-2.1-1.3-3.9-3.3-4.3z" fill="#4a5568"/>
               </g>
             </defs>
 
-            <!-- Großes Zahnrad (links) -->
+            <!-- Großes Zahnrad -->
             <g transform="translate(20, 20) scale(0.8)">
-              <use href="#gear-shape" x="-50" y="-50" style="transform-origin: 50px 50px;">
+              <use href="#gear-shape" xlink:href="#gear-shape" x="-50" y="-50" style="transform-origin: 50px 50px;">
                 <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="6s" repeatCount="indefinite"/>
               </use>
             </g>
 
-            <!-- Mittleres Zahnrad (unten Mitte) -->
+            <!-- Mittleres Zahnrad -->
             <g transform="translate(85, 85) scale(0.6)">
-              <use href="#gear-shape" x="-50" y="-50" style="transform-origin: 50px 50px;">
+              <use href="#gear-shape" xlink:href="#gear-shape" x="-50" y="-50" style="transform-origin: 50px 50px;">
                 <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="-360 50 50" dur="4.5s" repeatCount="indefinite"/>
               </use>
             </g>
 
-            <!-- Kleines Zahnrad (rechts oben) -->
+            <!-- Kleines Zahnrad -->
             <g transform="translate(130, 45) scale(0.45)">
-              <use href="#gear-shape" x="-50" y="-50" style="transform-origin: 50px 50px;">
+              <use href="#gear-shape" xlink:href="#gear-shape" x="-50" y="-50" style="transform-origin: 50px 50px;">
                 <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="3.5s" repeatCount="indefinite"/>
               </use>
             </g>
@@ -77,17 +72,16 @@
         <div style="display: inline-block; background-color: #edf2f7; color: #4a5568; padding: 10px 20px; border-radius: 20px; font-size: 0.85em; font-weight: 600;">
           ⚡ System update in progress — back online soon!
         </div>
-
       </div>
     `;
 
     document.body.appendChild(overlay);
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", showMaintenancePage);
-  } else {
+  if (document.readyState === "interactive" || document.readyState === "complete") {
     showMaintenancePage();
+  } else {
+    document.addEventListener("DOMContentLoaded", showMaintenancePage);
   }
 })();
   }
