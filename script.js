@@ -13,7 +13,7 @@
     return;
   }
 
- function showMaintenancePage() {
+function showMaintenancePage() {
     if (!document.body) return;
     if (document.getElementById("maintenance-overlay")) return;
 
@@ -33,38 +33,12 @@
       "justify-content: center;" +
       "font-family: system-ui, -apple-system, sans-serif;";
 
-    // CSS Keyframes mit inline transform-origin für jedes Zahnrad
-    const styleEl = document.createElement("style");
-    styleEl.textContent = `
-      @keyframes spin-cw {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-      }
-      @keyframes spin-ccw {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(-360deg); }
-      }
-      .gear-main {
-        animation: spin-cw 8s linear infinite;
-        transform-origin: 50px 50px;
-      }
-      .gear-mid {
-        animation: spin-ccw 5.5s linear infinite;
-        transform-origin: 50px 50px;
-      }
-      .gear-small {
-        animation: spin-cw 4s linear infinite;
-        transform-origin: 50px 50px;
-      }
-    `;
-    document.head.appendChild(styleEl);
-
     overlay.innerHTML = `
       <div style="text-align: center; padding: 20px;">
-        <div style="position: relative; width: 200px; height: 120px; margin: 0 auto 10px auto;">
-          <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%; overflow: visible;">
+        <!-- Container oberhalb des Textes -->
+        <div style="width: 220px; height: 120px; margin: 0 auto 15px auto;">
+          <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%; display: block; overflow: visible;">
             <defs>
-              <!-- Farbverläufe -->
               <linearGradient id="gearGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#4A5568" />
                 <stop offset="100%" stop-color="#2D3748" />
@@ -74,26 +48,30 @@
                 <stop offset="100%" stop-color="#4A5568" />
               </linearGradient>
 
-              <!-- Zahnrad-Basisform (Mittelpunkt exakt bei X:50, Y:50) -->
-              <g id="gear-shape">
-                <path d="M50 34c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zm43.6 12.1l-6.4-1.1c-.5-2.2-1.3-4.3-2.3-6.2l3.9-5.1c1.2-1.6.9-3.8-.6-5.1l-6.3-6.3c-1.3-1.4-3.5-1.7-5.1-.6l-5.1 3.9c-2-.1-4-.9-6.2-2.3l-1.1-6.4C64.2 5.2 62.4 3.9 60.3 3.9h-8.9c-2.1 0-3.9 1.3-4.3 3.3l-1.1 6.4c-2.2.5-4.3 1.3-6.2 2.3l-5.1-3.9c-1.6-1.2-3.8-.9-5.1.6l-6.3 6.3c-1.4 1.3-1.7 3.5-.6 5.1l3.9 5.1c-1 2-1.8 4.1-2.3 6.2l-6.4 1.1c-2 .4-3.3 2.2-3.3 4.3v8.9c0 2.1 1.3 3.9 3.3 4.3l6.4 1.1c.5 2.2 1.3 4.3 2.3 6.2l-3.9 5.1c-1.2 1.6-.9 3.8.6 5.1l6.3 6.3c1.3 1.4 3.5 1.7 5.1.6l5.1-3.9c2 1 4.1 1.8 6.2 2.3l1.1 6.4c.4 2 2.2 3.3 4.3 3.3h8.9c2.1 0 3.9-1.3 4.3-3.3l1.1-6.4c2.2-.5 4.3-1.3 6.2-2.3l5.1 3.9c1.6 1.2 3.8.9 5.1-.6l6.3-6.3c1.4-1.3 1.7-3.5.6-5.1l-3.9-5.1c1-2 1.8-4.1 2.3-6.2l6.4-1.1c2-.4 3.3-2.2 3.3-4.3v-8.9c0-2.1-1.3-3.9-3.3-4.3z" 
-                      stroke="#CBD5E0" stroke-width="1.5"/>
-              </g>
+              <!-- Zahnrad-Pfad exakt zentriert um den Ursprung (0,0) -->
+              <path id="gear-centered" d="M0 -16c-4.4 0-8 3.6-8 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm21.8 6.1l-3.2-.6c-.3-1.1-.7-2.1-1.2-3.1l2-2.5c.6-.8.5-1.9-.3-2.5l-3.1-3.1c-.7-.7-1.8-.8-2.5-.3l-2.5 2c-1-.5-2-.9-3.1-1.2l-.6-3.2c-.2-1-.9-1.7-1.9-1.7h-4.4c-1 0-1.8.7-1.9 1.7l-.6 3.2c-1.1.3-2.1.7-3.1 1.2l-2.5-2c-.8-.6-1.9-.5-2.5.3l-3.1 3.1c-.7.7-.8 1.8-.3 2.5l2 2.5c-.5 1-.9 2-1.2 3.1l-3.2.6c-1 .2-1.7.9-1.7 1.9v4.4c0 1 .7 1.8 1.7 1.9l3.2.6c.3 1.1.7 2.1 1.2 3.1l-2 2.5c-.6.8-.5 1.9.3 2.5l3.1 3.1c.7.7 1.8.8 2.5.3l2.5-2c1 .5 2 .9 3.1 1.2l.6 3.2c.2 1 .9 1.7 1.9 1.7h4.4c1 0 1.8-.7 1.9-1.7l.6-3.2c1.1-.3 2.1-.7 3.1-1.2l2.5 2c.8.6 1.9.5 2.5-.3l3.1-3.1c.7-.7.8-1.8.3-2.5l-2-2.5c.5-1 .9-2 1.2-3.1l3.2-.6c1-.2 1.7-.9 1.7-1.9v-4.4c0-1-.7-1.8-1.7-1.9z" 
+                    stroke="#CBD5E0" stroke-width="1.5"/>
             </defs>
 
-            <!-- Großes Zahnrad (Links) -->
-            <g transform="translate(10, 10)">
-              <use href="#gear-shape" class="gear-main" fill="url(#gearGrad1)" />
+            <!-- Großes Zahnrad (Links oben) -->
+            <g transform="translate(50, 45) scale(1.3)">
+              <use href="#gear-centered" fill="url(#gearGrad1)">
+                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="8s" repeatCount="indefinite" />
+              </use>
             </g>
 
-            <!-- Mittleres Zahnrad (Mitte unten, greift ins große) -->
-            <g transform="translate(68, 42) scale(0.75)">
-              <use href="#gear-shape" class="gear-mid" fill="url(#gearGrad2)" />
+            <!-- Mittleres Zahnrad (Mitte unten) -->
+            <g transform="translate(105, 75) scale(0.95)">
+              <use href="#gear-centered" fill="url(#gearGrad2)">
+                <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="5.5s" repeatCount="indefinite" />
+              </use>
             </g>
 
-            <!-- Kleines Zahnrad (Rechts oben, greift ins mittlere) -->
-            <g transform="translate(112, 12) scale(0.55)">
-              <use href="#gear-shape" class="gear-small" fill="url(#gearGrad1)" />
+            <!-- Kleines Zahnrad (Rechts oben) -->
+            <g transform="translate(150, 38) scale(0.7)">
+              <use href="#gear-centered" fill="url(#gearGrad1)">
+                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="4s" repeatCount="indefinite" />
+              </use>
             </g>
           </svg>
         </div>
