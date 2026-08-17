@@ -1,5 +1,5 @@
 // ==========================================
-// 🛠️ AUTOMATISCHER WARTUNGSMODUS (POLLING)
+// 🛠️ AUTOMATISCHER WARTUNGSMODUS (POLLING & ADMIN)
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
   const urlParams = new URLSearchParams(window.location.search);
@@ -22,14 +22,20 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function checkMaintenanceStatus() {
-    // ?t= verhindert, dass der Browser die JSON-Antwort im Cache speichert
-    fetch('status.json?t=' + Date.now())
+    fetch('status.json?t=' + Date.now(), {
+      cache: 'no-store',
+      headers: { 'Cache-Control': 'no-cache' }
+    })
       .then(response => response.json())
       .then(data => {
-        if (data.maintenance && !isAdmin) {
+        // Wenn Admin eingeloggt ist, wird die Wartungsseite NIEMALS angezeigt
+        if (isAdmin) {
+          return;
+        }
+
+        if (data.maintenance) {
           showMaintenancePage();
         } else if (!data.maintenance && document.querySelector('.maintenance-container')) {
-          // Schaltet zurück zur App, sobald Maintenance wieder false ist
           initAnatomyApp();
         }
       })
@@ -42,9 +48,15 @@ document.addEventListener("DOMContentLoaded", function () {
   // Alle 10 Sekunden automatisch im Hintergrund prüfen
   setInterval(checkMaintenanceStatus, 10000);
 
-  if (!isAdmin) {
-    initAnatomyApp();
-  }
+  // Tab-Wechsel Check für mobile Geräte
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible") {
+      checkMaintenanceStatus();
+    }
+  });
+
+  // App immer direkt starten (Admin sieht sie trotz Wartungsmodus, User sehen sie wenn false)
+  initAnatomyApp();
 });
 
 // ==========================================
