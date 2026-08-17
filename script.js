@@ -1,66 +1,73 @@
 // ==========================================
 // 🛠️ MAINTENANCE MODE & ADMIN ACCESS
 // ==========================================
-document.addEventListener("DOMContentLoaded", function () {
-  const MAINTENANCE_MODE = true; // Set to 'false' when you are ready to publish
+(function () {
+  const MAINTENANCE_MODE = true; // Auf 'false' setzen zum Deaktivieren
 
+  // Admin-Prüfung sofort ausführen
   const urlParams = new URLSearchParams(window.location.search);
-  const isAdmin = urlParams.get('admin') === 'true';
+  const isAdmin = urlParams.get("admin") === "true";
 
-  if (MAINTENANCE_MODE && !isAdmin) {
-    const container = document.getElementById("app-container") || document.body;
+  if (isAdmin || !MAINTENANCE_MODE) {
+    console.log("Normaler Zugriff / Admin aktiv.");
+    return;
+  }
 
-    container.innerHTML = `
-      <style>
-        @keyframes spinCW {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
+  // Erstelle das Overlay direkt im DOM
+  function showMaintenancePage() {
+    // Falls das Overlay schon existiert, nicht doppelt erstellen
+    if (document.getElementById("maintenance-overlay")) return;
 
-        @keyframes spinCCW {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(-360deg); }
-        }
+    const overlay = document.createElement("div");
+    overlay.id = "maintenance-overlay";
+    
+    // Zwingt die Ansicht vollflächig über alles
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #f7fafc;
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: system-ui, -apple-system, sans-serif;
+    `;
 
-        .maintenance-container {
-          text-align: center;
-          padding: 50px 20px;
-          font-family: system-ui, -apple-system, sans-serif;
-        }
+    overlay.innerHTML = `
+      <div style="text-align: center; padding: 20px;">
+        
+        <div style="position: relative; width: 160px; height: 140px; margin: 0 auto 20px auto;">
+          <svg viewBox="0 0 160 140" style="width: 100%; height: 100%; overflow: visible;">
+            <defs>
+              <g id="gear-shape">
+                <path d="M50 34c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zm43.6 12.1l-6.4-1.1c-.5-2.2-1.3-4.3-2.3-6.2l3.9-5.1c1.2-1.6.9-3.8-.6-5.1l-6.3-6.3c-1.3-1.4-3.5-1.7-5.1-.6l-5.1 3.9c-2-.1-4-.9-6.2-2.3l-1.1-6.4C64.2 5.2 62.4 3.9 60.3 3.9h-8.9c-2.1 0-3.9 1.3-4.3 3.3l-1.1 6.4c-2.2.5-4.3 1.3-6.2 2.3l-5.1-3.9c-1.6-1.2-3.8-.9-5.1.6l-6.3 6.3c-1.4 1.3-1.7 3.5-.6 5.1l3.9 5.1c-1 2-1.8 4.1-2.3 6.2l-6.4 1.1c-2 .4-3.3 2.2-3.3 4.3v8.9c0 2.1 1.3 3.9 3.3 4.3l6.4 1.1c.5 2.2 1.3 4.3 2.3 6.2l-3.9 5.1c-1.2 1.6-.9 3.8.6 5.1l6.3 6.3c1.3 1.4 3.5 1.7 5.1.6l5.1-3.9c2 1 4.1 1.8 6.2 2.3l1.1 6.4c.4 2 2.2 3.3 4.3 3.3h8.9c2.1 0 3.9-1.3 4.3-3.3l1.1-6.4c2.2-.5 4.3-1.3 6.2-2.3l5.1 3.9c1.6 1.2 3.8.9 5.1-.6l6.3-6.3c1.4-1.3 1.7-3.5.6-5.1l-3.9-5.1c1-2 1.8-4.1 2.3-6.2l6.4-1.1c2-.4 3.3-2.2 3.3-4.3v-8.9c0-2.1-1.3-3.9-3.3-4.3z" fill="#4a5568"/>
+              </g>
+            </defs>
 
-        .gear-svg {
-          fill: #333333;
-          width: 100%;
-          height: 100%;
-          display: block;
-        }
-      </style>
+            <!-- Großes Zahnrad (links) -->
+            <g transform="translate(20, 20) scale(0.8)">
+              <use href="#gear-shape" x="-50" y="-50" style="transform-origin: 50px 50px;">
+                <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="6s" repeatCount="indefinite"/>
+              </use>
+            </g>
 
-      <div class="maintenance-container">
-        <!-- Bounding Box für das Dreiecks-Layout -->
-        <div style="position: relative; width: 150px; height: 140px; margin: 0 auto 20px auto;">
-          
-          <!-- Großes Zahnrad (oben links) -->
-          <div style="position: absolute; top: 0; left: 0; width: 85px; height: 85px; animation: spinCW 6s linear infinite; transform-origin: 50% 50%;">
-            <svg class="gear-svg" viewBox="0 0 100 100">
-              <path d="M50 34c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zm43.6 12.1l-6.4-1.1c-.5-2.2-1.3-4.3-2.3-6.2l3.9-5.1c1.2-1.6.9-3.8-.6-5.1l-6.3-6.3c-1.3-1.4-3.5-1.7-5.1-.6l-5.1 3.9c-2-.1-4-.9-6.2-2.3l-1.1-6.4C64.2 5.2 62.4 3.9 60.3 3.9h-8.9c-2.1 0-3.9 1.3-4.3 3.3l-1.1 6.4c-2.2.5-4.3 1.3-6.2 2.3l-5.1-3.9c-1.6-1.2-3.8-.9-5.1.6l-6.3 6.3c-1.4 1.3-1.7 3.5-.6 5.1l3.9 5.1c-1 2-1.8 4.1-2.3 6.2l-6.4 1.1c-2 .4-3.3 2.2-3.3 4.3v8.9c0 2.1 1.3 3.9 3.3 4.3l6.4 1.1c.5 2.2 1.3 4.3 2.3 6.2l-3.9 5.1c-1.2 1.6-.9 3.8.6 5.1l6.3 6.3c1.3 1.4 3.5 1.7 5.1.6l5.1-3.9c2 1 4.1 1.8 6.2 2.3l1.1 6.4c.4 2 2.2 3.3 4.3 3.3h8.9c2.1 0 3.9-1.3 4.3-3.3l1.1-6.4c2.2-.5 4.3-1.3 6.2-2.3l5.1 3.9c1.6 1.2 3.8.9 5.1-.6l6.3-6.3c1.4-1.3 1.7-3.5.6-5.1l-3.9-5.1c1-2 1.8-4.1 2.3-6.2l6.4-1.1c2-.4 3.3-2.2 3.3-4.3v-8.9c0-2.1-1.3-3.9-3.3-4.3z"/>
-            </svg>
-          </div>
+            <!-- Mittleres Zahnrad (unten Mitte) -->
+            <g transform="translate(85, 85) scale(0.6)">
+              <use href="#gear-shape" x="-50" y="-50" style="transform-origin: 50px 50px;">
+                <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="-360 50 50" dur="4.5s" repeatCount="indefinite"/>
+              </use>
+            </g>
 
-          <!-- Mittleres Zahnrad (unten mittig/rechts) -->
-          <div style="position: absolute; bottom: 0; left: 45px; width: 65px; height: 65px; animation: spinCCW 4.5s linear infinite; transform-origin: 50% 50%;">
-            <svg class="gear-svg" viewBox="0 0 100 100">
-              <path d="M50 34c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zm43.6 12.1l-6.4-1.1c-.5-2.2-1.3-4.3-2.3-6.2l3.9-5.1c1.2-1.6.9-3.8-.6-5.1l-6.3-6.3c-1.3-1.4-3.5-1.7-5.1-.6l-5.1 3.9c-2-.1-4-.9-6.2-2.3l-1.1-6.4C64.2 5.2 62.4 3.9 60.3 3.9h-8.9c-2.1 0-3.9 1.3-4.3 3.3l-1.1 6.4c-2.2.5-4.3 1.3-6.2 2.3l-5.1-3.9c-1.6-1.2-3.8-.9-5.1.6l-6.3 6.3c-1.4 1.3-1.7 3.5-.6 5.1l3.9 5.1c-1 2-1.8 4.1-2.3 6.2l-6.4 1.1c-2 .4-3.3 2.2-3.3 4.3v8.9c0 2.1 1.3 3.9 3.3 4.3l6.4 1.1c.5 2.2 1.3 4.3 2.3 6.2l-3.9 5.1c-1.2 1.6-.9 3.8.6 5.1l6.3 6.3c1.3 1.4 3.5 1.7 5.1.6l5.1-3.9c2 1 4.1 1.8 6.2 2.3l1.1 6.4c.4 2 2.2 3.3 4.3 3.3h8.9c2.1 0 3.9-1.3 4.3-3.3l1.1-6.4c2.2-.5 4.3-1.3 6.2-2.3l5.1 3.9c1.6 1.2 3.8.9 5.1-.6l6.3-6.3c1.4-1.3 1.7-3.5.6-5.1l-3.9-5.1c1-2 1.8-4.1 2.3-6.2l6.4-1.1c2-.4 3.3-2.2 3.3-4.3v-8.9c0-2.1-1.3-3.9-3.3-4.3z"/>
-            </svg>
-          </div>
-
-          <!-- Kleines Zahnrad (oben rechts) -->
-          <div style="position: absolute; top: 18px; right: 0; width: 48px; height: 48px; animation: spinCW 3.5s linear infinite; transform-origin: 50% 50%;">
-            <svg class="gear-svg" viewBox="0 0 100 100">
-              <path d="M50 34c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zm43.6 12.1l-6.4-1.1c-.5-2.2-1.3-4.3-2.3-6.2l3.9-5.1c1.2-1.6.9-3.8-.6-5.1l-6.3-6.3c-1.3-1.4-3.5-1.7-5.1-.6l-5.1 3.9c-2-.1-4-.9-6.2-2.3l-1.1-6.4C64.2 5.2 62.4 3.9 60.3 3.9h-8.9c-2.1 0-3.9 1.3-4.3 3.3l-1.1 6.4c-2.2.5-4.3 1.3-6.2 2.3l-5.1-3.9c-1.6-1.2-3.8-.9-5.1.6l-6.3 6.3c-1.4 1.3-1.7 3.5-.6 5.1l3.9 5.1c-1 2-1.8 4.1-2.3 6.2l-6.4 1.1c-2 .4-3.3 2.2-3.3 4.3v8.9c0 2.1 1.3 3.9 3.3 4.3l6.4 1.1c.5 2.2 1.3 4.3 2.3 6.2l-3.9 5.1c-1.2 1.6-.9 3.8.6 5.1l6.3 6.3c1.3 1.4 3.5 1.7 5.1.6l5.1-3.9c2 1 4.1 1.8 6.2 2.3l1.1 6.4c.4 2 2.2 3.3 4.3 3.3h8.9c2.1 0 3.9-1.3 4.3-3.3l1.1-6.4c2.2-.5 4.3-1.3 6.2-2.3l5.1 3.9c1.6 1.2 3.8.9 5.1-.6l6.3-6.3c1.4-1.3 1.7-3.5.6-5.1l-3.9-5.1c1-2 1.8-4.1 2.3-6.2l6.4-1.1c2-.4 3.3-2.2 3.3-4.3v-8.9c0-2.1-1.3-3.9-3.3-4.3z"/>
-            </svg>
-          </div>
-
+            <!-- Kleines Zahnrad (rechts oben) -->
+            <g transform="translate(130, 45) scale(0.45)">
+              <use href="#gear-shape" x="-50" y="-50" style="transform-origin: 50px 50px;">
+                <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="3.5s" repeatCount="indefinite"/>
+              </use>
+            </g>
+          </svg>
         </div>
 
         <h2 style="color: #2d3748; margin-bottom: 8px; font-weight: 700; font-size: 1.8em;">Under Maintenance</h2>
@@ -70,10 +77,19 @@ document.addEventListener("DOMContentLoaded", function () {
         <div style="display: inline-block; background-color: #edf2f7; color: #4a5568; padding: 10px 20px; border-radius: 20px; font-size: 0.85em; font-weight: 600;">
           ⚡ System update in progress — back online soon!
         </div>
+
       </div>
     `;
+
+    document.body.appendChild(overlay);
   }
-});
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", showMaintenancePage);
+  } else {
+    showMaintenancePage();
+  }
+})();
   }
 } else {
   // ==========================================
