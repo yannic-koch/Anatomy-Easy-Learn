@@ -2,7 +2,7 @@
 // 🛠️ MAINTENANCE MODE & ADMIN ACCESS
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
-  const MAINTENANCE_MODE = true; // Setze auf 'false', sobald du veröffentlichen willst
+  const MAINTENANCE_MODE = false; // Auf 'false' setzen, um den Trainer direkt anzuzeigen
 
   const urlParams = new URLSearchParams(window.location.search);
   const isAdmin = urlParams.get('admin') === 'true';
@@ -96,12 +96,12 @@ function initAnatomyApp() {
   let currentIndex = 0;
   let userAnswers = {};
   let currentMode = "";
-  let selectedMatchingPairs = {};
 
   let container = document.getElementById("app-container");
   if (!container) {
     container = document.createElement("div");
     container.id = "app-container";
+    container.className = "app-container";
     document.body.appendChild(container);
   }
 
@@ -272,7 +272,6 @@ function initAnatomyApp() {
       const leftSide = [...subSet].sort(() => Math.random() - 0.5);
       const rightSide = subSet.map(m => m[currentCategory]).sort(() => Math.random() - 0.5);
 
-      selectedMatchingPairs = {};
       q.matchingSubSet = subSet;
 
       html += `
@@ -299,9 +298,11 @@ function initAnatomyApp() {
     container.innerHTML = html;
   }
 
+  // KORRIGIERTE EINZEL- UND FREITEXTPROFE-FUNKTION
   window.checkWriteAnswer = function() {
     const q = sessionList[currentIndex];
-    const userAns = document.getElementById('write-answer').value.trim();
+    const inputEl = document.getElementById('write-answer');
+    const userAns = inputEl ? inputEl.value.trim() : "";
     const correct = q.muskel[q.kat];
 
     const ignoreWords = ["und", "im", "am", "der", "die", "das", "an", "von", "m", "musculus", "p", "pars"];
@@ -381,7 +382,6 @@ function initAnatomyApp() {
   function finishSession() {
     const total = sessionList.length;
     const correctCount = Object.values(userAnswers).filter(a => a.success).length;
-
     const wrongQuestions = sessionList.filter((_, i) => !userAnswers[i] || !userAnswers[i].success);
 
     let html = `
