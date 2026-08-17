@@ -33,10 +33,36 @@
       "justify-content: center;" +
       "font-family: system-ui, -apple-system, sans-serif;";
 
+    // CSS Keyframes direkt für die saubere Eigenachsen-Rotation
+    const styleEl = document.createElement("style");
+    styleEl.textContent = `
+      @keyframes spin-cw {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      @keyframes spin-ccw {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(-360deg); }
+      }
+      .gear-1 {
+        animation: spin-cw 8s linear infinite;
+        transform-origin: 50px 50px;
+      }
+      .gear-2 {
+        animation: spin-ccw 5.5s linear infinite;
+        transform-origin: 50px 50px;
+      }
+      .gear-3 {
+        animation: spin-cw 4s linear infinite;
+        transform-origin: 50px 50px;
+      }
+    `;
+    document.head.appendChild(styleEl);
+
     overlay.innerHTML = `
       <div style="text-align: center; padding: 20px;">
-        <div style="position: relative; width: 220px; height: 160px; margin: 0 auto -10px auto;">
-          <svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="width: 100%; height: 100%; overflow: visible;">
+        <div style="position: relative; width: 220px; height: 150px; margin: 0 auto -5px auto;">
+          <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%; overflow: visible;">
             <defs>
               <linearGradient id="gearGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#4A5568" />
@@ -47,37 +73,31 @@
                 <stop offset="100%" stop-color="#4A5568" />
               </linearGradient>
 
-              <!-- Zahnrad zentriert um (0,0) -->
-              <g id="gear-shape-centered">
-                <path d="M0 -32c-3.3 0-6 2.7-6 6s2.7 6 6 6 6-2.7 6-6-2.7-6-6-6zm32.7 9.1l-4.8-.8c-.4-1.7-1-3.2-1.7-4.7l2.9-3.8c.9-1.2.7-2.9-.5-3.8l-4.7-4.7c-1-1-2.6-1.3-3.8-.5l-3.8 2.9c-1.5-.7-3-1.3-4.7-1.7l-.8-4.8c-.3-1.5-1.7-2.5-3.2-2.5h-6.7c-1.6 0-2.9 1-3.2 2.5l-.8 4.8c-1.7.4-3.2 1-4.7 1.7l-3.8-2.9c-1.2-.9-2.9-.7-3.8.5l-4.7 4.7c-1 1-1.3 2.6-.5 3.8l2.9 3.8c-.7 1.5-1.3 3-1.7 4.7l-4.8.8c-1.5.3-2.5 1.7-2.5 3.2v6.7c0 1.6 1 2.9 2.5 3.2l4.8.8c.4 1.7 1 3.2 1.7 4.7l-2.9 3.8c-.9 1.2-.7 2.9.5 3.8l4.7 4.7c1 1 2.6 1.3 3.8.5l3.8-2.9c1.5.7 3 1.3 4.7 1.7l.8 4.8c.3 1.5 1.7 2.5 3.2 2.5h6.7c1.6 0 2.9-1 3.2-2.5l.8-4.8c1.7-.4 3.2-1 4.7-1.7l3.8 2.9c1.2.9 2.9.7 3.8-.5l4.7-4.7c1-1 1.3-2.6.5-3.8l-2.9-3.8c.7-1.5 1.3-3 1.7-4.7l4.8-.8c1.5-.3 2.5-1.7 2.5-3.2v-6.7c0-1.6-1-2.9-2.5-3.2z" 
-                      fill="url(#gearGrad1)" stroke="#cbd5e0" stroke-width="1.5"/>
+              <!-- Pfad zentriert auf Box 0..100 mit Mittelpunkt (50,50) -->
+              <g id="gear-base">
+                <path d="M50 34c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zm43.6 12.1l-6.4-1.1c-.5-2.2-1.3-4.3-2.3-6.2l3.9-5.1c1.2-1.6.9-3.8-.6-5.1l-6.3-6.3c-1.3-1.4-3.5-1.7-5.1-.6l-5.1 3.9c-2-.1-4-.9-6.2-2.3l-1.1-6.4C64.2 5.2 62.4 3.9 60.3 3.9h-8.9c-2.1 0-3.9 1.3-4.3 3.3l-1.1 6.4c-2.2.5-4.3 1.3-6.2 2.3l-5.1-3.9c-1.6-1.2-3.8-.9-5.1.6l-6.3 6.3c-1.4 1.3-1.7 3.5-.6 5.1l3.9 5.1c-1 2-1.8 4.1-2.3 6.2l-6.4 1.1c-2 .4-3.3 2.2-3.3 4.3v8.9c0 2.1 1.3 3.9 3.3 4.3l6.4 1.1c.5 2.2 1.3 4.3 2.3 6.2l-3.9 5.1c-1.2 1.6-.9 3.8.6 5.1l6.3 6.3c1.3 1.4 3.5 1.7 5.1.6l5.1-3.9c2 1 4.1 1.8 6.2 2.3l1.1 6.4c.4 2 2.2 3.3 4.3 3.3h8.9c2.1 0 3.9-1.3 4.3-3.3l1.1-6.4c2.2-.5 4.3-1.3 6.2-2.3l5.1 3.9c1.6 1.2 3.8.9 5.1-.6l6.3-6.3c1.4-1.3 1.7-3.5.6-5.1l-3.9-5.1c1-2 1.8-4.1 2.3-6.2l6.4-1.1c2-.4 3.3-2.2 3.3-4.3v-8.9c0-2.1-1.3-3.9-3.3-4.3z" 
+                      stroke="#cbd5e0" stroke-width="1.5"/>
               </g>
             </defs>
 
-            <!-- Großes Zahnrad (Links oben, Position 60,60) -->
-            <g transform="translate(60, 60) scale(1.1)">
-              <use href="#gear-shape-centered" xlink:href="#gear-shape-centered">
-                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="8s" repeatCount="indefinite"/>
-              </use>
+            <!-- Großes Zahnrad (Links) -->
+            <g transform="translate(10, 10) scale(1.1)">
+              <use href="#gear-base" class="gear-1" fill="url(#gearGrad1)" />
             </g>
 
-            <!-- Mittleres Zahnrad (Mitte unten, Position 115, 105) -->
-            <g transform="translate(115, 105) scale(0.85)">
-              <use href="#gear-shape-centered" xlink:href="#gear-shape-centered" fill="url(#gearGrad2)">
-                <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="5.5s" repeatCount="indefinite"/>
-              </use>
+            <!-- Mittleres Zahnrad (Mitte unten, greift in Großes) -->
+            <g transform="translate(72, 55) scale(0.85)">
+              <use href="#gear-base" class="gear-2" fill="url(#gearGrad2)" />
             </g>
 
-            <!-- Kleines Zahnrad (Rechts oben, Position 155, 55) -->
-            <g transform="translate(155, 55) scale(0.65)">
-              <use href="#gear-shape-centered" xlink:href="#gear-shape-centered">
-                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="4s" repeatCount="indefinite"/>
-              </use>
+            <!-- Kleines Zahnrad (Rechts oben, greift in Mittleres) -->
+            <g transform="translate(118, 12) scale(0.65)">
+              <use href="#gear-base" class="gear-3" fill="url(#gearGrad1)" />
             </g>
           </svg>
         </div>
 
-        <h2 style="color: #2d3748; margin-bottom: 8px; font-weight: 700; font-size: 1.8em;">Under Maintenance</h2>
+        <h2 style="color: #2d3748; margin-bottom: 8px; font-weight: 700; font-size: 1.8em; position: relative; z-index: 2;">Under Maintenance</h2>
         <p style="color: #718096; font-size: 1.05em; max-width: 420px; margin: 0 auto 24px auto; line-height: 1.5;">
           Upgrading the database for a better training experience.
         </p>
@@ -89,7 +109,7 @@
 
     document.body.appendChild(overlay);
   }
-
+  
   if (document.readyState === "interactive" || document.readyState === "complete") {
     showMaintenancePage();
   } else {
