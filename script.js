@@ -2,7 +2,7 @@
 // 🛠️ MAINTENANCE MODE & ADMIN ACCESS
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
-  const MAINTENANCE_MODE = true; // Set to 'false' when you are ready to publish
+  const MAINTENANCE_MODE = true; // Setze auf 'false', sobald du veröffentlichen willst
 
   const urlParams = new URLSearchParams(window.location.search);
   const isAdmin = urlParams.get('admin') === 'true';
@@ -31,7 +31,6 @@ document.addEventListener("DOMContentLoaded", function () {
           margin: 0 auto 20px auto;
         }
 
-        /* Ein einzelnes Zahnrad, das sich exakt um den eigenen Mittelpunkt dreht */
         .gear-single {
           width: 100px;
           height: 100px;
@@ -99,10 +98,14 @@ function initAnatomyApp() {
   let currentMode = "";
   let selectedMatchingPairs = {};
 
-  const container = document.getElementById("app-container");
+  let container = document.getElementById("app-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "app-container";
+    document.body.appendChild(container);
+  }
 
   function renderMenu() {
-    if (!container) return;
     const gruppen = [...new Set(muskelDaten.map(m => m.gruppe))].sort();
 
     let html = `
