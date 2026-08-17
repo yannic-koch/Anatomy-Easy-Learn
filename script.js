@@ -11,16 +11,16 @@ if (MAINTENANCE_MODE && !isAdmin) {
   if (container) {
 container.innerHTML = `
   <style>
-    /* Das Zahnrad dreht sich durchgehend */
-    @keyframes gearSpin {
+    /* Drehung im Uhrzeigersinn */
+    @keyframes spinCW {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
 
-    /* Der Schraubenschlüssel wackelt/schraubt im Takt mit */
-    @keyframes wrenchWiggle {
-      0%, 100% { transform: translate(-20px, -20px) rotate(-15deg); }
-      50% { transform: translate(-20px, -20px) rotate(15deg); }
+    /* Drehung gegen den Uhrzeigersinn */
+    @keyframes spinCCW {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(-360deg); }
     }
 
     .maintenance-container {
@@ -29,33 +29,42 @@ container.innerHTML = `
       font-family: sans-serif;
     }
 
-    .animation-wrapper {
-      display: inline-block;
-      position: relative;
-      width: 80px;
-      height: 80px;
+    /* Layout für die 3 Zahnräder nebeneinander */
+    .gears-wrapper {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 90px;
       margin-bottom: 20px;
     }
 
-    .gear-icon {
-      font-size: 70px;
-      display: inline-block;
-      animation: gearSpin 4s linear infinite;
+    .gear-main {
+      font-size: 65px;
+      line-height: 1;
+      animation: spinCW 4s linear infinite;
+      z-index: 2;
     }
 
-    .wrench-icon {
+    .gear-left {
       font-size: 45px;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      animation: wrenchWiggle 1.2s ease-in-out infinite;
+      line-height: 1;
+      margin-right: -12px; /* Schiebt das linke Zahnrad ans mittlere */
+      animation: spinCCW 4s linear infinite;
+    }
+
+    .gear-right {
+      font-size: 45px;
+      line-height: 1;
+      margin-left: -12px; /* Schiebt das rechte Zahnrad ans mittlere */
+      animation: spinCCW 4s linear infinite;
     }
   </style>
 
   <div class="maintenance-container">
-    <div class="animation-wrapper">
-      <span class="gear-icon">⚙️</span>
-      <span class="wrench-icon">🔧</span>
+    <div class="gears-wrapper">
+      <span class="gear-left">⚙️</span>
+      <span class="gear-main">⚙️</span>
+      <span class="gear-right">⚙️</span>
     </div>
     <h2 style="color: #e67e22; margin-bottom: 12px; font-weight: 700;">Under Maintenance</h2>
     <p style="color: #4a5568; font-size: 1.1em; max-width: 440px; margin: 0 auto 20px auto; line-height: 1.5;">
