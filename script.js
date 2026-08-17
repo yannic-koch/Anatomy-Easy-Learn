@@ -1,15 +1,12 @@
 // ==========================================
-// 🛠️ MAINTENANCE MODE & ADMIN ACCESS
+// 🛠️ AUTOMATISCHER WARTUNGSMODUS (POLLING)
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
-  const MAINTENANCE_MODE = true; // Auf 'true' setzen für Wartungsmodus
-
   const urlParams = new URLSearchParams(window.location.search);
   const isAdmin = urlParams.get('admin') === 'true';
 
   function showMaintenancePage() {
     const container = document.getElementById("app-container") || document.body;
-
     container.innerHTML = `
       <div class="maintenance-container">
         <div class="gears-box">
@@ -24,9 +21,28 @@ document.addEventListener("DOMContentLoaded", function () {
     `;
   }
 
-  if (MAINTENANCE_MODE && !isAdmin) {
-    showMaintenancePage();
-  } else {
+  function checkMaintenanceStatus() {
+    // ?t= verhindert, dass der Browser die JSON-Antwort im Cache speichert
+    fetch('status.json?t=' + Date.now())
+      .then(response => response.json())
+      .then(data => {
+        if (data.maintenance && !isAdmin) {
+          showMaintenancePage();
+        } else if (!data.maintenance && document.querySelector('.maintenance-container')) {
+          // Schaltet zurück zur App, sobald Maintenance wieder false ist
+          initAnatomyApp();
+        }
+      })
+      .catch(err => console.log("Status-Check fehlgeschlagen:", err));
+  }
+
+  // Erstprüfung beim Laden
+  checkMaintenanceStatus();
+
+  // Alle 10 Sekunden automatisch im Hintergrund prüfen
+  setInterval(checkMaintenanceStatus, 10000);
+
+  if (!isAdmin) {
     initAnatomyApp();
   }
 });
