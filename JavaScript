@@ -136,7 +136,7 @@ function showQuestion() {
 
     html += `
       <p>Wähle die richtige Antwort:</p>
-      ${options.map((opt, i) => `
+      ${options.map((opt) => `
         <label class="option-item">
           <input type="radio" name="single-opt" value="${opt}"> ${opt}
         </label>
@@ -228,5 +228,4 @@ function finishSession() {
   container.innerHTML = html;
 }
 
-// Start-App
 renderMenu();
