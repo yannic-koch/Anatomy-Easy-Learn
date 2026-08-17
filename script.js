@@ -1,79 +1,99 @@
 // ==========================================
 // 🛠️ MAINTENANCE MODE & ADMIN ACCESS
 // ==========================================
-(function () {
-  const MAINTENANCE_MODE = true;
+document.addEventListener("DOMContentLoaded", function () {
+  const MAINTENANCE_MODE = true; // Set to 'false' when you are ready to publish
 
   const urlParams = new URLSearchParams(window.location.search);
-  const isAdmin = urlParams.get("admin") === "true";
+  const isAdmin = urlParams.get('admin') === 'true';
 
-  if (isAdmin || !MAINTENANCE_MODE) {
-    console.log("Normaler Zugriff / Admin aktiv.");
-    initAnatomyApp();
-    return;
-  }
+  if (MAINTENANCE_MODE && !isAdmin) {
+    const container = document.getElementById("app-container") || document.body;
 
-function showMaintenancePage() {
-    if (!document.body) return;
-    if (document.getElementById("maintenance-overlay")) return;
+    container.innerHTML = `
+      <style>
+        @keyframes spinCW {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
 
-    const overlay = document.createElement("div");
-    overlay.id = "maintenance-overlay";
+        @keyframes spinCCW {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(-360deg); }
+        }
 
-    overlay.style.cssText =
-      "position: fixed;" +
-      "top: 0;" +
-      "left: 0;" +
-      "width: 100vw;" +
-      "height: 100vh;" +
-      "background-color: #f7fafc;" +
-      "z-index: 999999;" +
-      "display: flex;" +
-      "align-items: center;" +
-      "justify-content: center;" +
-      "font-family: system-ui, -apple-system, sans-serif;";
+        .maintenance-container {
+          text-align: center;
+          padding: 50px 20px;
+          font-family: system-ui, -apple-system, sans-serif;
+        }
 
-    overlay.innerHTML = `
-      <div style="text-align: center; padding: 20px;">
-        <!-- Container oberhalb des Textes -->
-        <div style="width: 220px; height: 120px; margin: 0 auto 15px auto;">
-          <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%; display: block; overflow: visible;">
-            <defs>
-              <linearGradient id="gearGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#4A5568" />
-                <stop offset="100%" stop-color="#2D3748" />
-              </linearGradient>
-              <linearGradient id="gearGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#718096" />
-                <stop offset="100%" stop-color="#4A5568" />
-              </linearGradient>
+        .gears-box {
+          position: relative;
+          width: 140px;
+          height: 140px;
+          margin: 0 auto 20px auto;
+        }
 
-              <!-- Zahnrad-Pfad exakt zentriert um den Ursprung (0,0) -->
-              <path id="gear-centered" d="M0 -16c-4.4 0-8 3.6-8 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm21.8 6.1l-3.2-.6c-.3-1.1-.7-2.1-1.2-3.1l2-2.5c.6-.8.5-1.9-.3-2.5l-3.1-3.1c-.7-.7-1.8-.8-2.5-.3l-2.5 2c-1-.5-2-.9-3.1-1.2l-.6-3.2c-.2-1-.9-1.7-1.9-1.7h-4.4c-1 0-1.8.7-1.9 1.7l-.6 3.2c-1.1.3-2.1.7-3.1 1.2l-2.5-2c-.8-.6-1.9-.5-2.5.3l-3.1 3.1c-.7.7-.8 1.8-.3 2.5l2 2.5c-.5 1-.9 2-1.2 3.1l-3.2.6c-1 .2-1.7.9-1.7 1.9v4.4c0 1 .7 1.8 1.7 1.9l3.2.6c.3 1.1.7 2.1 1.2 3.1l-2 2.5c-.6.8-.5 1.9.3 2.5l3.1 3.1c.7.7 1.8.8 2.5.3l2.5-2c1 .5 2 .9 3.1 1.2l.6 3.2c.2 1 .9 1.7 1.9 1.7h4.4c1 0 1.8-.7 1.9-1.7l.6-3.2c1.1-.3 2.1-.7 3.1-1.2l2.5 2c.8.6 1.9.5 2.5-.3l3.1-3.1c.7-.7.8-1.8.3-2.5l-2-2.5c.5-1 .9-2 1.2-3.1l3.2-.6c1-.2 1.7-.9 1.7-1.9v-4.4c0-1-.7-1.8-1.7-1.9z" 
-                    stroke="#CBD5E0" stroke-width="1.5"/>
-            </defs>
+        /* WICHTIG: display: inline-block & transform-origin: 50% 50% verhindert das Eiern */
+        .gear-large {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 80px;
+          height: 80px;
+          display: inline-block;
+          transform-origin: 50% 50%;
+          animation: spinCW 6s linear infinite;
+        }
 
-            <!-- Großes Zahnrad (Links oben) -->
-            <g transform="translate(50, 45) scale(1.3)">
-              <use href="#gear-centered" fill="url(#gearGrad1)">
-                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="8s" repeatCount="indefinite" />
-              </use>
-            </g>
+        .gear-medium {
+          position: absolute;
+          bottom: 5px;
+          right: 25px;
+          width: 60px;
+          height: 60px;
+          display: inline-block;
+          transform-origin: 50% 50%;
+          animation: spinCCW 4.5s linear infinite;
+        }
 
-            <!-- Mittleres Zahnrad (Mitte unten) -->
-            <g transform="translate(105, 75) scale(0.95)">
-              <use href="#gear-centered" fill="url(#gearGrad2)">
-                <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="5.5s" repeatCount="indefinite" />
-              </use>
-            </g>
+        .gear-small {
+          position: absolute;
+          top: 22px;
+          right: 5px;
+          width: 45px;
+          height: 45px;
+          display: inline-block;
+          transform-origin: 50% 50%;
+          animation: spinCW 3.5s linear infinite;
+        }
 
-            <!-- Kleines Zahnrad (Rechts oben) -->
-            <g transform="translate(150, 38) scale(0.7)">
-              <use href="#gear-centered" fill="url(#gearGrad1)">
-                <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="4s" repeatCount="indefinite" />
-              </use>
-            </g>
-          </svg>
+        .gear-svg {
+          fill: #2d3748;
+          width: 100%;
+          height: 100%;
+          display: block;
+        }
+      </style>
+
+      <div class="maintenance-container">
+        <div class="gears-box">
+          <div class="gear-large">
+            <svg class="gear-svg" viewBox="0 0 100 100">
+              <path d="M50 34c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zm43.6 12.1l-6.4-1.1c-.5-2.2-1.3-4.3-2.3-6.2l3.9-5.1c1.2-1.6.9-3.8-.6-5.1l-6.3-6.3c-1.3-1.4-3.5-1.7-5.1-.6l-5.1 3.9c-2-.1-4-.9-6.2-2.3l-1.1-6.4C64.2 5.2 62.4 3.9 60.3 3.9h-8.9c-2.1 0-3.9 1.3-4.3 3.3l-1.1 6.4c-2.2.5-4.3 1.3-6.2 2.3l-5.1-3.9c-1.6-1.2-3.8-.9-5.1.6l-6.3 6.3c-1.4 1.3-1.7 3.5-.6 5.1l3.9 5.1c-1 2-1.8 4.1-2.3 6.2l-6.4 1.1c-2 .4-3.3 2.2-3.3 4.3v8.9c0 2.1 1.3 3.9 3.3 4.3l6.4 1.1c.5 2.2 1.3 4.3 2.3 6.2l-3.9 5.1c-1.2 1.6-.9 3.8.6 5.1l6.3 6.3c1.3 1.4 3.5 1.7 5.1.6l5.1-3.9c2 1 4.1 1.8 6.2 2.3l1.1 6.4c.4 2 2.2 3.3 4.3 3.3h8.9c2.1 0 3.9-1.3 4.3-3.3l1.1-6.4c2.2-.5 4.3-1.3 6.2-2.3l5.1 3.9c1.6 1.2 3.8.9 5.1-.6l6.3-6.3c1.4-1.3 1.7-3.5.6-5.1l-3.9-5.1c1-2 1.8-4.1 2.3-6.2l6.4-1.1c2-.4 3.3-2.2 3.3-4.3v-8.9c0-2.1-1.3-3.9-3.3-4.3z"/>
+            </svg>
+          </div>
+          <div class="gear-medium">
+            <svg class="gear-svg" viewBox="0 0 100 100">
+              <path d="M50 34c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zm43.6 12.1l-6.4-1.1c-.5-2.2-1.3-4.3-2.3-6.2l3.9-5.1c1.2-1.6.9-3.8-.6-5.1l-6.3-6.3c-1.3-1.4-3.5-1.7-5.1-.6l-5.1 3.9c-2-.1-4-.9-6.2-2.3l-1.1-6.4C64.2 5.2 62.4 3.9 60.3 3.9h-8.9c-2.1 0-3.9 1.3-4.3 3.3l-1.1 6.4c-2.2.5-4.3 1.3-6.2 2.3l-5.1-3.9c-1.6-1.2-3.8-.9-5.1.6l-6.3 6.3c-1.4 1.3-1.7 3.5-.6 5.1l3.9 5.1c-1 2-1.8 4.1-2.3 6.2l-6.4 1.1c-2 .4-3.3 2.2-3.3 4.3v8.9c0 2.1 1.3 3.9 3.3 4.3l6.4 1.1c.5 2.2 1.3 4.3 2.3 6.2l-3.9 5.1c-1.2 1.6-.9 3.8.6 5.1l6.3 6.3c1.3 1.4 3.5 1.7 5.1.6l5.1-3.9c2 1 4.1 1.8 6.2 2.3l1.1 6.4c.4 2 2.2 3.3 4.3 3.3h8.9c2.1 0 3.9-1.3 4.3-3.3l1.1-6.4c2.2-.5 4.3-1.3 6.2-2.3l5.1 3.9c1.6 1.2 3.8.9 5.1-.6l6.3-6.3c1.4-1.3 1.7-3.5.6-5.1l-3.9-5.1c1-2 1.8-4.1 2.3-6.2l6.4-1.1c2-.4 3.3-2.2 3.3-4.3v-8.9c0-2.1-1.3-3.9-3.3-4.3z"/>
+            </svg>
+          </div>
+          <div class="gear-small">
+            <svg class="gear-svg" viewBox="0 0 100 100">
+              <path d="M50 34c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zm43.6 12.1l-6.4-1.1c-.5-2.2-1.3-4.3-2.3-6.2l3.9-5.1c1.2-1.6.9-3.8-.6-5.1l-6.3-6.3c-1.3-1.4-3.5-1.7-5.1-.6l-5.1 3.9c-2-.1-4-.9-6.2-2.3l-1.1-6.4C64.2 5.2 62.4 3.9 60.3 3.9h-8.9c-2.1 0-3.9 1.3-4.3 3.3l-1.1 6.4c-2.2.5-4.3 1.3-6.2 2.3l-5.1-3.9c-1.6-1.2-3.8-.9-5.1.6l-6.3 6.3c-1.4 1.3-1.7 3.5-.6 5.1l3.9 5.1c-1 2-1.8 4.1-2.3 6.2l-6.4 1.1c-2 .4-3.3 2.2-3.3 4.3v8.9c0 2.1 1.3 3.9 3.3 4.3l6.4 1.1c.5 2.2 1.3 4.3 2.3 6.2l-3.9 5.1c-1.2 1.6-.9 3.8.6 5.1l6.3 6.3c1.3 1.4 3.5 1.7 5.1.6l5.1-3.9c2 1 4.1 1.8 6.2 2.3l1.1 6.4c.4 2 2.2 3.3 4.3 3.3h8.9c2.1 0 3.9-1.3 4.3-3.3l1.1-6.4c2.2-.5 4.3-1.3 6.2-2.3l5.1 3.9c1.6 1.2 3.8.9 5.1-.6l6.3-6.3c1.4-1.3 1.7-3.5.6-5.1l-3.9-5.1c1-2 1.8-4.1 2.3-6.2l6.4-1.1c2-.4 3.3-2.2 3.3-4.3v-8.9c0-2.1-1.3-3.9-3.3-4.3z"/>
+            </svg>
+          </div>
         </div>
 
         <h2 style="color: #2d3748; margin-bottom: 8px; font-weight: 700; font-size: 1.8em;">Under Maintenance</h2>
@@ -85,9 +105,8 @@ function showMaintenancePage() {
         </div>
       </div>
     `;
-
-    document.body.appendChild(overlay);
   }
+});
   
   if (document.readyState === "interactive" || document.readyState === "complete") {
     showMaintenancePage();
