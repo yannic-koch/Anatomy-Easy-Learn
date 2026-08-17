@@ -156,3 +156,44 @@ select.match-select {
   border-radius: 4px;
   font-size: 0.95rem;
 }
+/* ==========================================
+   ⚙️ WARTUNGSSEITE (MAINTENANCE STYLES)
+   ========================================== */
+@keyframes spinCW {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.maintenance-container {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.gears-box {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 20px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gear-single {
+  font-size: 80px;
+  line-height: 1;
+  display: inline-block;
+  transform-origin: 50% 50%;
+  animation: spinCW 6s linear infinite;
+  user-select: none;
+}
+
+.maintenance-badge {
+  display: inline-block;
+  background-color: #edf2f7;
+  color: #4a5568;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 15px;
+}
