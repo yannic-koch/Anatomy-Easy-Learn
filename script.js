@@ -2,7 +2,7 @@
 // 🛠️ MAINTENANCE MODE & ADMIN ACCESS
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
-  const MAINTENANCE_MODE = true; // Auf 'false' setzen für den normalen Betrieb
+  const MAINTENANCE_MODE = false; // Auf 'true' setzen für Wartungsmodus
 
   const urlParams = new URLSearchParams(window.location.search);
   const isAdmin = urlParams.get('admin') === 'true';
@@ -16,9 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
           <div class="gear-single">⚙️</div>
         </div>
         <h2>Under Maintenance</h2>
-        <p>
-          Upgrading the database for a better training experience.
-        </p>
+        <p>Upgrading the database for a better training experience.</p>
         <div class="maintenance-badge">
           ⚡ System update in progress — back online soon!
         </div>
@@ -203,7 +201,7 @@ function initAnatomyApp() {
         <br>
         <label>Antwort eingeben:</label>
         <input type="text" id="write-answer" autofocus autocomplete="off">
-        <button class="btn" onclick="checkWriteAnswer()">Antwort prüfen</button>
+        <button class="btn" id="submit-btn" onclick="checkWriteAnswer()">Antwort prüfen</button>
       `;
     } else if (q.type === 'single') {
       const correct = q.muskel[q.kat];
@@ -222,7 +220,7 @@ function initAnatomyApp() {
             <input type="radio" name="single-opt" value="${opt.replace(/"/g, '&quot;')}"> ${opt}
           </label>
         `).join('')}
-        <button class="btn" onclick="checkSingleAnswer()">Auswahl prüfen</button>
+        <button class="btn" id="submit-btn" onclick="checkSingleAnswer()">Auswahl prüfen</button>
       `;
     } else if (q.type === 'match') {
       const currentCategory = q.kat;
@@ -241,7 +239,7 @@ function initAnatomyApp() {
         
         <div class="match-list">
           ${leftSide.map((m) => `
-            <div class="match-item">
+            <div class="match-item" style="margin: 8px 0;">
               <strong>${m.muskel}</strong> ➔ 
               <select class="match-select" data-muskel="${m.muskel}">
                 <option value="">-- Bitte wählen --</option>
@@ -250,7 +248,7 @@ function initAnatomyApp() {
             </div>
           `).join('')}
         </div>
-        <button class="btn" onclick="checkMatchAnswer()">Zuordnung prüfen</button>
+        <button class="btn" id="submit-btn" onclick="checkMatchAnswer()">Zuordnung prüfen</button>
       `;
     }
 
@@ -320,14 +318,18 @@ function initAnatomyApp() {
     userAnswers[currentIndex] = { user: userAns, correct: correctAns, success: isCorrect };
 
     if (currentMode === "PRACTICE") {
+      const submitBtn = document.getElementById("submit-btn");
+      if (submitBtn) submitBtn.style.display = "none";
+
       const feedbackArea = document.getElementById("feedback-area");
       feedbackArea.className = `feedback ${isCorrect ? 'correct' : 'wrong'}`;
       feedbackArea.innerHTML = isCorrect 
-        ? `✓ Richtig! Gut gemacht.` 
-        : `✗ Falsch!<br><strong>Richtige Antwort:</strong><br>${correctAns}`;
+        ? `✅ Richtig! Gut gemacht.` 
+        : `❌ Falsch!<br><strong>Richtige Antwort:</strong><br>${correctAns}`;
       
       const nextBtn = document.createElement("button");
       nextBtn.className = "btn";
+      nextBtn.style.marginTop = "12px";
       nextBtn.innerText = "Nächste Frage ➡";
       nextBtn.onclick = () => { currentIndex++; showQuestion(); };
       feedbackArea.appendChild(nextBtn);
@@ -357,20 +359,20 @@ function initAnatomyApp() {
     }
 
     html += `
-      <div class="results-list">
+      <div class="results-list" style="margin-top: 15px;">
         ${sessionList.map((q, i) => {
           const ans = userAnswers[i] || { user: "Keine Antwort", correct: "-", success: false };
           return `
-            <div class="box result-box ${ans.success ? 'result-correct' : 'result-wrong'}">
-              <strong>Frage ${i+1}: ${q.muskel ? q.muskel.muskel : 'Zuordnungsaufgabe'}</strong> [${q.type.toUpperCase()}]<br>
+            <div class="box result-box ${ans.success ? 'result-correct' : 'result-wrong'}" style="margin-bottom: 10px;">
+              <strong>${ans.success ? '✅' : '❌'} Frage ${i+1}: ${q.muskel ? q.muskel.muskel : 'Zuordnungsaufgabe'}</strong> [${q.type.toUpperCase()}]<br>
               <small>Kategorie: ${q.kat.toUpperCase()}</small><br>
               <span class="user-ans">Deine Antwort: ${ans.user}</span><br>
-              ${!ans.success ? `<span class="correct-ans">Richtige Lösung: ${ans.correct}</span>` : ''}
+              ${!ans.success ? `<span class="correct-ans" style="color: #c0392b; font-weight: bold;">Richtige Lösung: ${ans.correct}</span>` : ''}
             </div>
           `;
         }).join('')}
       </div>
-      <button class="btn" onclick="renderMenu()">Hauptmenü</button>
+      <button class="btn" onclick="renderMenu()" style="margin-top: 15px;">Hauptmenü</button>
     `;
 
     window.lastWrongQuestions = wrongQuestions;
