@@ -9,16 +9,16 @@ const isAdmin = urlParams.get('admin') === 'true';
 if (MAINTENANCE_MODE && !isAdmin) {
   const container = document.getElementById("app-container");
   if (container) {
- container.innerHTML = `
+container.innerHTML = `
   <style>
-    /* Die Drehanimation für den Schraubenschlüssel */
+    /* Drehanimation für den Schraubenschlüssel */
     @keyframes wrenchTurn {
       0% { transform: translate(-50%, -50%) rotate(0deg); }
       25% { transform: translate(-50%, -50%) rotate(35deg); }  /* Anziehen */
       45% { transform: translate(-50%, -50%) rotate(-5deg); }  /* Zurücksetzen */
       70% { transform: translate(-50%, -50%) rotate(40deg); }  /* Nochmals anziehen */
       85% { transform: translate(-50%, -50%) rotate(0deg); }   /* Ausrichten */
-      100% { transform: translate(-50%, -50%) rotate(0deg); }  /* Kurze Pause */
+      100% { transform: translate(-50%, -50%) rotate(0deg); }  /* Pause */
     }
 
     .maintenance-container {
@@ -27,6 +27,7 @@ if (MAINTENANCE_MODE && !isAdmin) {
       font-family: sans-serif;
     }
 
+    /* Der Container, der beide Symbole übereinander bündelt */
     .animation-wrapper {
       position: relative;
       width: 100px;
@@ -51,7 +52,7 @@ if (MAINTENANCE_MODE && !isAdmin) {
       top: 40%;
       left: 50%;
       transform: translate(-50%, -50%) rotate(0deg); 
-      transform-origin: bottom left; /* Drehpunkt am Schlüsselkopf */
+      transform-origin: bottom left; /* Drehung genau am Schlüsselkopf */
       animation: wrenchTurn 2.2s infinite ease-in-out;
       z-index: 2;
     }
@@ -70,7 +71,7 @@ if (MAINTENANCE_MODE && !isAdmin) {
       ⚡ System update in progress — back online soon!
     </div>
   </div>
-`;
+`; 
   }
 } else {
   // ==========================================
