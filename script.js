@@ -7,9 +7,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const urlParams = new URLSearchParams(window.location.search);
   const isAdmin = urlParams.get('admin') === 'true';
 
-  if (MAINTENANCE_MODE && !isAdmin) {
+  function showMaintenancePage() {
     const container = document.getElementById("app-container") || document.body;
-
     const gearImageUrl = "https://i.ibb.co/3kW2T3z/purple-gear.png";
 
     container.innerHTML = `
@@ -67,14 +66,13 @@ document.addEventListener("DOMContentLoaded", function () {
       </div>
     `;
   }
-});
-  
-  if (document.readyState === "interactive" || document.readyState === "complete") {
+
+  if (MAINTENANCE_MODE && !isAdmin) {
     showMaintenancePage();
   } else {
-    document.addEventListener("DOMContentLoaded", showMaintenancePage);
+    initAnatomyApp();
   }
-})();
+});
 
 // ==========================================
 // 🦴 ANATOMIE TRAINER ULTIMATE PRO
