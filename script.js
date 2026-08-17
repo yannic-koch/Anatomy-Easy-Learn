@@ -9,6 +9,7 @@
 
   if (isAdmin || !MAINTENANCE_MODE) {
     console.log("Normaler Zugriff / Admin aktiv.");
+    initAnatomyApp();
     return;
   }
 
@@ -18,8 +19,8 @@
 
     const overlay = document.createElement("div");
     overlay.id = "maintenance-overlay";
-    
-    overlay.style.cssText = 
+
+    overlay.style.cssText =
       "position: fixed;" +
       "top: 0;" +
       "left: 0;" +
@@ -84,11 +85,11 @@
     document.addEventListener("DOMContentLoaded", showMaintenancePage);
   }
 })();
-  }
-} else {
-  // ==========================================
-  // DATABASE (Deutsch)
-  // ==========================================
+
+// ==========================================
+// 🦴 ANATOMIE TRAINER ULTIMATE PRO
+// ==========================================
+function initAnatomyApp() {
   const muskelDaten = [
     { muskel: "M. supraspinatus", gruppe: "Schultergelenk (Dorsal)", ursprung: "Fossa supraspinata der Scapula", ansatz: "Tuberculum majus des Humerus", innervation: "N. suprascapularis (C4–C6)", funktion: "Abduktion des Oberarms" },
     { muskel: "M. infraspinatus", gruppe: "Schultergelenk (Dorsal)", ursprung: "Fossa infraspinata der Scapula", ansatz: "Tuberculum majus des Humerus", innervation: "N. suprascapularis (C4–C6)", funktion: "Außenrotation des Oberarms" },
@@ -104,24 +105,21 @@
     { muskel: "M. biceps brachii", gruppe: "Oberarm (Ventral)", ursprung: "Tuberculum supraglenoidale & Proc. coracoideus", ansatz: "Tuberositas radii", innervation: "N. musculocutaneus (C5–C7)", funktion: "Flexion, Supination Ellenbogen" }
   ];
 
-  // --- STATE MANAGEMENT ---
   let sessionList = [];
   let currentIndex = 0;
   let userAnswers = {};
-  let currentMode = ""; // "PRACTICE" oder "EXAM"
+  let currentMode = "";
   let selectedMatchingPairs = {};
 
   const container = document.getElementById("app-container");
 
-  // --- HAUPTMENÜ ANZEIGEN ---
   function renderMenu() {
+    if (!container) return;
     const gruppen = [...new Set(muskelDaten.map(m => m.gruppe))].sort();
 
     let html = `
       <h1>🦴 Anatomie Trainer Ultimate Pro</h1>
       <div class="main-layout">
-        
-        <!-- BOX 1: MUSKELAUSWAHL -->
         <div class="box">
           <h3>1. Muskelauswahl</h3>
           <div style="margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
@@ -129,7 +127,6 @@
             <button class="btn btn-menu" onclick="selectAllMuscles(false)">Alle abwählen</button>
             <button class="btn btn-menu" onclick="selectRandomMuscles()">🎲 Zufall (5-13)</button>
           </div>
-          
           ${gruppen.map(g => `
             <div class="group-title">
               <label style="font-weight: bold; color: #2980b9;">
@@ -144,7 +141,6 @@
           `).join('')}
         </div>
 
-        <!-- BOX 2: EINSTELLUNGEN & INHALTE -->
         <div class="box">
           <h3>2. Einstellungen & Inhalte</h3>
           <strong>Kategorien:</strong>
@@ -167,13 +163,11 @@
           <button class="btn" style="margin-top:15px; background: #2ecc71;" onclick="startSession('PRACTICE')">🚀 ÜBUNGSMODUS (Direktes Feedback)</button>
           <button class="btn" style="margin-top:10px; background: #8e44ad;" onclick="startSession('EXAM')">📝 PRÜFUNGSMODUS (Auswertung am Ende)</button>
         </div>
-
       </div>
     `;
     container.innerHTML = html;
   }
 
-  // --- HILFSFUNKTIONEN FÜR DIE AUSWAHL ---
   window.selectAllMuscles = function(status) {
     document.querySelectorAll('.m-check').forEach(cb => cb.checked = status);
   };
@@ -190,7 +184,6 @@
     checkboxes.slice(0, randomCount).forEach(cb => cb.checked = true);
   };
 
-  // --- SESSION STARTEN ---
   window.startSession = function(mode, customPool = null) {
     currentMode = mode;
 
@@ -235,7 +228,6 @@
     showQuestion();
   };
 
-  // --- FRAGE ANZEIGEN ---
   function showQuestion() {
     if (currentIndex >= sessionList.length) {
       finishSession();
@@ -316,7 +308,6 @@
     container.innerHTML = html;
   }
 
-  // --- AUSWERTUNGEN ---
   window.checkWriteAnswer = function() {
     const q = sessionList[currentIndex];
     const userAns = document.getElementById('write-answer').value.trim();
@@ -374,7 +365,6 @@
     saveAndRoute(userSummary.join(' | '), correctSummary.join(' | '), isCorrect);
   };
 
-  // --- ROUTING & SPEICHERN ---
   function saveAndRoute(userAns, correctAns, isCorrect) {
     userAnswers[currentIndex] = { user: userAns, correct: correctAns, success: isCorrect };
 
@@ -397,7 +387,6 @@
     }
   }
 
-  // --- AUSWERTUNG & WIEDERHOLUNG ---
   function finishSession() {
     const total = sessionList.length;
     const correctCount = Object.values(userAnswers).filter(a => a.success).length;
@@ -446,6 +435,5 @@
 
   window.renderMenu = renderMenu;
 
-  // --- INITIALISIERUNG ---
   renderMenu();
 }
