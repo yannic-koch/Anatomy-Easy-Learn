@@ -37,7 +37,7 @@ function renderMenu() {
         <div style="margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
           <button class="btn btn-menu" onclick="selectAllMuscles(true)">Alle auswählen</button>
           <button class="btn btn-menu" onclick="selectAllMuscles(false)">Alle abwählen</button>
-          <button class="btn btn-menu" onclick="selectRandomMuscles(5)">🎲 5 Zufall</button>
+          <button class="btn btn-menu" onclick="selectRandomMuscles()">🎲 Zufall (5-13)</button>
         </div>
         
         ${gruppen.map(g => `
@@ -92,11 +92,15 @@ function toggleGroup(gruppeName, status) {
   document.querySelectorAll(`.m-check[data-gruppe="${gruppeName}"]`).forEach(cb => cb.checked = status);
 }
 
-function selectRandomMuscles(count) {
+function selectRandomMuscles() {
   selectAllMuscles(false);
+  
+  // Wählt zufällig eine Anzahl zwischen 5 und 13
+  const randomCount = Math.floor(Math.random() * (13 - 5 + 1)) + 5;
+  
   const checkboxes = Array.from(document.querySelectorAll('.m-check'));
   checkboxes.sort(() => Math.random() - 0.5);
-  checkboxes.slice(0, count).forEach(cb => cb.checked = true);
+  checkboxes.slice(0, randomCount).forEach(cb => cb.checked = true);
 }
 
 // --- SESSION STARTEN ---
