@@ -1,0 +1,228 @@
+const muskelDaten = [
+  { muskel: "M. supraspinatus", gruppe: "Schultergelenk (Dorsal)", ursprung: "Fossa supraspinata der Scapula", ansatz: "Tuberculum majus des Humerus", innervation: "N. suprascapularis (C4–C6)", funktion: "Abduktion des Oberarms" },
+  { muskel: "M. infraspinatus", gruppe: "Schultergelenk (Dorsal)", ursprung: "Fossa infraspinata der Scapula", ansatz: "Tuberculum majus des Humerus", innervation: "N. suprascapularis (C4–C6)", funktion: "Außenrotation des Oberarms" },
+  { muskel: "M. teres minor", gruppe: "Schultergelenk (Dorsal)", ursprung: "Margo lateralis der Scapula", ansatz: "Tuberculum majus des Humerus", innervation: "N. axillaris (C5, C6)", funktion: "Außenrotation; schwache Adduktion" },
+  { muskel: "M. subscapularis", gruppe: "Schultergelenk (Dorsal)", ursprung: "Fossa subscapularis der Scapula", ansatz: "Tuberculum minus des Humerus", innervation: "N. subscapularis (C5–C8)", funktion: "Innenrotation des Oberarms" },
+  { muskel: "M. deltoideus", gruppe: "Schultergelenk (Dorsal)", ursprung: "Clavicula, Acromion, Spina scapulae", ansatz: "Tuberositas deltoidea am Humerus", innervation: "N. axillaris (C5, C6)", funktion: "Abduktion, Anteversion, Innenrotation, Retroversion, Außenrotation" },
+  { muskel: "M. latissimus dorsi", gruppe: "Schultergelenk (Dorsal)", ursprung: "Procc. spinosi Th7–L5, Fascia thoracolumbalis, Crista iliaca", ansatz: "Crista tuberculi minoris des Humerus", innervation: "N. thoracodorsalis (C6–C8)", funktion: "Innenrotation, Adduktion, Retroversion" },
+  { muskel: "M. teres major", gruppe: "Schultergelenk (Dorsal)", ursprung: "Angulus inferior der Scapula", ansatz: "Crista tuberculi minoris des Humerus", innervation: "N. subscapularis (C5–C8)", funktion: "Innenrotation, Adduktion, Retroversion" },
+  { muskel: "M. pectoralis major", gruppe: "Schultergelenk (Ventral)", ursprung: "Clavicula, Sternum, Rektusscheide", ansatz: "Crista tuberculi majoris", innervation: "Nn. pectorales (C5–Th1)", funktion: "Adduktion, Innenrotation, Anteversion" },
+  { muskel: "M. coracobrachialis", gruppe: "Schultergelenk (Ventral)", ursprung: "Proc. coracoideus der Scapula", ansatz: "Humerus", innervation: "N. musculocutaneus (C6, C7)", funktion: "Anteversion, Adduktion, Innenrotation" },
+  { muskel: "M. triceps brachii", gruppe: "Oberarm (Dorsal)", ursprung: "Caput longum: Tuberculum infraglenoidale", ansatz: "Olecranon der Ulna", innervation: "N. radialis (C6–C8)", funktion: "Extension im Ellenbogen" },
+  { muskel: "M. brachialis", gruppe: "Oberarm (Ventral)", ursprung: "Distale Vorderfläche Humerus", ansatz: "Tuberositas ulnae", innervation: "N. musculocutaneus (C5–C7)", funktion: "Flexion im Ellenbogengelenk" },
+  { muskel: "M. biceps brachii", gruppe: "Oberarm (Ventral)", ursprung: "Tuberculum supraglenoidale & Proc. coracoideus", ansatz: "Tuberositas radii", innervation: "N. musculocutaneus (C5–C7)", funktion: "Flexion, Supination Ellenbogen" }
+];
+
+let sessionList = [];
+let currentIndex = 0;
+let userAnswers = {};
+let currentMode = "";
+
+const container = document.getElementById("app-container");
+
+function renderMenu() {
+  const gruppen = [...new Set(muskelDaten.map(m => m.gruppe))].sort();
+  
+  let html = `
+    <h1>🦴 Anatomie Trainer Ultimate Pro</h1>
+    <div class="main-layout">
+      <div class="box">
+        <h3>1. Muskeln filtern</h3>
+        ${gruppen.map(g => `
+          <div class="group-title">${g}</div>
+          ${muskelDaten.filter(m => m.gruppe === g).map(m => `
+            <label><input type="checkbox" class="m-check" value="${m.muskel}" checked> ${m.muskel}</label>
+          `).join('')}
+        `).join('')}
+      </div>
+
+      <div class="box">
+        <h3>2. Einstellungen & Formate</h3>
+        <strong>Inhalte:</strong>
+        <label><input type="checkbox" id="kat-ursprung" checked> Ursprung</label>
+        <label><input type="checkbox" id="kat-ansatz" checked> Ansatz</label>
+        <label><input type="checkbox" id="kat-innervation" checked> Innervation</label>
+        <label><input type="checkbox" id="kat-funktion" checked> Funktion</label>
+        
+        <hr style="margin: 10px 0;">
+        <strong>Fragetypen:</strong>
+        <label><input type="checkbox" id="type-write" checked> Freitext (Schreiben)</label>
+        <label><input type="checkbox" id="type-single" checked> Single Choice</label>
+        
+        <hr style="margin: 10px 0;">
+        <label>Max. Fragenanzahl (0 = alle): 
+          <input type="number" id="limit-input" value="10" min="0">
+        </label>
+        
+        <button class="btn" style="margin-top:15px;" onclick="startSession('LERNEN')">🚀 LERN-MODUS (Direktes Feedback)</button>
+        <button class="btn" style="background:#8e44ad;" onclick="startSession('PRÜFUNG')">📝 PRÜFUNG (Auswertung am Ende)</button>
+      </div>
+    </div>
+  `;
+  container.innerHTML = html;
+}
+
+function startSession(mode) {
+  currentMode = mode;
+  const selectedMuscles = Array.from(document.querySelectorAll('.m-check:checked')).map(c => c.value);
+  const selectedKats = [];
+  if (document.getElementById('kat-ursprung').checked) selectedKats.push('ursprung');
+  if (document.getElementById('kat-ansatz').checked) selectedKats.push('ansatz');
+  if (document.getElementById('kat-innervation').checked) selectedKats.push('innervation');
+  if (document.getElementById('kat-funktion').checked) selectedKats.push('funktion');
+
+  const selectedTypes = [];
+  if (document.getElementById('type-write').checked) selectedTypes.push('write');
+  if (document.getElementById('type-single').checked) selectedTypes.push('single');
+
+  if (!selectedMuscles.length || !selectedKats.length || !selectedTypes.length) {
+    alert("Bitte wähle mindestens einen Muskel, eine Kategorie und einen Fragetyp aus!");
+    return;
+  }
+
+  const limit = parseInt(document.getElementById('limit-input').value) || 0;
+  let pool = [];
+
+  selectedMuscles.forEach(mName => {
+    const mObj = muskelDaten.find(m => m.muskel === mName);
+    selectedKats.forEach(kat => {
+      const randomType = selectedTypes[Math.floor(Math.random() * selectedTypes.length)];
+      pool.push({ muskel: mObj, kat: kat, type: randomType });
+    });
+  });
+
+  pool.sort(() => Math.random() - 0.5);
+  if (limit > 0) pool = pool.slice(0, limit);
+
+  sessionList = pool;
+  currentIndex = 0;
+  userAnswers = {};
+  showQuestion();
+}
+
+function showQuestion() {
+  if (currentIndex >= sessionList.length) {
+    finishSession();
+    return;
+  }
+
+  const q = sessionList[currentIndex];
+  const progressPct = ((currentIndex) / sessionList.length) * 100;
+
+  let html = `
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <button class="btn btn-menu" onclick="renderMenu()">◀ Menü</button>
+      <span>Frage ${currentIndex + 1} von ${sessionList.length} [${currentMode}]</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width: ${progressPct}%;"></div></div>
+    
+    <h2>Muskel: ${q.muskel.muskel}</h2>
+    <p><em>Kategorie: ${q.kat.toUpperCase()} (${q.muskel.gruppe})</em></p>
+    <br>
+  `;
+
+  if (q.type === 'write') {
+    html += `
+      <label>Schreibe die Antwort:</label>
+      <input type="text" id="write-answer" autofocus>
+      <button class="btn" onclick="checkWriteAnswer()">Antwort prüfen</button>
+    `;
+  } else if (q.type === 'single') {
+    const correct = q.muskel[q.kat];
+    const wrongPool = [...new Set(muskelDaten.map(m => m[q.kat]).filter(v => v !== correct))];
+    const options = wrongPool.sort(() => Math.random() - 0.5).slice(0, 3);
+    options.push(correct);
+    options.sort(() => Math.random() - 0.5);
+
+    html += `
+      <p>Wähle die richtige Antwort:</p>
+      ${options.map((opt, i) => `
+        <label class="option-item">
+          <input type="radio" name="single-opt" value="${opt}"> ${opt}
+        </label>
+      `).join('')}
+      <button class="btn" onclick="checkSingleAnswer()">Auswahl prüfen</button>
+    `;
+  }
+
+  html += `<div id="feedback-area"></div>`;
+  container.innerHTML = html;
+}
+
+function checkWriteAnswer() {
+  const q = sessionList[currentIndex];
+  const userAns = document.getElementById('write-answer').value.trim();
+  const correct = q.muskel[q.kat];
+
+  const ignoreWords = ["und", "im", "am", "der", "die", "das", "an", "von", "m", "musculus", "p", "pars"];
+  const clean = text => text.toLowerCase().match(/\w+/g)?.filter(w => !ignoreWords.includes(w)) || [];
+  
+  const userWords = clean(userAns);
+  const correctWords = clean(correct);
+  
+  const matches = userWords.filter(w => correctWords.includes(w));
+  const isCorrect = correctWords.length > 0 && (matches.length / correctWords.length) >= 0.6;
+
+  saveAndRoute(userAns, correct, isCorrect);
+}
+
+function checkSingleAnswer() {
+  const q = sessionList[currentIndex];
+  const selected = document.querySelector('input[name="single-opt"]:checked');
+  const userAns = selected ? selected.value : "Nichts ausgewählt";
+  const correct = q.muskel[q.kat];
+  const isCorrect = userAns === correct;
+
+  saveAndRoute(userAns, correct, isCorrect);
+}
+
+function saveAndRoute(userAns, correctAns, isCorrect) {
+  userAnswers[currentIndex] = { user: userAns, correct: correctAns, success: isCorrect };
+
+  if (currentMode === "LERNEN") {
+    const feedbackArea = document.getElementById("feedback-area");
+    feedbackArea.className = `feedback ${isCorrect ? 'correct' : 'wrong'}`;
+    feedbackArea.innerHTML = isCorrect 
+      ? `✓ Richtig! Sehr gut gelöst.` 
+      : `✗ Falsch!<br><strong>Richtige Lösung:</strong><br>${correctAns}`;
+    
+    const nextBtn = document.createElement("button");
+    nextBtn.className = "btn";
+    nextBtn.style.marginTop = "10px";
+    nextBtn.innerText = "Weiter ➡";
+    nextBtn.onclick = () => { currentIndex++; showQuestion(); };
+    feedbackArea.appendChild(nextBtn);
+  } else {
+    currentIndex++;
+    showQuestion();
+  }
+}
+
+function finishSession() {
+  const total = sessionList.length;
+  const correctCount = Object.values(userAnswers).filter(a => a.success).length;
+
+  let html = `
+    <h1>🏁 Auswertung deiner Session</h1>
+    <h2>Ergebnis: ${correctCount} von ${total} richtig.</h2>
+    <br>
+    <div style="max-height: 450px; overflow-y: auto;">
+      ${sessionList.map((q, i) => {
+        const ans = userAnswers[i] || { user: "Keine Antwort", correct: "-", success: false };
+        return `
+          <div class="box" style="margin-bottom: 10px; border-left: 5px solid ${ans.success ? '#2ecc71' : '#e74c3c'};">
+            <strong>Frage ${i+1}: ${q.muskel.muskel}</strong> [${q.type.toUpperCase()}]<br>
+            <small>Kategorie: ${q.kat.toUpperCase()}</small><br>
+            <span style="color: ${ans.success ? 'green' : 'red'};">Deine Antwort: ${ans.user}</span><br>
+            ${!ans.success ? `<span style="color: darkgreen;">Richtige Lösung: ${ans.correct}</span>` : ''}
+          </div>
+        `;
+      }).join('')}
+    </div>
+    <button class="btn" style="margin-top:15px;" onclick="renderMenu()">Hauptmenü</button>
+  `;
+  container.innerHTML = html;
+}
+
+// Start-App
+renderMenu();
