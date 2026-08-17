@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function showMaintenancePage() {
     const container = document.getElementById("app-container") || document.body;
-    const gearImageUrl = "https://i.ibb.co/3kW2T3z/purple-gear.png";
 
     container.innerHTML = `
       <style>
@@ -27,28 +26,23 @@ document.addEventListener("DOMContentLoaded", function () {
           width: 100px;
           height: 100px;
           margin: 0 auto 20px auto;
+          display: flex;
+          justify-content: center;
+          align-items: center;
         }
         .gear-single {
-          width: 100px;
-          height: 100px;
+          font-size: 80px;
+          line-height: 1;
           display: inline-block;
           transform-origin: 50% 50%;
           animation: spinCW 6s linear infinite;
-        }
-        .gear-img {
-          width: 100%;
-          height: 100%;
-          display: block;
           user-select: none;
-          pointer-events: none;
         }
       </style>
 
       <div class="maintenance-container">
         <div class="gears-box">
-          <div class="gear-single">
-            <img src="${gearImageUrl}" class="gear-img" alt="Gear" />
-          </div>
+          <div class="gear-single">⚙️</div>
         </div>
         <h2 style="color: #2d3748; margin-bottom: 8px; font-weight: 700; font-size: 1.8em;">Under Maintenance</h2>
         <p style="color: #718096; font-size: 1.05em; max-width: 420px; margin: 0 auto 24px auto; line-height: 1.5;">
