@@ -9,41 +9,58 @@ const isAdmin = urlParams.get('admin') === 'true';
 if (MAINTENANCE_MODE && !isAdmin) {
   const container = document.getElementById("app-container");
   if (container) {
-   container.innerHTML = `
+ container.innerHTML = `
   <style>
-    @keyframes hammerStrike {
-      0% { transform: rotate(0deg); }
-      30% { transform: rotate(-45deg); } /* Hammer holt nach hinten aus */
-      40% { transform: rotate(10deg); }  /* Schneller Schlag nach unten */
-      50% { transform: rotate(0deg); }   /* Treffer-Moment */
-      100% { transform: rotate(0deg); }  /* Kurze Pause vor dem nächsten Schlag */
+    /* Die Drehanimation für den Schraubenschlüssel */
+    @keyframes wrenchTurn {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      25% { transform: translate(-50%, -50%) rotate(35deg); }  /* Anziehen */
+      45% { transform: translate(-50%, -50%) rotate(-5deg); }  /* Zurücksetzen */
+      70% { transform: translate(-50%, -50%) rotate(40deg); }  /* Nochmals anziehen */
+      85% { transform: translate(-50%, -50%) rotate(0deg); }   /* Ausrichten */
+      100% { transform: translate(-50%, -50%) rotate(0deg); }  /* Kurze Pause */
     }
 
-    .maintenance-animation {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 50px;
-      margin-bottom: 15px;
-      height: 70px;
+    .maintenance-container {
+      text-align: center;
+      padding: 50px 20px;
+      font-family: sans-serif;
     }
 
-    .hammer {
-      display: inline-block;
-      transform-origin: bottom right; /* Drehpunkt am Griffende */
-      animation: hammerStrike 1s infinite ease-in-out;
+    .animation-wrapper {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 20px auto;
     }
 
-    .nut {
-      display: inline-block;
-      margin-left: -10px;
+    /* Zahnrad im Hintergrund */
+    .gear-icon {
+      font-size: 80px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.8;
+    }
+
+    /* Schraubenschlüssel im Vordergrund */
+    .wrench-icon {
+      font-size: 55px;
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(0deg); 
+      transform-origin: bottom left; /* Drehpunkt am Schlüsselkopf */
+      animation: wrenchTurn 2.2s infinite ease-in-out;
+      z-index: 2;
     }
   </style>
 
-  <div style="text-align: center; padding: 50px 20px; font-family: sans-serif;">
-    <div class="maintenance-animation">
-      <span class="hammer">🔨</span>
-      <span class="nut">⚙️</span>
+  <div class="maintenance-container">
+    <div class="animation-wrapper">
+      <div class="gear-icon">⚙️</div>
+      <div class="wrench-icon">🔧</div>
     </div>
     <h2 style="color: #e67e22; margin-bottom: 12px; font-weight: 700;">Under Maintenance</h2>
     <p style="color: #4a5568; font-size: 1.1em; max-width: 440px; margin: 0 auto 20px auto; line-height: 1.5;">
