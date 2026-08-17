@@ -19,11 +19,6 @@ document.addEventListener("DOMContentLoaded", function () {
           100% { transform: rotate(360deg); }
         }
 
-        @keyframes spinCCW {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(-360deg); }
-        }
-
         .maintenance-container {
           text-align: center;
           padding: 50px 20px;
@@ -32,43 +27,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
         .gears-box {
           position: relative;
-          width: 140px;
-          height: 140px;
+          width: 100px;
+          height: 100px;
           margin: 0 auto 20px auto;
         }
 
-        /* Rotation exakt um den eigenen Mittelpunkt */
-        .gear-large {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 80px;
-          height: 80px;
+        /* Ein einzelnes Zahnrad, das sich exakt um den eigenen Mittelpunkt dreht */
+        .gear-single {
+          width: 100px;
+          height: 100px;
           display: inline-block;
           transform-origin: 50% 50%;
           animation: spinCW 6s linear infinite;
-        }
-
-        .gear-medium {
-          position: absolute;
-          bottom: 5px;
-          right: 25px;
-          width: 60px;
-          height: 60px;
-          display: inline-block;
-          transform-origin: 50% 50%;
-          animation: spinCCW 4.5s linear infinite;
-        }
-
-        .gear-small {
-          position: absolute;
-          top: 22px;
-          right: 5px;
-          width: 45px;
-          height: 45px;
-          display: inline-block;
-          transform-origin: 50% 50%;
-          animation: spinCW 3.5s linear infinite;
         }
 
         .gear-img {
@@ -82,14 +52,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
       <div class="maintenance-container">
         <div class="gears-box">
-          <div class="gear-large">
-            <img src="${gearImageUrl}" class="gear-img" alt="Gear Large" />
-          </div>
-          <div class="gear-medium">
-            <img src="${gearImageUrl}" class="gear-img" alt="Gear Medium" />
-          </div>
-          <div class="gear-small">
-            <img src="${gearImageUrl}" class="gear-img" alt="Gear Small" />
+          <div class="gear-single">
+            <img src="${gearImageUrl}" class="gear-img" alt="Gear" />
           </div>
         </div>
 
