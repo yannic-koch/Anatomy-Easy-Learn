@@ -2,7 +2,7 @@
 // 🛠️ MAINTENANCE MODE & ADMIN ACCESS
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
-  const MAINTENANCE_MODE = false; // Auf 'false' setzen für den normalen Betrieb
+  const MAINTENANCE_MODE = true; // Auf 'false' setzen für den normalen Betrieb
 
   const urlParams = new URLSearchParams(window.location.search);
   const isAdmin = urlParams.get('admin') === 'true';
