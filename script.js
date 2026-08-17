@@ -11,14 +11,16 @@ if (MAINTENANCE_MODE && !isAdmin) {
   if (container) {
 container.innerHTML = `
   <style>
-    /* Drehanimation für den Schraubenschlüssel */
-    @keyframes wrenchTurn {
-      0% { transform: translate(-50%, -50%) rotate(0deg); }
-      25% { transform: translate(-50%, -50%) rotate(35deg); }  /* Anziehen */
-      45% { transform: translate(-50%, -50%) rotate(-5deg); }  /* Zurücksetzen */
-      70% { transform: translate(-50%, -50%) rotate(40deg); }  /* Nochmals anziehen */
-      85% { transform: translate(-50%, -50%) rotate(0deg); }   /* Ausrichten */
-      100% { transform: translate(-50%, -50%) rotate(0deg); }  /* Pause */
+    /* Das Zahnrad dreht sich durchgehend */
+    @keyframes gearSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Der Schraubenschlüssel wackelt/schraubt im Takt mit */
+    @keyframes wrenchWiggle {
+      0%, 100% { transform: translate(-20px, -20px) rotate(-15deg); }
+      50% { transform: translate(-20px, -20px) rotate(15deg); }
     }
 
     .maintenance-container {
@@ -27,41 +29,33 @@ container.innerHTML = `
       font-family: sans-serif;
     }
 
-    /* Der Container, der beide Symbole übereinander bündelt */
     .animation-wrapper {
+      display: inline-block;
       position: relative;
-      width: 100px;
-      height: 100px;
-      margin: 0 auto 20px auto;
+      width: 80px;
+      height: 80px;
+      margin-bottom: 20px;
     }
 
-    /* Zahnrad im Hintergrund */
     .gear-icon {
-      font-size: 80px;
+      font-size: 70px;
+      display: inline-block;
+      animation: gearSpin 4s linear infinite;
+    }
+
+    .wrench-icon {
+      font-size: 45px;
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
-      opacity: 0.8;
-    }
-
-    /* Schraubenschlüssel im Vordergrund */
-    .wrench-icon {
-      font-size: 55px;
-      position: absolute;
-      top: 40%;
-      left: 50%;
-      transform: translate(-50%, -50%) rotate(0deg); 
-      transform-origin: bottom left; /* Drehung genau am Schlüsselkopf */
-      animation: wrenchTurn 2.2s infinite ease-in-out;
-      z-index: 2;
+      animation: wrenchWiggle 1.2s ease-in-out infinite;
     }
   </style>
 
   <div class="maintenance-container">
     <div class="animation-wrapper">
-      <div class="gear-icon">⚙️</div>
-      <div class="wrench-icon">🔧</div>
+      <span class="gear-icon">⚙️</span>
+      <span class="wrench-icon">🔧</span>
     </div>
     <h2 style="color: #e67e22; margin-bottom: 12px; font-weight: 700;">Under Maintenance</h2>
     <p style="color: #4a5568; font-size: 1.1em; max-width: 440px; margin: 0 auto 20px auto; line-height: 1.5;">
@@ -71,7 +65,7 @@ container.innerHTML = `
       ⚡ System update in progress — back online soon!
     </div>
   </div>
-`; 
+`;
   }
 } else {
   // ==========================================
