@@ -10,10 +10,13 @@ body {
   color: #2c3e50;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
   padding: 20px;
 }
 
-.container {
+/* KORREKTUR: Styling für app-container angepasst */
+.app-container {
   background: white;
   width: 100%;
   max-width: 900px;
@@ -25,6 +28,8 @@ body {
 h1 {
   text-align: center;
   margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: #2c3e50;
 }
 
 .main-layout {
@@ -40,7 +45,7 @@ h1 {
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 15px;
-  max-height: 400px;
+  max-height: 450px;
   overflow-y: auto;
 }
 
@@ -68,6 +73,7 @@ input[type="text"], input[type="number"] {
   margin-top: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  font-size: 0.95rem;
 }
 
 .btn {
@@ -80,6 +86,8 @@ input[type="text"], input[type="number"] {
   width: 100%;
   margin-top: 8px;
   font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.2s ease;
 }
 
 .btn:hover {
@@ -89,6 +97,12 @@ input[type="text"], input[type="number"] {
 .btn-menu {
   background: #7f8c8d;
   width: auto;
+  font-size: 0.85rem;
+  padding: 6px 10px;
+}
+
+.btn-menu:hover {
+  background: #626d6e;
 }
 
 .progress-bar {
@@ -112,6 +126,11 @@ input[type="text"], input[type="number"] {
   margin: 6px 0;
   border-radius: 6px;
   cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.option-item:hover {
+  background: #e2e8f0;
 }
 
 .feedback {
@@ -125,19 +144,15 @@ input[type="text"], input[type="number"] {
   background: #d4edda;
   color: #155724;
 }
-/* Styling für das Verbinden-Format (Matching-Dropdowns) */
+
+.feedback.wrong {
+  background: #f8d7da;
+  color: #721c24;
+}
+
 select.match-select {
   background: white;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 0.95rem;
-}
-/* Kleinere Buttons im Menü für die Schnellauswahl */
-.btn-menu {
-  font-size: 0.85rem;
-  padding: 6px 10px;
-}
-.feedback.wrong {
-  background: #f8d7da;
-  color: #721c24;
 }
