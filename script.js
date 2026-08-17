@@ -1,77 +1,115 @@
 // ==========================================
 // 🛠️ MAINTENANCE MODE & ADMIN ACCESS
 // ==========================================
-const MAINTENANCE_MODE = true; // Set to 'false' when you are ready to publish
+document.addEventListener("DOMContentLoaded", function () {
+  const MAINTENANCE_MODE = true; // Set to 'false' when you are ready to publish
 
-const urlParams = new URLSearchParams(window.location.search);
-const isAdmin = urlParams.get('admin') === 'true';
+  const urlParams = new URLSearchParams(window.location.search);
+  const isAdmin = urlParams.get('admin') === 'true';
 
-if (MAINTENANCE_MODE && !isAdmin) {
-  const container = document.getElementById("app-container");
-  if (container) {
-container.innerHTML = `
-  <style>
-    @keyframes spinCW {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+  if (MAINTENANCE_MODE && !isAdmin) {
+    const container = document.getElementById("app-container") || document.body;
 
-    @keyframes spinCCW {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(-360deg); }
-    }
+    container.innerHTML = `
+      <style>
+        /* Animation im Uhrzeigersinn */
+        @keyframes spinCW {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
 
-    .maintenance-container {
-      text-align: center;
-      padding: 50px 20px;
-      font-family: system-ui, -apple-system, sans-serif;
-    }
+        /* Animation gegen den Uhrzeigersinn */
+        @keyframes spinCCW {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(-360deg); }
+        }
 
-    .gears-wrapper {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      height: 90px;
-      margin-bottom: 20px;
-    }
+        .maintenance-container {
+          text-align: center;
+          padding: 50px 20px;
+          font-family: system-ui, -apple-system, sans-serif;
+        }
 
-    .gear-main {
-      font-size: 65px;
-      line-height: 1;
-      animation: spinCW 4s linear infinite;
-      z-index: 2;
-    }
+        .gears-box {
+          position: relative;
+          width: 140px;
+          height: 140px;
+          margin: 0 auto 20px auto;
+        }
 
-    .gear-left {
-      font-size: 45px;
-      line-height: 1;
-      margin-right: -12px;
-      animation: spinCCW 4s linear infinite;
-    }
+        /* Haupt-Zahnrad (Groß, oben links) */
+        .gear-large {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 80px;
+          height: 80px;
+          animation: spinCW 6s linear infinite;
+          transform-origin: center center;
+        }
 
-    .gear-right {
-      font-size: 45px;
-      line-height: 1;
-      margin-left: -12px;
-      animation: spinCCW 4s linear infinite;
-    }
-  </style>
+        /* Mittleres Zahnrad (Unten) */
+        .gear-medium {
+          position: absolute;
+          bottom: 5px;
+          right: 25px;
+          width: 60px;
+          height: 60px;
+          animation: spinCCW 4.5s linear infinite;
+          transform-origin: center center;
+        }
 
-  <div class="maintenance-container">
-    <div class="gears-wrapper">
-      <span class="gear-left">⚙️</span>
-      <span class="gear-main">⚙️</span>
-      <span class="gear-right">⚙️</span>
-    </div>
-    <h2 style="color: #e67e22; margin-bottom: 12px; font-weight: 700;">Under Maintenance</h2>
-    <p style="color: #4a5568; font-size: 1.1em; max-width: 440px; margin: 0 auto 20px auto; line-height: 1.5;">
-      Upgrading the database for a better training experience.
-    </p>
-    <div style="display: inline-block; background-color: #edf2f7; color: #4a5568; padding: 10px 20px; border-radius: 20px; font-size: 0.9em; font-weight: 600;">
-      ⚡ System update in progress — back online soon!
-    </div>
-  </div>
-`;
+        /* Kleines Zahnrad (Oben rechts) */
+        .gear-small {
+          position: absolute;
+          top: 22px;
+          right: 5px;
+          width: 45px;
+          height: 45px;
+          animation: spinCW 3.5s linear infinite;
+          transform-origin: center center;
+        }
+
+        .gear-svg {
+          fill: #2d3748;
+          width: 100%;
+          height: 100%;
+        }
+      </style>
+
+      <div class="maintenance-container">
+        <div class="gears-box">
+          <!-- Großes Zahnrad -->
+          <div class="gear-large">
+            <svg class="gear-svg" viewBox="0 0 100 100">
+              <path d="M50 34c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zm43.6 12.1l-6.4-1.1c-.5-2.2-1.3-4.3-2.3-6.2l3.9-5.1c1.2-1.6.9-3.8-.6-5.1l-6.3-6.3c-1.3-1.4-3.5-1.7-5.1-.6l-5.1 3.9c-2-.1-4-.9-6.2-2.3l-1.1-6.4C64.2 5.2 62.4 3.9 60.3 3.9h-8.9c-2.1 0-3.9 1.3-4.3 3.3l-1.1 6.4c-2.2.5-4.3 1.3-6.2 2.3l-5.1-3.9c-1.6-1.2-3.8-.9-5.1.6l-6.3 6.3c-1.4 1.3-1.7 3.5-.6 5.1l3.9 5.1c-1 2-1.8 4.1-2.3 6.2l-6.4 1.1c-2 .4-3.3 2.2-3.3 4.3v8.9c0 2.1 1.3 3.9 3.3 4.3l6.4 1.1c.5 2.2 1.3 4.3 2.3 6.2l-3.9 5.1c-1.2 1.6-.9 3.8.6 5.1l6.3 6.3c1.3 1.4 3.5 1.7 5.1.6l5.1-3.9c2 1 4.1 1.8 6.2 2.3l1.1 6.4c.4 2 2.2 3.3 4.3 3.3h8.9c2.1 0 3.9-1.3 4.3-3.3l1.1-6.4c2.2-.5 4.3-1.3 6.2-2.3l5.1 3.9c1.6 1.2 3.8.9 5.1-.6l6.3-6.3c1.4-1.3 1.7-3.5.6-5.1l-3.9-5.1c1-2 1.8-4.1 2.3-6.2l6.4-1.1c2-.4 3.3-2.2 3.3-4.3v-8.9c0-2.1-1.3-3.9-3.3-4.3z"/>
+            </svg>
+          </div>
+          <!-- Mittleres Zahnrad -->
+          <div class="gear-medium">
+            <svg class="gear-svg" viewBox="0 0 100 100">
+              <path d="M50 34c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zm43.6 12.1l-6.4-1.1c-.5-2.2-1.3-4.3-2.3-6.2l3.9-5.1c1.2-1.6.9-3.8-.6-5.1l-6.3-6.3c-1.3-1.4-3.5-1.7-5.1-.6l-5.1 3.9c-2-.1-4-.9-6.2-2.3l-1.1-6.4C64.2 5.2 62.4 3.9 60.3 3.9h-8.9c-2.1 0-3.9 1.3-4.3 3.3l-1.1 6.4c-2.2.5-4.3 1.3-6.2 2.3l-5.1-3.9c-1.6-1.2-3.8-.9-5.1.6l-6.3 6.3c-1.4 1.3-1.7 3.5-.6 5.1l3.9 5.1c-1 2-1.8 4.1-2.3 6.2l-6.4 1.1c-2 .4-3.3 2.2-3.3 4.3v8.9c0 2.1 1.3 3.9 3.3 4.3l6.4 1.1c.5 2.2 1.3 4.3 2.3 6.2l-3.9 5.1c-1.2 1.6-.9 3.8.6 5.1l6.3 6.3c1.3 1.4 3.5 1.7 5.1.6l5.1-3.9c2 1 4.1 1.8 6.2 2.3l1.1 6.4c.4 2 2.2 3.3 4.3 3.3h8.9c2.1 0 3.9-1.3 4.3-3.3l1.1-6.4c2.2-.5 4.3-1.3 6.2-2.3l5.1 3.9c1.6 1.2 3.8.9 5.1-.6l6.3-6.3c1.4-1.3 1.7-3.5.6-5.1l-3.9-5.1c1-2 1.8-4.1 2.3-6.2l6.4-1.1c2-.4 3.3-2.2 3.3-4.3v-8.9c0-2.1-1.3-3.9-3.3-4.3z"/>
+            </svg>
+          </div>
+          <!-- Kleines Zahnrad -->
+          <div class="gear-small">
+            <svg class="gear-svg" viewBox="0 0 100 100">
+              <path d="M50 34c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zm43.6 12.1l-6.4-1.1c-.5-2.2-1.3-4.3-2.3-6.2l3.9-5.1c1.2-1.6.9-3.8-.6-5.1l-6.3-6.3c-1.3-1.4-3.5-1.7-5.1-.6l-5.1 3.9c-2-.1-4-.9-6.2-2.3l-1.1-6.4C64.2 5.2 62.4 3.9 60.3 3.9h-8.9c-2.1 0-3.9 1.3-4.3 3.3l-1.1 6.4c-2.2.5-4.3 1.3-6.2 2.3l-5.1-3.9c-1.6-1.2-3.8-.9-5.1.6l-6.3 6.3c-1.4 1.3-1.7 3.5-.6 5.1l3.9 5.1c-1 2-1.8 4.1-2.3 6.2l-6.4 1.1c-2 .4-3.3 2.2-3.3 4.3v8.9c0 2.1 1.3 3.9 3.3 4.3l6.4 1.1c.5 2.2 1.3 4.3 2.3 6.2l-3.9 5.1c-1.2 1.6-.9 3.8.6 5.1l6.3 6.3c1.3 1.4 3.5 1.7 5.1.6l5.1-3.9c2 1 4.1 1.8 6.2 2.3l1.1 6.4c.4 2 2.2 3.3 4.3 3.3h8.9c2.1 0 3.9-1.3 4.3-3.3l1.1-6.4c2.2-.5 4.3-1.3 6.2-2.3l5.1 3.9c1.6 1.2 3.8.9 5.1-.6l6.3-6.3c1.4-1.3 1.7-3.5.6-5.1l-3.9-5.1c1-2 1.8-4.1 2.3-6.2l6.4-1.1c2-.4 3.3-2.2 3.3-4.3v-8.9c0-2.1-1.3-3.9-3.3-4.3z"/>
+            </svg>
+          </div>
+        </div>
+
+        <h2 style="color: #2d3748; margin-bottom: 8px; font-weight: 700; font-size: 1.8em;">Under Maintenance</h2>
+        <p style="color: #718096; font-size: 1.05em; max-width: 420px; margin: 0 auto 24px auto; line-height: 1.5;">
+          Upgrading the database for a better training experience.
+        </p>
+        <div style="display: inline-block; background-color: #edf2f7; color: #4a5568; padding: 10px 20px; border-radius: 20px; font-size: 0.85em; font-weight: 600;">
+          ⚡ System update in progress — back online soon!
+        </div>
+      </div>
+    `;
+  }
+});
   }
 } else {
   // ==========================================
