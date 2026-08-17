@@ -1,9 +1,15 @@
 // ==========================================
-// 🛠️ AUTOMATISCHER WARTUNGSMODUS (POLLING & ADMIN)
+// 🛠️ AUTOMATISCHER WARTUNGSMODUS & ADMIN-MODUS
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
   const urlParams = new URLSearchParams(window.location.search);
   const isAdmin = urlParams.get('admin') === 'true';
+
+  // WICHTIG: Wenn du als Admin da bist, starte die App sofort und ignoriere den Wartungsmodus!
+  if (isAdmin) {
+    initAnatomyApp();
+    return; // Stoppt hier, es wird kein Polling für den Admin ausgeführt.
+  }
 
   function showMaintenancePage() {
     const container = document.getElementById("app-container") || document.body;
@@ -24,15 +30,13 @@ document.addEventListener("DOMContentLoaded", function () {
   function checkMaintenanceStatus() {
     fetch('status.json?t=' + Date.now(), {
       cache: 'no-store',
-      headers: { 'Cache-Control': 'no-cache' }
+      headers: { 
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache'
+      }
     })
       .then(response => response.json())
       .then(data => {
-        // Wenn Admin eingeloggt ist, wird die Wartungsseite NIEMALS angezeigt
-        if (isAdmin) {
-          return;
-        }
-
         if (data.maintenance) {
           showMaintenancePage();
         } else if (!data.maintenance && document.querySelector('.maintenance-container')) {
@@ -42,20 +46,19 @@ document.addEventListener("DOMContentLoaded", function () {
       .catch(err => console.log("Status-Check fehlgeschlagen:", err));
   }
 
-  // Erstprüfung beim Laden
+  // Erstprüfung beim Laden für normale User
   checkMaintenanceStatus();
 
   // Alle 10 Sekunden automatisch im Hintergrund prüfen
   setInterval(checkMaintenanceStatus, 10000);
 
-  // Tab-Wechsel Check für mobile Geräte
+  // Sofortiger Check, wenn der Nutzer den Tab/Browser wieder öffnet (Handy & Laptop)
   document.addEventListener("visibilitychange", function () {
     if (document.visibilityState === "visible") {
       checkMaintenanceStatus();
     }
   });
 
-  // App immer direkt starten (Admin sieht sie trotz Wartungsmodus, User sehen sie wenn false)
   initAnatomyApp();
 });
 
