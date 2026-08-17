@@ -9,9 +9,42 @@ const isAdmin = urlParams.get('admin') === 'true';
 if (MAINTENANCE_MODE && !isAdmin) {
   const container = document.getElementById("app-container");
   if (container) {
-    container.innerHTML = `
+   container.innerHTML = `
+  <style>
+    @keyframes hammerStrike {
+      0% { transform: rotate(0deg); }
+      30% { transform: rotate(-45deg); } /* Hammer holt nach hinten aus */
+      40% { transform: rotate(10deg); }  /* Schneller Schlag nach unten */
+      50% { transform: rotate(0deg); }   /* Treffer-Moment */
+      100% { transform: rotate(0deg); }  /* Kurze Pause vor dem nächsten Schlag */
+    }
+
+    .maintenance-animation {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 50px;
+      margin-bottom: 15px;
+      height: 70px;
+    }
+
+    .hammer {
+      display: inline-block;
+      transform-origin: bottom right; /* Drehpunkt am Griffende */
+      animation: hammerStrike 1s infinite ease-in-out;
+    }
+
+    .nut {
+      display: inline-block;
+      margin-left: -10px;
+    }
+  </style>
+
   <div style="text-align: center; padding: 50px 20px; font-family: sans-serif;">
-    <div style="font-size: 60px; margin-bottom: 15px;">🛠️</div>
+    <div class="maintenance-animation">
+      <span class="hammer">🔨</span>
+      <span class="nut">⚙️</span>
+    </div>
     <h2 style="color: #e67e22; margin-bottom: 12px; font-weight: 700;">Under Maintenance</h2>
     <p style="color: #4a5568; font-size: 1.1em; max-width: 440px; margin: 0 auto 20px auto; line-height: 1.5;">
       Upgrading the database for a better training experience.
