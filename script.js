@@ -11,44 +11,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const container = document.getElementById("app-container") || document.body;
 
     container.innerHTML = `
-      <style>
-        @keyframes spinCW {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        .maintenance-container {
-          text-align: center;
-          padding: 50px 20px;
-          font-family: system-ui, -apple-system, sans-serif;
-        }
-        .gears-box {
-          position: relative;
-          width: 100px;
-          height: 100px;
-          margin: 0 auto 20px auto;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-        .gear-single {
-          font-size: 80px;
-          line-height: 1;
-          display: inline-block;
-          transform-origin: 50% 50%;
-          animation: spinCW 6s linear infinite;
-          user-select: none;
-        }
-      </style>
-
       <div class="maintenance-container">
         <div class="gears-box">
           <div class="gear-single">⚙️</div>
         </div>
-        <h2 style="color: #2d3748; margin-bottom: 8px; font-weight: 700; font-size: 1.8em;">Under Maintenance</h2>
-        <p style="color: #718096; font-size: 1.05em; max-width: 420px; margin: 0 auto 24px auto; line-height: 1.5;">
+        <h2>Under Maintenance</h2>
+        <p>
           Upgrading the database for a better training experience.
         </p>
-        <div style="display: inline-block; background-color: #edf2f7; color: #4a5568; padding: 10px 20px; border-radius: 20px; font-size: 0.85em; font-weight: 600;">
+        <div class="maintenance-badge">
           ⚡ System update in progress — back online soon!
         </div>
       </div>
@@ -102,18 +73,18 @@ function initAnatomyApp() {
       <div class="main-layout">
         <div class="box">
           <h3>1. Muskelauswahl</h3>
-          <div style="margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+          <div class="button-group">
             <button class="btn btn-menu" onclick="selectAllMuscles(true)">Alle auswählen</button>
             <button class="btn btn-menu" onclick="selectAllMuscles(false)">Alle abwählen</button>
             <button class="btn btn-menu" onclick="selectRandomMuscles()">🎲 Zufall (5-13)</button>
           </div>
           ${gruppen.map(g => `
             <div class="group-title">
-              <label style="font-weight: bold; color: #2980b9;">
+              <label>
                 <input type="checkbox" onchange="toggleGroup('${g}', this.checked)"> 📁 ${g}
               </label>
             </div>
-            <div style="padding-left: 15px;">
+            <div class="group-items">
               ${muskelDaten.filter(m => m.gruppe === g).map(m => `
                 <label><input type="checkbox" class="m-check" data-gruppe="${g}" value="${m.muskel}" checked> ${m.muskel}</label>
               `).join('')}
@@ -129,19 +100,19 @@ function initAnatomyApp() {
           <label><input type="checkbox" id="kat-innervation" checked> Innervation</label>
           <label><input type="checkbox" id="kat-funktion" checked> Funktion</label>
           
-          <hr style="margin: 10px 0;">
+          <hr>
           <strong>Fragetypen:</strong>
           <label><input type="checkbox" id="type-write" checked> Freitext (Eintippen)</label>
           <label><input type="checkbox" id="type-single" checked> Single Choice</label>
           <label><input type="checkbox" id="type-match" checked> Zuordnung (Matching)</label>
           
-          <hr style="margin: 10px 0;">
+          <hr>
           <label>Max. Fragen (0 = alle): 
             <input type="number" id="limit-input" value="10" min="0">
           </label>
           
-          <button class="btn" style="margin-top:15px; background: #2ecc71;" onclick="startSession('PRACTICE')">🚀 ÜBUNGSMODUS (Direktes Feedback)</button>
-          <button class="btn" style="margin-top:10px; background: #8e44ad;" onclick="startSession('EXAM')">📝 PRÜFUNGSMODUS (Auswertung am Ende)</button>
+          <button class="btn btn-practice" onclick="startSession('PRACTICE')">🚀 ÜBUNGSMODUS (Direktes Feedback)</button>
+          <button class="btn btn-exam" onclick="startSession('EXAM')">📝 PRÜFUNGSMODUS (Auswertung am Ende)</button>
         </div>
       </div>
     `;
@@ -218,7 +189,7 @@ function initAnatomyApp() {
     const progressPct = ((currentIndex) / sessionList.length) * 100;
 
     let html = `
-      <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div class="header-bar">
         <button class="btn btn-menu" onclick="renderMenu()">◀ Menü</button>
         <span>Frage ${currentIndex + 1} von ${sessionList.length} [${currentMode}]</span>
       </div>
@@ -268,11 +239,11 @@ function initAnatomyApp() {
         <p><em>Kategorie: ${currentCategory.toUpperCase()}</em></p>
         <p>Ordne jedem Muskel den passenden Wert zu:</p>
         
-        <div style="display:flex; flex-direction:column; gap:12px; margin: 15px 0;">
+        <div class="match-list">
           ${leftSide.map((m) => `
-            <div style="background:#edf2f7; padding:10px; border-radius:6px;">
+            <div class="match-item">
               <strong>${m.muskel}</strong> ➔ 
-              <select class="match-select" data-muskel="${m.muskel}" style="width:100%; padding:6px; margin-top:5px;">
+              <select class="match-select" data-muskel="${m.muskel}">
                 <option value="">-- Bitte wählen --</option>
                 ${rightSide.map(val => `<option value="${val.replace(/"/g, '&quot;')}">${val}</option>`).join('')}
               </select>
@@ -357,7 +328,6 @@ function initAnatomyApp() {
       
       const nextBtn = document.createElement("button");
       nextBtn.className = "btn";
-      nextBtn.style.marginTop = "10px";
       nextBtn.innerText = "Nächste Frage ➡";
       nextBtn.onclick = () => { currentIndex++; showQuestion(); };
       feedbackArea.appendChild(nextBtn);
@@ -380,27 +350,27 @@ function initAnatomyApp() {
 
     if (wrongQuestions.length > 0) {
       html += `
-        <button class="btn" style="background:#e67e22; margin-bottom: 20px;" onclick="startRepetition()">
+        <button class="btn btn-repeat" onclick="startRepetition()">
           🔄 Falsche Fragen wiederholen (${wrongQuestions.length})
         </button>
       `;
     }
 
     html += `
-      <div style="max-height: 450px; overflow-y: auto;">
+      <div class="results-list">
         ${sessionList.map((q, i) => {
           const ans = userAnswers[i] || { user: "Keine Antwort", correct: "-", success: false };
           return `
-            <div class="box" style="margin-bottom: 10px; border-left: 5px solid ${ans.success ? '#2ecc71' : '#e74c3c'};">
+            <div class="box result-box ${ans.success ? 'result-correct' : 'result-wrong'}">
               <strong>Frage ${i+1}: ${q.muskel ? q.muskel.muskel : 'Zuordnungsaufgabe'}</strong> [${q.type.toUpperCase()}]<br>
               <small>Kategorie: ${q.kat.toUpperCase()}</small><br>
-              <span style="color: ${ans.success ? 'green' : 'red'};">Deine Antwort: ${ans.user}</span><br>
-              ${!ans.success ? `<span style="color: darkgreen;">Richtige Lösung: ${ans.correct}</span>` : ''}
+              <span class="user-ans">Deine Antwort: ${ans.user}</span><br>
+              ${!ans.success ? `<span class="correct-ans">Richtige Lösung: ${ans.correct}</span>` : ''}
             </div>
           `;
         }).join('')}
       </div>
-      <button class="btn" style="margin-top:15px;" onclick="renderMenu()">Hauptmenü</button>
+      <button class="btn" onclick="renderMenu()">Hauptmenü</button>
     `;
 
     window.lastWrongQuestions = wrongQuestions;
