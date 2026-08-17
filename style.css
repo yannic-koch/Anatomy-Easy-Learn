@@ -125,7 +125,18 @@ input[type="text"], input[type="number"] {
   background: #d4edda;
   color: #155724;
 }
-
+/* Styling für das Verbinden-Format (Matching-Dropdowns) */
+select.match-select {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+/* Kleinere Buttons im Menü für die Schnellauswahl */
+.btn-menu {
+  font-size: 0.85rem;
+  padding: 6px 10px;
+}
 .feedback.wrong {
   background: #f8d7da;
   color: #721c24;
