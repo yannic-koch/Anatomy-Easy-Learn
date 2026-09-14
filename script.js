@@ -1,5 +1,5 @@
 // ==========================================
-// 🛠️ AUTOMATISCHER WARTUNGSMODUS & ADMIN-MODUS
+// 🛠️ LOGIK / JAVASCRIPT
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
   const urlParams = new URLSearchParams(window.location.search);
@@ -13,14 +13,14 @@ document.addEventListener("DOMContentLoaded", function () {
   function showMaintenancePage() {
     const container = document.getElementById("app-container") || document.body;
     container.innerHTML = `
-      <div class="maintenance-container">
+      <div class="maintenance-container fade-in">
         <div class="gears-box">
           <div class="gear-single">⚙️</div>
         </div>
-        <h2>Under Maintenance</h2>
-        <p>Upgrading the database for a better training experience.</p>
+        <h2>Wartungsarbeiten</h2>
+        <p style="color: #64748b; margin-top: 10px;">Wir aktualisieren die Datenbank für dein Training.</p>
         <div class="maintenance-badge">
-          ⚡ System update in progress — back online soon!
+          ⚡ System-Update läuft — gleich wieder da!
         </div>
       </div>
     `;
@@ -29,23 +29,15 @@ document.addEventListener("DOMContentLoaded", function () {
   function checkMaintenanceStatus() {
     fetch('status.json?t=' + Date.now(), {
       cache: 'no-store',
-      headers: { 
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache'
-      }
+      headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache' }
     })
       .then(response => response.json())
       .then(data => {
-        if (data.maintenance) {
-          showMaintenancePage();
-        } else {
-          if (!window.appInitialized) {
-            initAnatomyApp();
-          }
-        }
+        if (data.maintenance) showMaintenancePage();
+        else if (!window.appInitialized) initAnatomyApp();
       })
       .catch(err => {
-        console.log("Status-Check fehlgeschlagen (Fallback: App wird gestartet):", err);
+        console.log("Status-Check fehlgeschlagen:", err);
         if (!window.appInitialized) initAnatomyApp();
       });
   }
@@ -54,15 +46,10 @@ document.addEventListener("DOMContentLoaded", function () {
   setInterval(checkMaintenanceStatus, 10000);
 
   document.addEventListener("visibilitychange", function () {
-    if (document.visibilityState === "visible") {
-      checkMaintenanceStatus();
-    }
+    if (document.visibilityState === "visible") checkMaintenanceStatus();
   });
 });
 
-// ==========================================
-// 🦴 ANATOMIE TRAINER ULTIMATE PRO
-// ==========================================
 function initAnatomyApp() {
   window.appInitialized = true;
 
@@ -109,10 +96,10 @@ function initAnatomyApp() {
     { muskel: "M. serratus posterior inferior", gruppe: "Rücken (Spinokostal)", ursprung: "Dornfortsätze (T11-L2), Fascia thoracolumbalis.", ansatz: "9.-12. Rippe.", innervation: "Nn. intercostales Th9-12.", funktion: "Unterstützt Inspiration (verankert das Zwerchfell)." },
 
     // --- ARM: SCHULTERGÜRTELMUSKULATUR ---
-    { muskel: "M. trapezius", gruppe: "Schultergürtelmuskulatur", ursprung: "Os occipitale, Lig. nuchae, Procc. spinosi aller Halswirbel; Procc. spinosi der 1.–12. Brustwirbel.", ansatz: "laterales Drittel der Clavicula, Acromion, Spina scapulae.", innervation: "N. accessorius (XI. Hirnnerv) und Plexus cervicalis (C2-4).", funktion: "Zieht Scapula schräg aufwärts und dreht sie nach außen, verlagert das Schulterblatt nach medial, zieht Scapula nach kaudal-medial. Gesamter Muskel fixiert das Schulterblatt am Thorax." },
+    { muskel: "M. trapezius", gruppe: "Schultergürtelmuskulatur", ursprung: "Os occipitale, Lig. nuchae, Procc. spinosi aller Hals- und Brustwirbel.", ansatz: "laterales Drittel der Clavicula, Acromion, Spina scapulae.", innervation: "N. accessorius (XI. Hirnnerv) und Plexus cervicalis (C2-4).", funktion: "Fixiert das Schulterblatt am Thorax, zieht Scapula aufwärts/medial." },
     { muskel: "M. sternocleidomastoideus", gruppe: "Schultergürtelmuskulatur", ursprung: "Manubrium sterni, mediales Drittel der Clavicula.", ansatz: "Proc. mastoideus und Linea nuchalis superior.", innervation: "N. accessorius (XI. Hirnnerv) und Plexus cervicalis (C1-2).", funktion: "Lateralflexion ipsilateral und Rotation kontralateral (einseitig); Dorsalextension des Kopfes und Atemhilfsmuskel (beidseitig)." },
     { muskel: "M. omohyoideus", gruppe: "Schultergürtelmuskulatur", ursprung: "Margo superior des Schulterblatts.", ansatz: "Körper des Zungenbeins.", innervation: "Ansa cervicalis des Plexus cervicalis (C1-4).", funktion: "Absenkung des Zungenbeins, spannt die Halsfaszie, hält V. jugularis interna offen." },
-    { muskel: "M. serratus anterior", gruppe: "Schultergürtelmuskulatur", ursprung: "1.–9. Rippe.", ansatz: "Scapula (Angulus superior, Margo medialis, Angulus inferior).", innervation: "N. thoracicus longus (C5-7).", funktion: "Verschiebung der Scapula nach lateral-ventral, Atemhilfsmuskel, ermöglicht Elevation des Armes über 90°." },
+    { muskel: "M. serratus anterior", gruppe: "Schultergürtelmuskulatur", ursprung: "1.–9. Rippe.", ansatz: "Scapula (Angulus superior, Margo medialis, Angulus inferior).", innervation: "N. thoracicus longus (C5-7).", funktion: "Verschiebung der Scapula nach lateral-ventral, ermöglicht Arm-Elevation über 90°." },
     { muskel: "M. subclavius", gruppe: "Schultergürtelmuskulatur", ursprung: "1. Rippe (Knorpel-Knochen-Grenze).", ansatz: "Unterseite der Clavicula.", innervation: "N. subclavius (C5, 6).", funktion: "Fixierung der Clavicula im Sternoklavikulargelenk." },
     { muskel: "M. pectoralis minor", gruppe: "Schultergürtelmuskulatur", ursprung: "3.–5. Rippe.", ansatz: "Proc. coracoideus der Scapula.", innervation: "Nn. pectorales medialis und lateralis (C6-Th1).", funktion: "Herabziehen der Scapula, Atemhilfsmuskel." },
     { muskel: "M. levator scapulae", gruppe: "Schultergürtelmuskulatur", ursprung: "Procc. transversi der 1.–4. Halswirbel.", ansatz: "Angulus superior der Scapula.", innervation: "N. dorsalis scapulae (C4-5).", funktion: "Zieht Scapula nach kranial-medial, neigt den Hals ipsilateral." },
@@ -124,20 +111,20 @@ function initAnatomyApp() {
     { muskel: "M. infraspinatus", gruppe: "Schultergelenk", ursprung: "Fossa infraspinata der Scapula.", ansatz: "Tuberculum majus des Humerus.", innervation: "N. suprascapularis (C4-6).", funktion: "Außenrotation." },
     { muskel: "M. teres minor", gruppe: "Schultergelenk", ursprung: "Margo lateralis der Scapula.", ansatz: "Tuberculum majus des Humerus.", innervation: "N. axillaris (C5, 6).", funktion: "Außenrotation, schwache Adduktion." },
     { muskel: "M. deltoideus", gruppe: "Schultergelenk", ursprung: "laterales Drittel der Clavicula, Acromion, Spina scapulae.", ansatz: "Tuberositas deltoidea am Humerus.", innervation: "N. axillaris (C5, 6).", funktion: "Abduktion; Anteversion, Innenrotation; Retroversion, Außenrotation." },
-    { muskel: "M. latissimus dorsi", gruppe: "Schultergelenk", ursprung: "Procc. spinosi Th7-Th12, Os sacrum/LWS (via Fascia thoracolumbalis), Crista iliaca, 9.–12. Rippe, Angulus inferior der Scapula.", ansatz: "Crista tuberculi minoris des Humerus.", innervation: "N. thoracodorsalis (C6-8).", funktion: "Innenrotation, Adduktion, Retroversion, Atemhilfsmuskel (\"Hustenmuskel\")." },
+    { muskel: "M. latissimus dorsi", gruppe: "Schultergelenk", ursprung: "Procc. spinosi Th7-Th12, Fascia thoracolumbalis, Crista iliaca, 9.–12. Rippe.", ansatz: "Crista tuberculi minoris des Humerus.", innervation: "N. thoracodorsalis (C6-8).", funktion: "Innenrotation, Adduktion, Retroversion, Atemhilfsmuskel." },
     { muskel: "M. teres major", gruppe: "Schultergelenk", ursprung: "Angulus inferior der Scapula.", ansatz: "Crista tuberculi minoris des Humerus.", innervation: "N. subscapularis (C5-8).", funktion: "Innenrotation, Adduktion, Retroversion." },
-    { muskel: "M. pectoralis major", gruppe: "Schultergelenk", ursprung: "mediale Clavicula, Sternum, 2.–6. Rippenknorpel, Rektusscheide.", ansatz: "Crista tuberculi majoris des Humerus.", innervation: "Nn. pectorales medialis und lateralis (C5-Th1).", funktion: "Adduktion, Innenrotation, Anteversion, Atemhilfsmuskel." },
+    { muskel: "M. pectoralis major", gruppe: "Schultergelenk", ursprung: "mediale Clavicula, Sternum, 2.–6. Rippenknorpel, Rektusscheide.", ansatz: "Crista tuberculi majoris des Humerus.", innervation: "Nn. pectorales medialis und lateralis (C5-Th1).", funktion: "Adduktion, Innenrotation, Anteversion." },
     { muskel: "M. coracobrachialis", gruppe: "Schultergelenk", ursprung: "Proc. coracoideus der Scapula.", ansatz: "Humerus (Verlängerung der Crista tuberculi minoris).", innervation: "N. musculocutaneus (C5, 6).", funktion: "Anteversion, Adduktion, Innenrotation." },
 
     // --- ARM: OBERARMMUSKULATUR ---
-    { muskel: "M. biceps brachii", gruppe: "Oberarm", ursprung: "Tuberculum supraglenoidale (Caput longum), Proc. coracoideus (Caput breve).", ansatz: "Tuberositas radii, Lacertus fibrosus.", innervation: "N. musculocutaneus (C5-7).", funktion: "Ellenbogengelenk: Flexion, Supination; Schulter: Abduktion, Innenrotation, Anteversion." },
+    { muskel: "M. biceps brachii", gruppe: "Oberarm", ursprung: "Tuberculum supraglenoidale (Caput longum), Proc. coracoideus (Caput breve).", ansatz: "Tuberositas radii, Lacertus fibrosus.", innervation: "N. musculocutaneus (C5-7).", funktion: "Ellenbogen: Flexion, Supination; Schulter: Abduktion, Innenrotation, Anteversion." },
     { muskel: "M. brachialis", gruppe: "Oberarm", ursprung: "distale Hälfte der Vorderfläche des Humerus.", ansatz: "Tuberositas ulnae.", innervation: "N. musculocutaneus (C5-7), N. radialis (C5-6).", funktion: "Flexion im Ellenbogengelenk." },
-    { muskel: "M. triceps brachii", gruppe: "Oberarm", ursprung: "Tuberculum infraglenoidale (Caput longum), Hinterfläche des Humerus distal/proximal vom Sulcus n. radialis (Caput mediale/laterale).", ansatz: "Olecranon der Ulna.", innervation: "N. radialis (C6-8).", funktion: "Extension im Ellenbogen; Retroversion und Adduktion in der Schulter (Caput longum)." },
+    { muskel: "M. triceps brachii", gruppe: "Oberarm", ursprung: "Tuberculum infraglenoidale (Caput longum), Hinterfläche des Humerus.", ansatz: "Olecranon der Ulna.", innervation: "N. radialis (C6-8).", funktion: "Extension im Ellenbogen; Retroversion (Caput longum)." },
     { muskel: "M. anconeus", gruppe: "Oberarm", ursprung: "Epicondylus lateralis des Humerus.", ansatz: "Olecranon der Ulna.", innervation: "N. radialis (C6-8).", funktion: "Extension, Kapselspanner." },
 
     // --- ARM: UNTERARMMUSKULATUR (FLEXOREN) ---
     { muskel: "M. pronator teres", gruppe: "Unterarm (Flexoren)", ursprung: "Epicondylus medialis des Humerus, Proc. coronoideus der Ulna.", ansatz: "Facies lateralis radii.", innervation: "N. medianus (C6).", funktion: "Flexion (Ellenbogen), Pronation (Unterarm)." },
-    { muskel: "M. flexor digitorum superficialis", gruppe: "Unterarm (Flexoren)", ursprung: "Epicondylus medialis, Proc. coronoideus der Ulna, Radius.", ansatz: "Seiten der Mittelphalangen der Finger II-V.", innervation: "N. medianus (C7-Th1).", funktion: "Schwacher Beuger im Ellenbogen; Flexion in Hand- und Fingergelenken (II-V)." },
+    { muskel: "M. flexor digitorum superficialis", gruppe: "Unterarm (Flexoren)", ursprung: "Epicondylus medialis, Proc. coronoideus der Ulna, Radius.", ansatz: "Seiten der Mittelphalangen der Finger II-V.", innervation: "N. medianus (C7-Th1).", funktion: "Flexion in Hand- und Fingergelenken (II-V)." },
     { muskel: "M. flexor carpi radialis", gruppe: "Unterarm (Flexoren)", ursprung: "Epicondylus medialis des Humerus.", ansatz: "Basis des Os metacarpi II.", innervation: "N. medianus (C6-8).", funktion: "Handgelenke: Flexion, Radialabduktion; schwache Pronation." },
     { muskel: "M. flexor carpi ulnaris", gruppe: "Unterarm (Flexoren)", ursprung: "Epicondylus medialis des Humerus, Olecranon der Ulna.", ansatz: "Hamulus ossis hamati, Basis des Os metacarpi V, Os pisiforme.", innervation: "N. ulnaris (C8-Th1).", funktion: "Handgelenke: Flexion, Ulnarabduktion." },
     { muskel: "M. palmaris longus", gruppe: "Unterarm (Flexoren)", ursprung: "Epicondylus medialis des Humerus.", ansatz: "Palmaraponeurose.", innervation: "N. medianus (C8-Th1).", funktion: "Palmarflexion im Handgelenk, Spannen der Palmaraponeurose." },
@@ -146,15 +133,15 @@ function initAnatomyApp() {
     { muskel: "M. pronator quadratus", gruppe: "Unterarm (Flexoren)", ursprung: "Verbindet die distalen Viertel der Ulna und des Radius.", ansatz: "Verbindet die distalen Viertel der Ulna und des Radius.", innervation: "N. medianus (C8-Th1).", funktion: "Pronation, sichert distales Radioulnargelenk." },
 
     // --- ARM: UNTERARMMUSKULATUR (EXTENSOREN & RADIALISMUSKULATUR) ---
-    { muskel: "M. brachioradialis", gruppe: "Unterarm (Extensoren & Radialis)", ursprung: "laterale Seite des distalen Humerus.", ansatz: "Proc. styloideus radii.", innervation: "N. radialis (C5-7).", funktion: "Flexion im Ellenbogen, Semipronationsstellung im Unterarm." },
-    { muskel: "Mm. extensores carpi radialis (longus und brevis)", gruppe: "Unterarm (Extensoren & Radialis)", ursprung: "lateraler Humerus (longus), Epicondylus lateralis (brevis).", ansatz: "dorsale Basis des Os metacarpi II (longus) und III (brevis).", innervation: "N. radialis (C5-7).", funktion: "Handgelenke: Dorsalextension, Radialabduktion." },
-    { muskel: "M. extensor digitorum", gruppe: "Unterarm (Extensoren & Radialis)", ursprung: "Epicondylus lateralis des Humerus.", ansatz: "Dorsalaponeurose des 2.–5. Fingers.", innervation: "N. radialis (C6-8).", funktion: "Handgelenke: Dorsalextension; Finger: Extension, Spreizen." },
-    { muskel: "M. extensor digiti minimi", gruppe: "Unterarm (Extensoren & Radialis)", ursprung: "Epicondylus lateralis des Humerus.", ansatz: "Dorsalaponeurose des 5. Fingers.", innervation: "N. radialis (C6-8).", funktion: "Handgelenke: Dorsalextension, Ulnarabduktion; 5. Finger: Extension, Abspreizen." },
-    { muskel: "M. extensor carpi ulnaris", gruppe: "Unterarm (Extensoren & Radialis)", ursprung: "Epicondylus lateralis, Dorsalseite der Ulna.", ansatz: "Basis des Os metacarpi V.", innervation: "N. radialis (C6-8).", funktion: "Dorsalextension, Ulnarabduktion der Handgelenke." },
-    { muskel: "M. supinator", gruppe: "Unterarm (Extensoren & Radialis)", ursprung: "Olecranon, Epicondylus lateralis, Ligg. collaterale radiale und anulare radii.", ansatz: "Radius.", innervation: "N. radialis (C5, 6).", funktion: "Supination." },
-    { muskel: "M. abductor pollicis longus", gruppe: "Unterarm (Extensoren & Radialis)", ursprung: "Dorsalflächen von Radius und Ulna, Membrana interossea.", ansatz: "Basis des Os metacarpi I.", innervation: "N. radialis (C6-8).", funktion: "Radialabduktion (Handgelenk), Abduktion (Daumensattelgelenk)." },
-    { muskel: "M. extensor pollicis (longus und brevis)", gruppe: "Unterarm (Extensoren & Radialis)", ursprung: "Dorsalfläche Ulna/Membrana interossea (longus); Dorsalfläche Radius/Membrana interossea (brevis).", ansatz: "Basis der Endphalanx (longus) bzw. Grundphalanx (brevis) des Daumens.", innervation: "N. radialis (C6-8).", funktion: "Dorsalextension, Radialabduktion; Daumenextension, Daumenadduktion." },
-    { muskel: "M. extensor indicis", gruppe: "Unterarm (Extensoren & Radialis)", ursprung: "Dorsalfläche der Ulna, Membrana interossea.", ansatz: "Dorsalaponeurose des 2. Fingers.", innervation: "N. radialis (C6-8).", funktion: "Dorsalextension (Handgelenk und 2. Finger)." },
+    { muskel: "M. brachioradialis", gruppe: "Unterarm (Extensoren)", ursprung: "laterale Seite des distalen Humerus.", ansatz: "Proc. styloideus radii.", innervation: "N. radialis (C5-7).", funktion: "Flexion im Ellenbogen, Semipronationsstellung im Unterarm." },
+    { muskel: "Mm. extensores carpi radialis (longus und brevis)", gruppe: "Unterarm (Extensoren)", ursprung: "lateraler Humerus (longus), Epicondylus lateralis (brevis).", ansatz: "dorsale Basis des Os metacarpi II (longus) und III (brevis).", innervation: "N. radialis (C5-7).", funktion: "Handgelenke: Dorsalextension, Radialabduktion." },
+    { muskel: "M. extensor digitorum", gruppe: "Unterarm (Extensoren)", ursprung: "Epicondylus lateralis des Humerus.", ansatz: "Dorsalaponeurose des 2.–5. Fingers.", innervation: "N. radialis (C6-8).", funktion: "Handgelenke: Dorsalextension; Finger: Extension, Spreizen." },
+    { muskel: "M. extensor digiti minimi", gruppe: "Unterarm (Extensoren)", ursprung: "Epicondylus lateralis des Humerus.", ansatz: "Dorsalaponeurose des 5. Fingers.", innervation: "N. radialis (C6-8).", funktion: "Handgelenke: Dorsalextension, Ulnarabduktion; 5. Finger: Extension, Abspreizen." },
+    { muskel: "M. extensor carpi ulnaris", gruppe: "Unterarm (Extensoren)", ursprung: "Epicondylus lateralis, Dorsalseite der Ulna.", ansatz: "Basis des Os metacarpi V.", innervation: "N. radialis (C6-8).", funktion: "Dorsalextension, Ulnarabduktion der Handgelenke." },
+    { muskel: "M. supinator", gruppe: "Unterarm (Extensoren)", ursprung: "Olecranon, Epicondylus lateralis, Ligg. collaterale radiale und anulare radii.", ansatz: "Radius.", innervation: "N. radialis (C5, 6).", funktion: "Supination." },
+    { muskel: "M. abductor pollicis longus", gruppe: "Unterarm (Extensoren)", ursprung: "Dorsalflächen von Radius und Ulna, Membrana interossea.", ansatz: "Basis des Os metacarpi I.", innervation: "N. radialis (C6-8).", funktion: "Radialabduktion (Handgelenk), Abduktion (Daumensattelgelenk)." },
+    { muskel: "M. extensor pollicis (longus und brevis)", gruppe: "Unterarm (Extensoren)", ursprung: "Dorsalfläche Ulna/Membrana interossea (longus); Dorsalfläche Radius/Membrana interossea (brevis).", ansatz: "Basis der Endphalanx (longus) bzw. Grundphalanx (brevis) des Daumens.", innervation: "N. radialis (C6-8).", funktion: "Dorsalextension, Radialabduktion; Daumenextension, Daumenadduktion." },
+    { muskel: "M. extensor indicis", gruppe: "Unterarm (Extensoren)", ursprung: "Dorsalfläche der Ulna, Membrana interossea.", ansatz: "Dorsalaponeurose des 2. Fingers.", innervation: "N. radialis (C6-8).", funktion: "Dorsalextension (Handgelenk und 2. Finger)." },
 
     // --- ARM: KURZE HANDMUSKELN ---
     { muskel: "Mm. abductor pollicis brevis, adductor pollicis, flexor pollicis brevis, opponens pollicis", gruppe: "Hand (Thenar)", ursprung: "Retinaculum flexorum, angrenzende Handwurzelknochen.", ansatz: "Basis der Daumengrundphalanx bzw. Os metacarpi I.", innervation: "Überwiegend N. medianus (C6, 7), teils N. ulnaris (C8-Th1).", funktion: "Komplexe Daumenbewegungen (Abduktion, Adduktion, Flexion, Opposition)." },
@@ -163,53 +150,49 @@ function initAnatomyApp() {
     { muskel: "Mm. interossei (dorsales I-IV und palmares I-III)", gruppe: "Hand (Mittelhand)", ursprung: "Ossa metacarpi (dorsales: zweiköpfig; palmares: einseitig).", ansatz: "Dorsalaponeurose und Basis der proximalen Phalangen der jeweiligen Finger.", innervation: "N. ulnaris (C8-Th1).", funktion: "Flexion (Grundgelenk), Extension (Mittel-/Endgelenk); Spreizen (dorsales) und Schließen (palmares) der Finger." },
 
     // --- BEIN: INNERE HÜFTMUSKELN ---
-    { muskel: "M. iliopsoas (M. psoas major und M. iliacus)", gruppe: "Innere Hüftmuskeln", ursprung: "M. psoas major: 12. Brust- und 1.–5. Lendenwirbelkörper/Disci/Procc. costales; M. iliacus: Fossa iliaca.", ansatz: "Gemeinsam am Trochanter minor des Femurs.", innervation: "N. femoralis (L1-4) sowie direkte Äste aus dem Plexus lumbalis.", funktion: "Hüftgelenk: Flexion und Außenrotation. Lendenwirbelsäule: Lateralflexion zur ipsilateralen Seite, Aufrichten des Rumpfes." },
+    { muskel: "M. iliopsoas", gruppe: "Hüfte (Innen)", ursprung: "12. Brust- und 1.–5. Lendenwirbelkörper (Psoas major); Fossa iliaca (Iliacus).", ansatz: "Gemeinsam am Trochanter minor des Femurs.", innervation: "N. femoralis (L1-4) sowie direkte Äste aus dem Plexus lumbalis.", funktion: "Hüftgelenk: Flexion und Außenrotation." },
 
     // --- BEIN: ÄUSSERE HÜFTMUSKELN ---
-    { muskel: "M. gluteus maximus", gruppe: "Äußere Hüftmuskeln", ursprung: "Facies dorsalis des Os sacrum, Facies glutea des Os ilium, Fascia thoracolumbalis und Lig. sacrotuberale.", ansatz: "Tractus iliotibialis (kraniale Fasern) und Tuberositas glutea (kaudale Fasern).", innervation: "N. gluteus inferior (L5-S2).", funktion: "Extension und Außenrotation im Hüftgelenk, Stabilisierung des Beckens. Abduktion/Adduktion je nach Faseranteil." },
-    { muskel: "M. gluteus medius", gruppe: "Äußere Hüftmuskeln", ursprung: "Facies glutea des Os ilium.", ansatz: "Seitliche Fläche des Trochanter major am Femur.", innervation: "N. gluteus superior (L4-S1).", funktion: "Abduktion und Beckenstabilisierung in der Frontalebene. Flexion/Innenrotation oder Extension/Außenrotation je nach Teil." },
-    { muskel: "M. gluteus minimus", gruppe: "Äußere Hüftmuskeln", ursprung: "Facies glutea des Os ilium (unter dem M. gluteus medius).", ansatz: "Mediale Fläche des Trochanter major am Femur.", innervation: "N. gluteus superior (L4-S1).", funktion: "Abduktion und Beckenstabilisierung. Flexion/Innenrotation oder Extension/Außenrotation je nach Teil." },
-    { muskel: "M. tensor fasciae latae", gruppe: "Äußere Hüftmuskeln", ursprung: "Spina iliaca anterior superior.", ansatz: "Tractus iliotibialis.", innervation: "N. gluteus superior (L4-S1).", funktion: "Spannt die Fascia lata; Hüftgelenk: Abduktion, Flexion und Innenrotation." },
-    { muskel: "M. piriformis", gruppe: "Äußere Hüftmuskeln", ursprung: "Facies pelvica des Os sacrum.", ansatz: "Spitze des Trochanter major am Femur.", innervation: "Direkte Äste aus dem Plexus sacralis (L5-S2).", funktion: "Außenrotation, Abduktion und Extension im Hüftgelenk; Stabilisierung." },
-    { muskel: "M. obturatorius internus", gruppe: "Äußere Hüftmuskeln", ursprung: "Innenfläche der Membrana obturatoria und an ihrem knöchernen Rahmen.", ansatz: "Fossa trochanterica am Femur.", innervation: "Direkte Äste aus dem Plexus sacralis (L5-S2).", funktion: "Außenrotation, Adduktion und Extension im Hüftgelenk." },
-    { muskel: "Mm. gemelli (superior und inferior)", gruppe: "Äußere Hüftmuskeln", ursprung: "Spina ischiadica des Os ischii (superior); Tuber ischiadicum des Os ischii (inferior).", ansatz: "Zusammen mit der Ansatzsehne des M. obturatorius internus in der Fossa trochanterica.", innervation: "Direkte Äste aus dem Plexus sacralis (L5-S2).", funktion: "Außenrotation, Adduktion und Extension im Hüftgelenk." },
-    { muskel: "M. quadratus femoris", gruppe: "Äußere Hüftmuskeln", ursprung: "Lateraler Rand des Tuber ischiadicum des Os ischii.", ansatz: "Crista intertrochanterica des Femur.", innervation: "Direkte Äste aus dem Plexus sacralis (L5-S2) und/oder N. gluteus inferior.", funktion: "Außenrotation und Adduktion im Hüftgelenk." },
+    { muskel: "M. gluteus maximus", gruppe: "Hüfte (Außen)", ursprung: "Facies dorsalis des Os sacrum, Facies glutea des Os ilium, Lig. sacrotuberale.", ansatz: "Tractus iliotibialis und Tuberositas glutea.", innervation: "N. gluteus inferior (L5-S2).", funktion: "Extension und Außenrotation im Hüftgelenk, Stabilisierung des Beckens." },
+    { muskel: "M. gluteus medius", gruppe: "Hüfte (Außen)", ursprung: "Facies glutea des Os ilium.", ansatz: "Seitliche Fläche des Trochanter major am Femur.", innervation: "N. gluteus superior (L4-S1).", funktion: "Abduktion und Beckenstabilisierung in der Frontalebene." },
+    { muskel: "M. gluteus minimus", gruppe: "Hüfte (Außen)", ursprung: "Facies glutea des Os ilium (unter dem M. gluteus medius).", ansatz: "Mediale Fläche des Trochanter major am Femur.", innervation: "N. gluteus superior (L4-S1).", funktion: "Abduktion und Beckenstabilisierung." },
+    { muskel: "M. tensor fasciae latae", gruppe: "Hüfte (Außen)", ursprung: "Spina iliaca anterior superior.", ansatz: "Tractus iliotibialis.", innervation: "N. gluteus superior (L4-S1).", funktion: "Spannt die Fascia lata; Hüftgelenk: Abduktion, Flexion und Innenrotation." },
+    { muskel: "M. piriformis", gruppe: "Hüfte (Außen)", ursprung: "Facies pelvica des Os sacrum.", ansatz: "Spitze des Trochanter major am Femur.", innervation: "Direkte Äste aus dem Plexus sacralis (L5-S2).", funktion: "Außenrotation, Abduktion und Extension im Hüftgelenk; Stabilisierung." },
+    { muskel: "M. obturatorius internus", gruppe: "Hüfte (Außen)", ursprung: "Innenfläche der Membrana obturatoria und an ihrem knöchernen Rahmen.", ansatz: "Fossa trochanterica am Femur.", innervation: "Direkte Äste aus dem Plexus sacralis (L5-S2).", funktion: "Außenrotation, Adduktion und Extension im Hüftgelenk." },
+    { muskel: "Mm. gemelli (superior und inferior)", gruppe: "Hüfte (Außen)", ursprung: "Spina ischiadica des Os ischii (superior); Tuber ischiadicum des Os ischii (inferior).", ansatz: "Zusammen mit der Ansatzsehne des M. obturatorius internus in der Fossa trochanterica.", innervation: "Direkte Äste aus dem Plexus sacralis (L5-S2).", funktion: "Außenrotation, Adduktion und Extension im Hüftgelenk." },
+    { muskel: "M. quadratus femoris", gruppe: "Hüfte (Außen)", ursprung: "Lateraler Rand des Tuber ischiadicum des Os ischii.", ansatz: "Crista intertrochanterica des Femur.", innervation: "Direkte Äste aus dem Plexus sacralis (L5-S2) und/oder N. gluteus inferior.", funktion: "Außenrotation und Adduktion im Hüftgelenk." },
 
     // --- BEIN: ADDUKTORENGRUPPE ---
     { muskel: "M. obturatorius externus", gruppe: "Adduktorengruppe", ursprung: "Außenseite der Membrana obturatoria und angrenzender Knochen.", ansatz: "Fossa trochanterica des Femur.", innervation: "N. obturatorius (L2-4).", funktion: "Adduktion und Außenrotation im Hüftgelenk, Stabilisierung des Beckens." },
-    { muskel: "M. pectineus", gruppe: "Adduktorengruppe", ursprung: "Pecten ossis pubis.", ansatz: "Linea pectinea und an der proximalen Linea aspera des Femur.", innervation: "N. femoralis (L1-4), N. obturatorius (L2-4).", funktion: "Adduktion, Außenrotation und leichte Flexion im Hüftgelenk, Beckenstabilisierung." },
-    { muskel: "M. adductor longus", gruppe: "Adduktorengruppe", ursprung: "R. superior des Os pubis und Vorderseite der Symphyse.", ansatz: "Linea aspera (Labium mediale im mittleren Femurdrittel).", innervation: "N. obturatorius (L2-4).", funktion: "Adduktion und Flexion (bis 70°) im Hüftgelenk, Beckenstabilisierung." },
-    { muskel: "M. adductor brevis", gruppe: "Adduktorengruppe", ursprung: "R. inferior des Os pubis.", ansatz: "Linea aspera (Labium mediale im oberen Femurdrittel).", innervation: "N. obturatorius (L2-4).", funktion: "Adduktion und Flexion (bis 70°) im Hüftgelenk, Beckenstabilisierung." },
-    { muskel: "M. adductor magnus", gruppe: "Adduktorengruppe", ursprung: "R. inferior des Os pubis, R. ossis ischii und Tuber ischiadicum.", ansatz: "Labium mediale der Linea aspera und Epicondylus medialis des Femur.", innervation: "N. obturatorius, L2-4 (tiefer Teil); N. tibialis, L4-5 (oberflächlicher Teil).", funktion: "Adduktion, Außenrotation und Extension im Hüftgelenk." },
+    { muskel: "M. pectineus", gruppe: "Adduktorengruppe", ursprung: "Pecten ossis pubis.", ansatz: "Linea pectinea und an der proximalen Linea aspera des Femur.", innervation: "N. femoralis (L1-4), N. obturatorius (L2-4).", funktion: "Adduktion, Außenrotation und leichte Flexion im Hüftgelenk." },
+    { muskel: "M. adductor longus", gruppe: "Adduktorengruppe", ursprung: "R. superior des Os pubis und Vorderseite der Symphyse.", ansatz: "Linea aspera (Labium mediale).", innervation: "N. obturatorius (L2-4).", funktion: "Adduktion und Flexion (bis 70°) im Hüftgelenk." },
+    { muskel: "M. adductor brevis", gruppe: "Adduktorengruppe", ursprung: "R. inferior des Os pubis.", ansatz: "Linea aspera (Labium mediale im oberen Femurdrittel).", innervation: "N. obturatorius (L2-4).", funktion: "Adduktion und Flexion (bis 70°) im Hüftgelenk." },
+    { muskel: "M. adductor magnus", gruppe: "Adduktorengruppe", ursprung: "R. inferior des Os pubis, R. ossis ischii und Tuber ischiadicum.", ansatz: "Labium mediale der Linea aspera und Epicondylus medialis des Femur.", innervation: "N. obturatorius (L2-4); N. tibialis (L4-5).", funktion: "Adduktion, Außenrotation und Extension im Hüftgelenk." },
     { muskel: "M. adductor minimus", gruppe: "Adduktorengruppe", ursprung: "R. inferior des Os pubis.", ansatz: "Labium mediale der Linea aspera.", innervation: "N. obturatorius (L2-4).", funktion: "Adduktion, Außenrotation und leichte Flexion im Hüftgelenk." },
     { muskel: "M. gracilis", gruppe: "Adduktorengruppe", ursprung: "R. inferior des Os pubis unterhalb der Symphyse.", ansatz: "Medial der Tuberositas tibiae im Pes anserinus superficialis.", innervation: "N. obturatorius (L2-4).", funktion: "Hüftgelenk: Adduktion und Flexion; Kniegelenk: Flexion und Innenrotation." },
 
-    // --- BEIN: OBERSCHENKEL (EXTENSOREN) ---
+    // --- BEIN: OBERSCHENKEL ---
     { muskel: "M. sartorius", gruppe: "Oberschenkel (Extensoren)", ursprung: "Spina iliaca anterior superior.", ansatz: "Medial der Tuberositas tibiae am Pes anserinus superficialis.", innervation: "N. femoralis (L1-4).", funktion: "Hüftgelenk: Flexion, Abduktion und Außenrotation; Kniegelenk: Flexion und Innenrotation." },
-    { muskel: "M. quadriceps femoris", gruppe: "Oberschenkel (Extensoren)", ursprung: "Spina iliaca anterior inferior / Pfannendach (M. rectus femoris); Linea aspera, Vorderseite des Femurschaftes (Mm. vasti).", ansatz: "Tuberositas tibiae via Lig. patellae sowie Condylen und Recessus suprapatellaris.", innervation: "N. femoralis (L1-4).", funktion: "Hüftgelenk: Flexion (M. rectus femoris); Kniegelenk: Extension (alle Anteile)." },
-
-    // --- BEIN: OBERSCHENKEL (FLEXOREN) ---
-    { muskel: "M. biceps femoris", gruppe: "Oberschenkel (Flexoren)", ursprung: "Tuber ischiadicum und Lig. sacrotuberale (Caput longum); Labium laterale der Linea aspera (Caput breve).", ansatz: "Caput fibulae.", innervation: "N. tibialis (Caput longum); N. fibularis communis (Caput breve).", funktion: "Hüftgelenk: Adduktion, Extension, Beckenstabilisierung (Caput longum); Kniegelenk: Flexion und Außenrotation." },
-    { muskel: "M. semimembranosus", gruppe: "Oberschenkel (Flexoren)", ursprung: "Tuber ischiadicum.", ansatz: "Pes anserinus profundus (Condylus medialis tibiae, Lig. popliteum obliquum, Faszie des M. popliteus).", innervation: "N. tibialis (L5-S2).", funktion: "Hüftgelenk: Adduktion, Extension; Kniegelenk: Flexion und Innenrotation." },
-    { muskel: "M. semitendinosus", gruppe: "Oberschenkel (Flexoren)", ursprung: "Tuber ischiadicum und Lig. sacrotuberale.", ansatz: "Medial der Tuberositas tibiae im Pes anserinus superficialis.", innervation: "N. tibialis (L5-S2).", funktion: "Hüftgelenk: Adduktion, Extension; Kniegelenk: Flexion und Innenrotation." },
+    { muskel: "M. quadriceps femoris", gruppe: "Oberschenkel (Extensoren)", ursprung: "Spina iliaca anterior inferior (Rectus); Linea aspera, Vorderseite Femur (Vasti).", ansatz: "Tuberositas tibiae via Lig. patellae.", innervation: "N. femoralis (L1-4).", funktion: "Hüftgelenk: Flexion (M. rectus femoris); Kniegelenk: Extension (alle)." },
+    { muskel: "M. biceps femoris", gruppe: "Oberschenkel (Flexoren)", ursprung: "Tuber ischiadicum (Caput longum); Labium laterale der Linea aspera (Caput breve).", ansatz: "Caput fibulae.", innervation: "N. tibialis (Caput longum); N. fibularis communis (Caput breve).", funktion: "Hüfte: Extension; Knie: Flexion und Außenrotation." },
+    { muskel: "M. semimembranosus", gruppe: "Oberschenkel (Flexoren)", ursprung: "Tuber ischiadicum.", ansatz: "Pes anserinus profundus (Condylus medialis tibiae).", innervation: "N. tibialis (L5-S2).", funktion: "Hüftgelenk: Extension; Kniegelenk: Flexion und Innenrotation." },
+    { muskel: "M. semitendinosus", gruppe: "Oberschenkel (Flexoren)", ursprung: "Tuber ischiadicum und Lig. sacrotuberale.", ansatz: "Medial der Tuberositas tibiae im Pes anserinus superficialis.", innervation: "N. tibialis (L5-S2).", funktion: "Hüftgelenk: Extension; Kniegelenk: Flexion und Innenrotation." },
     { muskel: "M. popliteus", gruppe: "Oberschenkel (Flexoren)", ursprung: "Condylus lateralis femoris, Hinterhorn des Außenmeniskus.", ansatz: "Facies posterior tibiae.", innervation: "N. tibialis (L5-S2).", funktion: "Flexion und Innenrotation im Kniegelenk." },
 
-    // --- BEIN: UNTERSCHENKEL (EXTENSOREN & FIBULARISGRUPPE) ---
-    { muskel: "M. tibialis anterior", gruppe: "Unterschenkel (Extensoren)", ursprung: "Obere zwei Drittel der Facies lateralis tibiae, Membrana interossea cruris, Fascia cruris superficialis.", ansatz: "Os cuneiforme mediale, mediale Basis des Os metatarsi I.", innervation: "N. fibularis profundus (L4, 5).", funktion: "Dorsalextension (oberes Sprunggelenk), Inversion/Supination (unteres Sprunggelenk)." },
-    { muskel: "M. extensor digitorum longus", gruppe: "Unterschenkel (Extensoren)", ursprung: "Condylus lateralis tibiae, Caput fibulae, Membrana interossea cruris.", ansatz: "Dorsalaponeurosen der 2.–5. Zehe, Basen der Phalanges distales der 2.–5. Zehe.", innervation: "N. fibularis profundus (L4-S1).", funktion: "Dorsalextension (oberes Sprunggelenk), Eversion (unteres Sprunggelenk), Extension der Zehen." },
-    { muskel: "M. extensor hallucis longus", gruppe: "Unterschenkel (Extensoren)", ursprung: "Mittleres Drittel der Facies medialis fibulae, Membrana interossea cruris.", ansatz: "Dorsalaponeurose der Großzehe, Basis ihrer Endphalanx.", innervation: "N. fibularis profundus (L5-S1).", funktion: "Dorsalextension (oberes Sprunggelenk), Extension der Großzehe, unterstützt Eversion und Inversion je nach Ausgangsstellung." },
-    { muskel: "M. fibularis longus", gruppe: "Unterschenkel (Fibularisgruppe)", ursprung: "Caput fibulae, proximale zwei Drittel der Facies lateralis fibulae.", ansatz: "Plantarseite des Os cuneiforme mediale, Basis des Os metatarsi I.", innervation: "N. fibularis superficialis (L5-S1).", funktion: "Plantarflexion, Eversion, Verspannung des Quergewölbes." },
-    { muskel: "M. fibularis brevis", gruppe: "Unterschenkel (Fibularisgruppe)", ursprung: "Distale Hälfte der Facies lateralis fibulae.", ansatz: "Tuberositas ossis metatarsi V.", innervation: "N. fibularis superficialis (L5-S1).", funktion: "Plantarflexion, Eversion." },
-    { muskel: "M. fibularis tertius", gruppe: "Unterschenkel (Fibularisgruppe)", ursprung: "Margo anterior der distalen Fibula.", ansatz: "Basis des Os metatarsi V.", innervation: "N. fibularis profundus (L4-S1).", funktion: "Dorsalextension, Eversion." },
-
-    // --- BEIN: UNTERSCHENKEL (FLEXOREN) ---
-    { muskel: "M. triceps surae", gruppe: "Unterschenkel (Flexoren)", ursprung: "Dorsalseite Caput/Collum fibulae und Arcus tendineus (M. soleus); Epicondylus medialis und lateralis femoris (M. gastrocnemius).", ansatz: "Tuber calcanei über die Achillessehne.", innervation: "N. tibialis (S1, 2).", funktion: "Plantarflexion (oberes Sprunggelenk), Inversion (unteres Sprunggelenk), Knieflexion (nur M. gastrocnemius)." },
-    { muskel: "M. plantaris", gruppe: "Unterschenkel (Flexoren)", ursprung: "Proximal des Caput laterale des M. gastrocnemius.", ansatz: "Tuber calcanei über die Achillessehne.", innervation: "N. tibialis (S1, 2).", funktion: "Verhindert bei Knieflexion Kompression der Vasa tibialia posteriora (insgesamt vernachlässigbare Flexion)." },
+    // --- BEIN: UNTERSCHENKEL ---
+    { muskel: "M. tibialis anterior", gruppe: "Unterschenkel (Extensoren)", ursprung: "Obere Facies lateralis tibiae, Membrana interossea, Fascia cruris.", ansatz: "Os cuneiforme mediale, mediale Basis des Os metatarsi I.", innervation: "N. fibularis profundus (L4, 5).", funktion: "Dorsalextension (Sprunggelenk oben), Inversion/Supination (unten)." },
+    { muskel: "M. extensor digitorum longus", gruppe: "Unterschenkel (Extensoren)", ursprung: "Condylus lateralis tibiae, Caput fibulae, Membrana interossea cruris.", ansatz: "Dorsalaponeurosen der 2.–5. Zehe, Basen der Phalanges distales der 2.–5. Zehe.", innervation: "N. fibularis profundus (L4-S1).", funktion: "Dorsalextension, Eversion, Extension der Zehen." },
+    { muskel: "M. extensor hallucis longus", gruppe: "Unterschenkel (Extensoren)", ursprung: "Mittleres Drittel der Facies medialis fibulae, Membrana interossea cruris.", ansatz: "Dorsalaponeurose der Großzehe, Basis ihrer Endphalanx.", innervation: "N. fibularis profundus (L5-S1).", funktion: "Dorsalextension, Extension der Großzehe." },
+    { muskel: "M. fibularis longus", gruppe: "Unterschenkel (Fibularis)", ursprung: "Caput fibulae, proximale Facies lateralis fibulae.", ansatz: "Plantarseite des Os cuneiforme mediale, Basis des Os metatarsi I.", innervation: "N. fibularis superficialis (L5-S1).", funktion: "Plantarflexion, Eversion, Verspannung des Quergewölbes." },
+    { muskel: "M. fibularis brevis", gruppe: "Unterschenkel (Fibularis)", ursprung: "Distale Hälfte der Facies lateralis fibulae.", ansatz: "Tuberositas ossis metatarsi V.", innervation: "N. fibularis superficialis (L5-S1).", funktion: "Plantarflexion, Eversion." },
+    { muskel: "M. fibularis tertius", gruppe: "Unterschenkel (Fibularis)", ursprung: "Margo anterior der distalen Fibula.", ansatz: "Basis des Os metatarsi V.", innervation: "N. fibularis profundus (L4-S1).", funktion: "Dorsalextension, Eversion." },
+    { muskel: "M. triceps surae", gruppe: "Unterschenkel (Flexoren)", ursprung: "Fibula, Arcus tendineus (Soleus); Epicondylus femoris (Gastrocnemius).", ansatz: "Tuber calcanei über die Achillessehne.", innervation: "N. tibialis (S1, 2).", funktion: "Plantarflexion, Inversion, Knieflexion (nur Gastrocnemius)." },
+    { muskel: "M. plantaris", gruppe: "Unterschenkel (Flexoren)", ursprung: "Proximal des Caput laterale des M. gastrocnemius.", ansatz: "Tuber calcanei über die Achillessehne.", innervation: "N. tibialis (S1, 2).", funktion: "Verhindert bei Knieflexion Kompression der Vasa tibialia posteriora." },
     { muskel: "M. tibialis posterior", gruppe: "Unterschenkel (Tiefe Flexoren)", ursprung: "Membrana interossea cruris, Ränder von Tibia und Fibula.", ansatz: "Tuberositas ossis navicularis, Ossa cuneiformia, Basen der Ossa metatarsi II-IV.", innervation: "N. tibialis (L4-S1).", funktion: "Plantarflexion, Inversion, Verspannung des Längs- und Quergewölbes." },
     { muskel: "M. flexor digitorum longus", gruppe: "Unterschenkel (Tiefe Flexoren)", ursprung: "Mittleres Drittel der Facies posterior der Tibia.", ansatz: "Basen der Endphalangen II-V.", innervation: "N. tibialis (L5-S2).", funktion: "Plantarflexion, Inversion, Zehenflexion." },
-    { muskel: "M. flexor hallucis longus", gruppe: "Unterschenkel (Tiefe Flexoren)", ursprung: "Distale zwei Drittel der Facies posterior fibulae, Membrana interossea cruris.", ansatz: "Basis der Endphalanx der Großzehe.", innervation: "N. tibialis (L5-S2).", funktion: "Plantarflexion, Inversion, Großzehenflexion, Verspannung des medialen Längsgewölbes." },
+    { muskel: "M. flexor hallucis longus", gruppe: "Unterschenkel (Tiefe Flexoren)", ursprung: "Distale zwei Drittel der Facies posterior fibulae, Membrana interossea cruris.", ansatz: "Basis der Endphalanx der Großzehe.", innervation: "N. tibialis (L5-S2).", funktion: "Plantarflexion, Inversion, Großzehenflexion." },
 
-    // --- BEIN: KURZE FUSSMUSKELN ---
+    // --- BEIN: FUSS ---
     { muskel: "M. extensor digitorum brevis", gruppe: "Fuß (Rücken)", ursprung: "Dorsalfläche des Calcaneus.", ansatz: "Dorsalaponeurose der 2.–4. Zehe, Basen der Mittelphalangen II-IV.", innervation: "N. fibularis profundus (L5-S1).", funktion: "Dorsalextension der 2.–4. Zehe." },
     { muskel: "M. extensor hallucis brevis", gruppe: "Fuß (Rücken)", ursprung: "Dorsalfläche des Calcaneus.", ansatz: "Dorsalaponeurose der Großzehe, Basis der Großzehengrundphalanx.", innervation: "N. fibularis profundus (L5-S1).", funktion: "Dorsalextension im Grundgelenk der Großzehe." },
     { muskel: "M. abductor hallucis", gruppe: "Fuß (Großzehenloge)", ursprung: "Proc. medialis des Tuber calcanei, Plantaraponeurose.", ansatz: "Über das mediale Sesambein an der Basis der Großzehengrundphalanx.", innervation: "N. plantaris medialis (L5-S1).", funktion: "Plantarflexion, Abduktion der 1. Zehe nach medial, Längsgewölbe-Verspannung." },
@@ -231,59 +214,62 @@ function initAnatomyApp() {
   let currentMode = "";
 
   let container = document.getElementById("app-container");
-  if (!container) {
-    container = document.createElement("div");
-    container.id = "app-container";
-    container.className = "app-container";
-    document.body.appendChild(container);
-  }
 
   function renderMenu() {
     const gruppen = [...new Set(muskelDaten.map(m => m.gruppe))].sort();
 
     let html = `
-      <h1>🦴 Anatomie Trainer Ultimate Pro</h1>
-      <div class="main-layout">
-        <div class="box">
-          <h3>1. Muskelauswahl</h3>
-          <div class="button-group">
-            <button class="btn btn-menu" onclick="window.selectAllMuscles(true)">Alle auswählen</button>
-            <button class="btn btn-menu" onclick="window.selectAllMuscles(false)">Alle abwählen</button>
-            <button class="btn btn-menu" onclick="window.selectRandomMuscles()">🎲 Zufall (5-13)</button>
+      <div class="fade-in">
+        <h1>🦴 Anatomie Trainer Ultimate Pro</h1>
+        <div class="main-layout">
+          <div class="box">
+            <h3>1. Muskelauswahl</h3>
+            <div class="button-group">
+              <button class="btn btn-menu" onclick="window.selectAllMuscles(true)">Alle an</button>
+              <button class="btn btn-menu" onclick="window.selectAllMuscles(false)">Alle aus</button>
+              <button class="btn btn-menu" onclick="window.selectRandomMuscles()">🎲 Zufall</button>
+            </div>
+            ${gruppen.map(g => `
+              <div class="group-title">
+                <label>
+                  <input type="checkbox" onchange="window.toggleGroup('${g}', this.checked)" checked> 📁 ${g}
+                </label>
+              </div>
+              <div class="group-items">
+                ${muskelDaten.filter(m => m.gruppe === g).map(m => `
+                  <label><input type="checkbox" class="m-check" data-gruppe="${g}" value="${m.muskel}" checked> ${m.muskel}</label>
+                `).join('')}
+              </div>
+            `).join('')}
           </div>
-          ${gruppen.map(g => `
-            <div class="group-title">
-              <label>
-                <input type="checkbox" onchange="window.toggleGroup('${g}', this.checked)" checked> 📁 ${g}
+
+          <div class="box">
+            <h3>2. Einstellungen & Inhalte</h3>
+            <div style="margin-bottom: 20px;">
+              <strong style="color:var(--primary); font-size:0.95rem;">KATEGORIEN</strong><br>
+              <label><input type="checkbox" id="kat-ursprung" checked> Ursprung</label>
+              <label><input type="checkbox" id="kat-ansatz" checked> Ansatz</label>
+              <label><input type="checkbox" id="kat-innervation" checked> Innervation</label>
+              <label><input type="checkbox" id="kat-funktion" checked> Funktion</label>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+              <strong style="color:var(--primary); font-size:0.95rem;">FRAGETYPEN</strong><br>
+              <label><input type="checkbox" id="type-write" checked> Freitext (Eintippen)</label>
+              <label><input type="checkbox" id="type-single" checked> Single Choice</label>
+              <label><input type="checkbox" id="type-match" checked> Zuordnung (Matching)</label>
+            </div>
+            
+            <div style="margin-bottom: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+              <label style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:600; color:var(--text-main);">Max. Fragen (0 = alle):</span> 
+                <input type="number" id="limit-input" value="10" min="0" style="width: 80px; margin:0; text-align:center;">
               </label>
             </div>
-            <div class="group-items">
-              ${muskelDaten.filter(m => m.gruppe === g).map(m => `
-                <label><input type="checkbox" class="m-check" data-gruppe="${g}" value="${m.muskel}" checked> ${m.muskel}</label>
-              `).join('')}
-            </div>
-          `).join('')}
-        </div>
-
-        <div class="box">
-          <h3>2. Einstellungen & Inhalte</h3>
-          <strong>Kategorien:</strong><br>
-          <label><input type="checkbox" id="kat-ursprung" checked> Ursprung</label>
-          <label><input type="checkbox" id="kat-ansatz" checked> Ansatz</label>
-          <label><input type="checkbox" id="kat-innervation" checked> Innervation</label>
-          <label><input type="checkbox" id="kat-funktion" checked> Funktion</label>
-          <hr>
-          <strong>Fragetypen:</strong><br>
-          <label><input type="checkbox" id="type-write" checked> Freitext (Eintippen)</label>
-          <label><input type="checkbox" id="type-single" checked> Single Choice</label>
-          <label><input type="checkbox" id="type-match" checked> Zuordnung (Matching)</label>
-          <hr>
-          <label>Max. Fragen (0 = alle): 
-            <input type="number" id="limit-input" value="10" min="0">
-          </label>
-          <br><br>
-          <button class="btn btn-practice" onclick="window.startSession('PRACTICE')">🚀 ÜBUNGSMODUS (Direktes Feedback)</button>
-          <button class="btn btn-exam" onclick="window.startSession('EXAM')">📝 PRÜFUNGSMODUS (Auswertung am Ende)</button>
+            
+            <button class="btn btn-practice" onclick="window.startSession('PRACTICE')">🚀 ÜBUNGSMODUS (Direktes Feedback)</button>
+            <button class="btn btn-exam" onclick="window.startSession('EXAM')">📝 PRÜFUNGSMODUS (Zusammenfassung)</button>
+          </div>
         </div>
       </div>
     `;
@@ -360,23 +346,24 @@ function initAnatomyApp() {
     const progressPct = ((currentIndex) / sessionList.length) * 100;
 
     let html = `
-      <div class="header-bar">
-        <button class="btn btn-menu" onclick="window.renderMenu()">◀ Menü</button>
-        <strong>Frage ${currentIndex + 1} von ${sessionList.length} [${currentMode}]</strong>
-      </div>
-      <div class="progress-bar">
-        <div class="progress-fill" style="width: ${progressPct}%;"></div>
-      </div>
+      <div class="fade-in">
+        <div class="header-bar">
+          <button class="btn btn-menu" onclick="window.renderMenu()">◀ Zurück ins Menü</button>
+          <span>Frage ${currentIndex + 1} von ${sessionList.length} <strong style="color:var(--primary);">[${currentMode}]</strong></span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: ${progressPct}%;"></div>
+        </div>
     `;
 
     if (q.type === 'write') {
       html += `
-        <h2>Muskel: ${q.muskel.muskel}</h2>
-        <p><em>Kategorie: ${q.kat.toUpperCase()} (${q.muskel.gruppe})</em></p>
+        <h2 style="font-size:1.6rem; color:var(--primary); margin-bottom:5px;">${q.muskel.muskel}</h2>
+        <p style="color:var(--text-muted); font-size:0.95rem;">Kategorie: <strong>${q.kat.toUpperCase()}</strong> &nbsp;|&nbsp; Gruppe: ${q.muskel.gruppe}</p>
         <br>
-        <label>Antwort eingeben:</label>
-        <input type="text" id="write-answer" autofocus autocomplete="off">
-        <button class="btn" id="submit-btn" onclick="window.checkWriteAnswer()">Antwort prüfen</button>
+        <label style="color:var(--text-main); font-weight:600; margin-bottom:10px;">Antwort eingeben:</label>
+        <input type="text" id="write-answer" autofocus autocomplete="off" placeholder="Tippe deine Antwort hier...">
+        <button class="btn btn-primary" id="submit-btn" onclick="window.checkWriteAnswer()">Antwort prüfen</button>
       `;
     } else if (q.type === 'single') {
       const correct = q.muskel[q.kat];
@@ -386,18 +373,19 @@ function initAnatomyApp() {
       options.sort(() => Math.random() - 0.5);
 
       html += `
-        <h2>Muskel: ${q.muskel.muskel}</h2>
-        <p><em>Kategorie: ${q.kat.toUpperCase()} (${q.muskel.gruppe})</em></p>
+        <h2 style="font-size:1.6rem; color:var(--primary); margin-bottom:5px;">${q.muskel.muskel}</h2>
+        <p style="color:var(--text-muted); font-size:0.95rem;">Kategorie: <strong>${q.kat.toUpperCase()}</strong> &nbsp;|&nbsp; Gruppe: ${q.muskel.gruppe}</p>
         <br>
-        <p>Wähle die richtige Antwort:</p>
+        <p style="font-weight:600; margin-bottom:15px; font-size:1.05rem;">Wähle die richtige Antwort:</p>
         <div class="option-list">
         ${options.map((opt) => `
           <label class="option-item">
-            <input type="radio" name="single-opt" value="${opt.replace(/"/g, '&quot;')}"> ${opt}
+            <input type="radio" name="single-opt" value="${opt.replace(/"/g, '&quot;')}"> 
+            <span>${opt}</span>
           </label>
         `).join('')}
         </div>
-        <button class="btn" id="submit-btn" onclick="window.checkSingleAnswer()">Auswahl prüfen</button>
+        <button class="btn btn-primary" id="submit-btn" onclick="window.checkSingleAnswer()">Auswahl bestätigen</button>
       `;
     } else if (q.type === 'match') {
       const currentCategory = q.kat;
@@ -410,9 +398,10 @@ function initAnatomyApp() {
       q.matchingSubSet = subSet;
 
       html += `
-        <h2>🔗 Zuordnung / Matching</h2>
-        <p><em>Kategorie: ${currentCategory.toUpperCase()}</em></p>
-        <p>Ordne jedem Muskel den passenden Wert zu:</p>
+        <h2 style="font-size:1.6rem; color:var(--primary); margin-bottom:5px;">🔗 Zuordnung (Matching)</h2>
+        <p style="color:var(--text-muted); font-size:0.95rem;">Kategorie: <strong>${currentCategory.toUpperCase()}</strong></p>
+        <br>
+        <p style="font-weight:600; margin-bottom:15px; font-size:1.05rem;">Ordne jedem Muskel den passenden Wert zu:</p>
         
         <div class="match-list">
           ${leftSide.map((m) => `
@@ -425,11 +414,11 @@ function initAnatomyApp() {
             </div>
           `).join('')}
         </div>
-        <button class="btn" id="submit-btn" onclick="window.checkMatchAnswer()">Zuordnung prüfen</button>
+        <button class="btn btn-primary" id="submit-btn" onclick="window.checkMatchAnswer()">Zuordnung prüfen</button>
       `;
     }
 
-    html += `<div id="feedback-area"></div>`;
+    html += `<div id="feedback-area"></div></div>`;
     container.innerHTML = html;
   }
 
@@ -507,11 +496,13 @@ function initAnatomyApp() {
       feedbackArea.className = isCorrect ? "feedback correct" : "feedback wrong";
 
       feedbackArea.innerHTML = isCorrect 
-        ? `✅ Richtig! Gut gemacht.` 
-        : `❌ Falsch!<br><br><strong>Richtige Antwort:</strong><br>${correctAns}`;
+        ? `✅ Exzellent! Die Antwort ist richtig.` 
+        : `❌ Leider falsch.<br><br><strong style="color:#991b1b; font-size:0.9rem;">RICHTIGE LÖSUNG:</strong><br><span style="font-size:1.05rem;">${correctAns}</span>`;
       
       const nextBtn = document.createElement("button");
       nextBtn.className = "btn";
+      nextBtn.style.background = "#1e293b";
+      nextBtn.style.marginTop = "20px";
       nextBtn.innerText = "Nächste Frage ➡";
       nextBtn.onclick = () => { currentIndex++; showQuestion(); };
       feedbackArea.appendChild(nextBtn);
@@ -525,11 +516,15 @@ function initAnatomyApp() {
     const total = sessionList.length;
     const correctCount = Object.values(userAnswers).filter(a => a.success).length;
     const wrongQuestions = sessionList.filter((_, i) => !userAnswers[i] || !userAnswers[i].success);
+    const scorePct = Math.round((correctCount / total) * 100);
 
     let html = `
-      <h1>🏁 Ergebnis der Session</h1>
-      <h2>Ergebnis: ${correctCount} von ${total} richtig.</h2>
-      <br>
+      <div class="fade-in">
+        <div style="text-align:center; padding: 20px 0;">
+          <h1 style="background: none; -webkit-text-fill-color: var(--text-main); margin-bottom:10px;">🏁 Session beendet</h1>
+          <h2 style="color: var(--primary); font-size:2.5rem; margin-bottom: 5px;">${scorePct}%</h2>
+          <p style="color:var(--text-muted); font-size:1.1rem; margin-bottom: 25px;">Du hast ${correctCount} von ${total} Fragen richtig beantwortet.</p>
+        </div>
     `;
 
     if (wrongQuestions.length > 0) {
@@ -541,20 +536,24 @@ function initAnatomyApp() {
     }
 
     html += `
-      <div class="results-list">
-        ${sessionList.map((q, i) => {
-          const ans = userAnswers[i] || { user: "Keine Antwort", correct: "-", success: false };
-          return `
-            <div class="box result-box ${ans.success ? 'result-correct' : 'result-wrong'}">
-              <strong>${ans.success ? '✅' : '❌'} Frage ${i+1}: ${q.muskel ? q.muskel.muskel : 'Zuordnungsaufgabe'}</strong> [${q.type.toUpperCase()}]<br>
-              <small>Kategorie: ${q.kat.toUpperCase()}</small><br><br>
-              <span class="user-ans">Deine Antwort: <br><i>${ans.user}</i></span><br><br>
-              ${!ans.success ? `<span class="correct-ans">Richtige Lösung: <br>${ans.correct}</span>` : ''}
-            </div>
-          `;
-        }).join('')}
+        <div class="results-list">
+          ${sessionList.map((q, i) => {
+            const ans = userAnswers[i] || { user: "Keine Antwort", correct: "-", success: false };
+            return `
+              <div class="result-box ${ans.success ? 'result-correct' : 'result-wrong'}">
+                <div style="font-size:1.1rem; margin-bottom:8px;">
+                  <strong>${ans.success ? '✅' : '❌'} Frage ${i+1}: ${q.muskel ? q.muskel.muskel : 'Zuordnung'}</strong> 
+                  <span style="color:#64748b; font-size:0.85rem; float:right;">[${q.type.toUpperCase()}]</span>
+                </div>
+                <small style="color:#64748b; display:block; margin-bottom:12px; font-weight:500;">KATEGORIE: ${q.kat.toUpperCase()}</small>
+                <div class="user-ans" style="margin-bottom:8px; line-height:1.4;">Deine Antwort:<br><strong style="color:var(--text-main); font-style:normal;">${ans.user}</strong></div>
+                ${!ans.success ? `<div class="correct-ans" style="padding-top:8px; border-top:1px dashed #fecaca; line-height:1.4;">Richtige Lösung:<br><span style="color:#b91c1c;">${ans.correct}</span></div>` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+        <button class="btn" onclick="window.renderMenu()" style="background:#1e293b; margin-top:20px; padding:16px; font-size:1.1rem;">🏠 Zurück zum Hauptmenü</button>
       </div>
-      <button class="btn" onclick="window.renderMenu()">Hauptmenü</button>
     `;
 
     window.lastWrongQuestions = wrongQuestions;
