@@ -224,7 +224,7 @@ let sessionList = [];
   let userAnswers = {};
   let currentMode = "";
   
-  // NEU: Wir speichern, in welchem "Raum" (Hub) sich der Nutzer befindet
+  // Wir speichern, in welchem "Raum" (Hub) sich der Nutzer befindet
   let currentHub = ""; 
 
   let container = document.getElementById("app-container");
@@ -244,7 +244,7 @@ let sessionList = [];
   window.renderHomeScreen = function() {
     let html = `
       <div class="fade-in" style="text-align:center; padding: 40px 20px;">
-        <h1 style="font-size: 2.8rem; color: var(--primary, #3b82f6); margin-bottom: 10px;">
+        <h1 style="font-size: 2.8rem; color: var(--primary, #3b82f6); margin-bottom: 10px; text-shadow: 0 0 20px rgba(59, 130, 246, 0.4);">
           🦴 Anatomie Trainer Ultimate Pro
         </h1>
         <p style="color: var(--text-muted, #94a3b8); font-size: 1.2rem; margin-bottom: 50px;">Wähle deinen Trainings-Raum</p>
@@ -253,26 +253,32 @@ let sessionList = [];
           
           <!-- Kachel: Ursprung & Ansatz -->
           <div onclick="window.openHub('UA')"
-               style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 35px 25px; width: 280px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px);">
+               style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 35px 25px; width: 280px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.2);"
+               onmouseover="this.style.transform='translateY(-8px)'; this.style.background='rgba(51, 65, 85, 0.9)'; this.style.borderColor='var(--primary, #3b82f6)';"
+               onmouseout="this.style.transform='none'; this.style.background='rgba(30, 41, 59, 0.7)'; this.style.borderColor='rgba(255,255,255,0.1)';">
             <div style="font-size: 3.5rem; margin-bottom: 15px;">🔗</div>
             <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 10px;">Ursprung & Ansatz</h2>
-            <p style="color: #94a3b8; font-size: 0.95rem;">Trainiere die mechanische Fixierung am Skelett.</p>
+            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.5;">Trainiere die mechanische Fixierung am Skelett.</p>
           </div>
 
           <!-- Kachel: Innervation -->
           <div onclick="window.openHub('INN')"
-               style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 35px 25px; width: 280px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px);">
+               style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 35px 25px; width: 280px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.2);"
+               onmouseover="this.style.transform='translateY(-8px)'; this.style.background='rgba(51, 65, 85, 0.9)'; this.style.borderColor='var(--primary, #3b82f6)';"
+               onmouseout="this.style.transform='none'; this.style.background='rgba(30, 41, 59, 0.7)'; this.style.borderColor='rgba(255,255,255,0.1)';">
             <div style="font-size: 3.5rem; margin-bottom: 15px;">⚡</div>
             <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 10px;">Innervation</h2>
-            <p style="color: #94a3b8; font-size: 0.95rem;">Fokus auf die nervale Versorgung der Muskeln.</p>
+            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.5;">Fokus auf die nervale Versorgung der Muskeln.</p>
           </div>
 
           <!-- Kachel: Funktion -->
           <div onclick="window.openHub('FUN')"
-               style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 35px 25px; width: 280px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px);">
+               style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 35px 25px; width: 280px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.2);"
+               onmouseover="this.style.transform='translateY(-8px)'; this.style.background='rgba(51, 65, 85, 0.9)'; this.style.borderColor='var(--primary, #3b82f6)';"
+               onmouseout="this.style.transform='none'; this.style.background='rgba(30, 41, 59, 0.7)'; this.style.borderColor='rgba(255,255,255,0.1)';">
             <div style="font-size: 3.5rem; margin-bottom: 15px;">⚙️</div>
             <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 10px;">Funktion</h2>
-            <p style="color: #94a3b8; font-size: 0.95rem;">Lerne die Biokinetik und Bewegungsausführung.</p>
+            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.5;">Lerne die Biokinetik und Bewegungsausführung.</p>
           </div>
         </div>
       </div>
@@ -319,7 +325,7 @@ let sessionList = [];
       categorySettingsHtml = `
         <div class="settings-card" style="background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--primary);">
           <strong style="color: var(--primary);">Gewähltes Thema: Innervation</strong>
-          <p style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">Alle Fragen beziehen sich ausschließlich auf die nervale Versorgung.</p>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">Alle Fragen in dieser Session beziehen sich ausschließlich auf die nervale Versorgung.</p>
         </div>
       `;
     } else if (currentHub === 'FUN') {
@@ -328,14 +334,14 @@ let sessionList = [];
       categorySettingsHtml = `
         <div class="settings-card" style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981;">
           <strong style="color: #10b981;">Gewähltes Thema: Funktion</strong>
-          <p style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">Alle Fragen beziehen sich ausschließlich auf die Funktion/Biomechanik.</p>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">Alle Fragen in dieser Session beziehen sich ausschließlich auf die Funktion und Biomechanik.</p>
         </div>
       `;
     }
 
     let html = `
       <div class="fade-in">
-        <button class="btn btn-menu" onclick="window.renderHomeScreen()" style="margin-bottom: 20px; font-size:0.9rem;">🏠 Zurück zum Hauptmenü</button>
+        <button class="btn btn-menu" onclick="window.renderHomeScreen()" style="margin-bottom: 20px; font-size:0.9rem;">🏠 Zurück zum Trainings-Raum</button>
         
         <div class="main-layout">
           <!-- LINKE BOX: MUSKELAUSWAHL (Bleibt immer gleich) -->
@@ -729,7 +735,7 @@ let sessionList = [];
             `;
           }).join('')}
         </div>
-        <button class="btn" onclick="window.renderHomeScreen()" style="background:#0f172a; margin-top:25px; padding:18px; font-size:1.1rem; box-shadow:0 10px 15px -3px rgba(15, 23, 42, 0.3);">🏠 Zurück zum Startbildschirm</button>
+        <button class="btn" onclick="window.renderHomeScreen()" style="background:#0f172a; margin-top:25px; padding:18px; font-size:1.1rem; box-shadow:0 10px 15px -3px rgba(15, 23, 42, 0.3);">🏠 Zurück zum Trainings-Raum</button>
       </div>
     `;
 
