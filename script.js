@@ -241,44 +241,61 @@ let sessionList = [];
   // ==========================================
   // 1. DER STARTBILDSCHIRM (HOME SCREEN)
   // ==========================================
+ // ==========================================
+  // 1. DER STARTBILDSCHIRM (IM LOGIN-STYLE)
+  // ==========================================
   window.renderHomeScreen = function() {
     let html = `
-      <div class="fade-in" style="text-align:center; padding: 40px 20px;">
-        <h1 style="font-size: 2.8rem; color: var(--primary, #3b82f6); margin-bottom: 10px; text-shadow: 0 0 20px rgba(59, 130, 246, 0.4);">
-          🦴 Anatomie Trainer Ultimate Pro
-        </h1>
-        <p style="color: var(--text-muted, #94a3b8); font-size: 1.2rem; margin-bottom: 50px;">Wähle deinen Trainings-Raum</p>
-
-        <div style="display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; margin-bottom: 50px;">
+      <div class="fade-in" style="display: flex; justify-content: center; align-items: center; min-height: 75vh; padding: 20px;">
+        
+        <!-- Das zentrale "Login-Style" Panel -->
+        <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 40px 30px; width: 100%; max-width: 420px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); backdrop-filter: blur(12px); text-align: center;">
           
-          <!-- Kachel: Ursprung & Ansatz -->
-          <div onclick="window.openHub('UA')"
-               style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 35px 25px; width: 280px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.2);"
-               onmouseover="this.style.transform='translateY(-8px)'; this.style.background='rgba(51, 65, 85, 0.9)'; this.style.borderColor='var(--primary, #3b82f6)';"
-               onmouseout="this.style.transform='none'; this.style.background='rgba(30, 41, 59, 0.7)'; this.style.borderColor='rgba(255,255,255,0.1)';">
-            <div style="font-size: 3.5rem; margin-bottom: 15px;">🔗</div>
-            <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 10px;">Ursprung & Ansatz</h2>
-            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.5;">Trainiere die mechanische Fixierung am Skelett.</p>
-          </div>
+          <h1 style="font-size: 1.6rem; color: #3b82f6; margin-bottom: 8px; font-weight: 700; letter-spacing: 0.5px;">
+            Anatomie-Trainer
+          </h1>
+          <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 30px;">
+            Bitte Trainings-Raum wählen, um fortzufahren.
+          </p>
 
-          <!-- Kachel: Innervation -->
-          <div onclick="window.openHub('INN')"
-               style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 35px 25px; width: 280px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.2);"
-               onmouseover="this.style.transform='translateY(-8px)'; this.style.background='rgba(51, 65, 85, 0.9)'; this.style.borderColor='var(--primary, #3b82f6)';"
-               onmouseout="this.style.transform='none'; this.style.background='rgba(30, 41, 59, 0.7)'; this.style.borderColor='rgba(255,255,255,0.1)';">
-            <div style="font-size: 3.5rem; margin-bottom: 15px;">⚡</div>
-            <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 10px;">Innervation</h2>
-            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.5;">Fokus auf die nervale Versorgung der Muskeln.</p>
-          </div>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            
+            <!-- Option 1: Ursprung & Ansatz -->
+            <div onclick="window.openHub('UA')"
+                 style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 18px 20px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 15px;"
+                 onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59, 130, 246, 0.1)';"
+                 onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.background='rgba(0, 0, 0, 0.3)';">
+              <div style="font-size: 1.8rem; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));">🔗</div>
+              <div style="text-align: left;">
+                <h2 style="font-size: 1.05rem; color: #e2e8f0; margin: 0 0 4px 0; font-weight: 600;">Ursprung & Ansatz</h2>
+                <p style="color: #64748b; font-size: 0.75rem; margin: 0;">Mechanische Fixierung</p>
+              </div>
+            </div>
 
-          <!-- Kachel: Funktion -->
-          <div onclick="window.openHub('FUN')"
-               style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 35px 25px; width: 280px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.2);"
-               onmouseover="this.style.transform='translateY(-8px)'; this.style.background='rgba(51, 65, 85, 0.9)'; this.style.borderColor='var(--primary, #3b82f6)';"
-               onmouseout="this.style.transform='none'; this.style.background='rgba(30, 41, 59, 0.7)'; this.style.borderColor='rgba(255,255,255,0.1)';">
-            <div style="font-size: 3.5rem; margin-bottom: 15px;">⚙️</div>
-            <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 10px;">Funktion</h2>
-            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.5;">Lerne die Biokinetik und Bewegungsausführung.</p>
+            <!-- Option 2: Innervation -->
+            <div onclick="window.openHub('INN')"
+                 style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 18px 20px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 15px;"
+                 onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59, 130, 246, 0.1)';"
+                 onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.background='rgba(0, 0, 0, 0.3)';">
+              <div style="font-size: 1.8rem; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));">⚡</div>
+              <div style="text-align: left;">
+                <h2 style="font-size: 1.05rem; color: #e2e8f0; margin: 0 0 4px 0; font-weight: 600;">Innervation</h2>
+                <p style="color: #64748b; font-size: 0.75rem; margin: 0;">Nervale Versorgung</p>
+              </div>
+            </div>
+
+            <!-- Option 3: Funktion -->
+            <div onclick="window.openHub('FUN')"
+                 style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 18px 20px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 15px;"
+                 onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59, 130, 246, 0.1)';"
+                 onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.background='rgba(0, 0, 0, 0.3)';">
+              <div style="font-size: 1.8rem; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));">⚙️</div>
+              <div style="text-align: left;">
+                <h2 style="font-size: 1.05rem; color: #e2e8f0; margin: 0 0 4px 0; font-weight: 600;">Funktion</h2>
+                <p style="color: #64748b; font-size: 0.75rem; margin: 0;">Biokinetik & Bewegung</p>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
