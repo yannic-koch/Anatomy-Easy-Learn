@@ -238,58 +238,66 @@ let sessionList = [];
     }
   };
 
- // ==========================================
-  // 1. DER STARTBILDSCHIRM (IM DUNKLEN LOGIN-STYLE)
+// ==========================================
+  // 1. DER STARTBILDSCHIRM (GLOW-STYLE & HINTERGRUNDBILD)
   // ==========================================
   window.renderHomeScreen = function() {
+    
+    // HIER DEIN HINTERGRUNDBILD EINTRAGEN:
+    // Ersetze 'dein_hintergrundbild.jpg' mit dem echten Dateinamen deines Bildes!
+    const backgroundImage = "url('dein_hintergrundbild.jpg')"; 
+
     let html = `
-      <div class="fade-in" style="display: flex; justify-content: center; align-items: center; min-height: 75vh; padding: 20px;">
+      <div class="fade-in" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; background: ${backgroundImage} center/cover no-repeat, #050b14;">
         
-        <!-- Das zentrale "Login-Style" Panel -->
-        <div style="background: rgba(15, 23, 42, 0.85) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 16px !important; padding: 40px 30px !important; width: 100% !important; max-width: 420px !important; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important; backdrop-filter: blur(12px) !important; text-align: center !important;">
+        <!-- Das zentrale Panel mit LEUCHTENDEM RAHMEN -->
+        <div style="background: rgba(15, 23, 42, 0.75) !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; border-radius: 16px !important; padding: 40px 30px !important; width: 100% !important; max-width: 400px !important; box-shadow: 0 0 25px rgba(56, 189, 248, 0.15), 0 15px 50px rgba(0, 0, 0, 0.8) !important; backdrop-filter: blur(12px) !important; text-align: center !important;">
           
-          <h1 style="font-size: 1.6rem !important; color: #3b82f6 !important; margin-bottom: 8px !important; font-weight: 700 !important; font-family: sans-serif !important;">
+          <!-- Leuchtender Titel -->
+          <h1 style="font-size: 1.7rem !important; color: #38bdf8 !important; margin-bottom: 8px !important; font-weight: 700 !important; font-family: sans-serif !important; text-shadow: 0 0 12px rgba(56, 189, 248, 0.5) !important; letter-spacing: 0.5px;">
             Anatomie-Trainer
           </h1>
-          <p style="color: #64748b !important; font-size: 0.85rem !important; margin-bottom: 30px !important; font-family: sans-serif !important;">
+          <p style="color: #94a3b8 !important; font-size: 0.85rem !important; margin-bottom: 20px !important; font-family: sans-serif !important;">
             Bitte Trainings-Raum wählen, um fortzufahren.
           </p>
 
-          <!-- flex-direction: column zwingt die Elemente UNTEREINANDER -->
+          <!-- Dezente Trennlinie wie im Login-Fenster -->
+          <div style="height: 1px; background: rgba(255, 255, 255, 0.1); width: 85%; margin: 0 auto 25px auto;"></div>
+
           <div style="display: flex !important; flex-direction: column !important; gap: 12px !important;">
             
             <!-- Option 1: Ursprung & Ansatz -->
             <div onclick="window.openHub('UA')"
-                 style="background: rgba(0, 0, 0, 0.3) !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 10px !important; padding: 18px 20px !important; cursor: pointer !important; transition: all 0.2s ease !important; display: flex !important; align-items: center !important; gap: 15px !important; justify-content: flex-start !important;"
-                 onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59, 130, 246, 0.1)';"
-                 onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.background='rgba(0, 0, 0, 0.3)';">
-              <div style="font-size: 1.8rem !important; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)) !important;">🔗</div>
+                 style="background: rgba(0, 0, 0, 0.4) !important; border: 1px solid rgba(255,255,255,0.07) !important; border-radius: 10px !important; padding: 16px 20px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 15px !important; justify-content: flex-start !important;"
+                 onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59, 130, 246, 0.15)'; this.style.boxShadow='0 0 15px rgba(59, 130, 246, 0.4)';"
+                 onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'; this.style.background='rgba(0, 0, 0, 0.4)'; this.style.boxShadow='none';">
+              <div style="font-size: 1.6rem !important; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)) !important;">🔗</div>
               <div style="text-align: left !important;">
-                <h2 style="font-size: 1.05rem !important; color: #e2e8f0 !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important;">Ursprung & Ansatz</h2>
+                <h2 style="font-size: 1.05rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important;">Ursprung & Ansatz</h2>
                 <p style="color: #64748b !important; font-size: 0.75rem !important; margin: 0 !important; font-family: sans-serif !important;">Mechanische Fixierung</p>
               </div>
             </div>
 
             <!-- Option 2: Innervation -->
             <div onclick="window.openHub('INN')"
-                 style="background: rgba(0, 0, 0, 0.3) !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 10px !important; padding: 18px 20px !important; cursor: pointer !important; transition: all 0.2s ease !important; display: flex !important; align-items: center !important; gap: 15px !important; justify-content: flex-start !important;"
-                 onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59, 130, 246, 0.1)';"
-                 onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.background='rgba(0, 0, 0, 0.3)';">
-              <div style="font-size: 1.8rem !important; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)) !important;">⚡</div>
+                 style="background: rgba(0, 0, 0, 0.4) !important; border: 1px solid rgba(255,255,255,0.07) !important; border-radius: 10px !important; padding: 16px 20px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 15px !important; justify-content: flex-start !important;"
+                 onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59, 130, 246, 0.15)'; this.style.boxShadow='0 0 15px rgba(59, 130, 246, 0.4)';"
+                 onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'; this.style.background='rgba(0, 0, 0, 0.4)'; this.style.boxShadow='none';">
+              <div style="font-size: 1.6rem !important; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)) !important;">⚡</div>
               <div style="text-align: left !important;">
-                <h2 style="font-size: 1.05rem !important; color: #e2e8f0 !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important;">Innervation</h2>
+                <h2 style="font-size: 1.05rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important;">Innervation</h2>
                 <p style="color: #64748b !important; font-size: 0.75rem !important; margin: 0 !important; font-family: sans-serif !important;">Nervale Versorgung</p>
               </div>
             </div>
 
             <!-- Option 3: Funktion -->
             <div onclick="window.openHub('FUN')"
-                 style="background: rgba(0, 0, 0, 0.3) !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 10px !important; padding: 18px 20px !important; cursor: pointer !important; transition: all 0.2s ease !important; display: flex !important; align-items: center !important; gap: 15px !important; justify-content: flex-start !important;"
-                 onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59, 130, 246, 0.1)';"
-                 onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.background='rgba(0, 0, 0, 0.3)';">
-              <div style="font-size: 1.8rem !important; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)) !important;">⚙️</div>
+                 style="background: rgba(0, 0, 0, 0.4) !important; border: 1px solid rgba(255,255,255,0.07) !important; border-radius: 10px !important; padding: 16px 20px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 15px !important; justify-content: flex-start !important;"
+                 onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59, 130, 246, 0.15)'; this.style.boxShadow='0 0 15px rgba(59, 130, 246, 0.4)';"
+                 onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'; this.style.background='rgba(0, 0, 0, 0.4)'; this.style.boxShadow='none';">
+              <div style="font-size: 1.6rem !important; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)) !important;">⚙️</div>
               <div style="text-align: left !important;">
-                <h2 style="font-size: 1.05rem !important; color: #e2e8f0 !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important;">Funktion</h2>
+                <h2 style="font-size: 1.05rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important;">Funktion</h2>
                 <p style="color: #64748b !important; font-size: 0.75rem !important; margin: 0 !important; font-family: sans-serif !important;">Biokinetik & Bewegung</p>
               </div>
             </div>
@@ -299,7 +307,6 @@ let sessionList = [];
       </div>
     `;
     
-    // Falls deine CSS-Datei im Hintergrund eine weiße Box erzwingt, entfernen wir hier Klassen, die stören könnten
     container.className = ""; 
     container.innerHTML = html;
   };
