@@ -239,18 +239,34 @@ let sessionList = [];
   };
 
 // ==========================================
-  // 1. DER STARTBILDSCHIRM (FROSTED GLASS STYLE)
+  // 1. DER STARTBILDSCHIRM (FULLSCREEN BACKGROUND)
   // ==========================================
   window.renderHomeScreen = function() {
     
-    // Hintergrundbild gesetzt auf home.jpg
+    // Wichtig: Das Bild muss exakt so heißen und im selben Ordner liegen!
     const backgroundImage = "url('home.jpg')"; 
 
+    // Dies erzwingt per JavaScript, dass der gesamte Body (die ganze Webseite)
+    // das Hintergrundbild übernimmt und keine weißen Ränder lässt.
+    document.body.style.margin = "0";
+    document.body.style.padding = "0";
+    document.body.style.minHeight = "100vh";
+    document.body.style.background = `${backgroundImage} center/cover fixed no-repeat`;
+    document.body.style.backgroundColor = "#0f172a"; // Fallback-Farbe
+    
+    // Falls der Haupt-HTML-Tag auch noch Ränder hat, entfernen wir diese
+    document.documentElement.style.margin = "0";
+    document.documentElement.style.padding = "0";
+    document.documentElement.style.minHeight = "100vh";
+
     let html = `
-      <div class="fade-in" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; background: ${backgroundImage} center/cover fixed no-repeat, #0f172a; position: relative;">
+      <!-- Wir entfernen hier den background, da ihn jetzt der body hat. -->
+      <!-- So stellen wir sicher, dass das Layout zentriert bleibt. -->
+      <div class="fade-in" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; position: relative;">
         
         <!-- Das zentrale Frosted Glass-Panel -->
-        <div style="background: rgba(255, 255, 255, 0.03) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; border-radius: 24px !important; padding: 45px 30px !important; width: 100% !important; max-width: 440px !important; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4) !important; backdrop-filter: blur(20px) !important; -webkit-backdrop-filter: blur(20px) !important; text-align: center !important; position: relative; z-index: 1;">
+        <!-- WICHTIG: Die Hintergrundfarbe der Box wurde auf ein dunkleres, bläuliches Schwarz geändert, damit sie nicht wie "Milchglas", sondern edel wie im Login aussieht -->
+        <div style="background: rgba(15, 23, 42, 0.75) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 24px !important; padding: 45px 30px !important; width: 100% !important; max-width: 440px !important; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(24px) !important; -webkit-backdrop-filter: blur(24px) !important; text-align: center !important; position: relative; z-index: 1;">
           
           <!-- Titel & Untertitel -->
           <h1 style="font-size: 2rem !important; color: #3b82f6 !important; margin-bottom: 5px !important; font-weight: 700 !important; font-family: sans-serif !important; text-shadow: 0 0 20px rgba(59, 130, 246, 0.6) !important; letter-spacing: 0.5px;">
@@ -264,37 +280,43 @@ let sessionList = [];
             
             <!-- Option 1: Ursprung & Ansatz -->
             <div onclick="window.openHub('UA')"
-                 style="background: rgba(15, 23, 42, 0.85) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.2) !important;"
-                 onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.5)'; this.style.background='rgba(25, 35, 55, 0.95)'; this.style.transform='translateY(-3px)';"
-                 onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'; this.style.background='rgba(15, 23, 42, 0.85)'; this.style.transform='translateY(0)';">
-              <div style="font-size: 1.5rem !important; color: #e2e8f0; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;">🔗</div>
+                 style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(255,255,255,0.05) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;"
+                 onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';"
+                 onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'; this.style.background='rgba(10, 15, 30, 0.8)'; this.style.transform='translateY(0)';">
+              <div style="color: #e2e8f0; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+              </div>
               <div style="text-align: left !important;">
                 <h2 style="font-size: 1.15rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Ursprung & Ansatz</h2>
-                <p style="color: #94a3b8 !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">Mechanische Fixierung</p>
+                <p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">Mechanische Fixierung</p>
               </div>
             </div>
 
             <!-- Option 2: Innervation -->
             <div onclick="window.openHub('INN')"
-                 style="background: rgba(15, 23, 42, 0.85) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.2) !important;"
-                 onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.5)'; this.style.background='rgba(25, 35, 55, 0.95)'; this.style.transform='translateY(-3px)';"
-                 onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'; this.style.background='rgba(15, 23, 42, 0.85)'; this.style.transform='translateY(0)';">
-              <div style="font-size: 1.5rem !important; color: #e2e8f0; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;">⚡</div>
+                 style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(255,255,255,0.05) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;"
+                 onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';"
+                 onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'; this.style.background='rgba(10, 15, 30, 0.8)'; this.style.transform='translateY(0)';">
+              <div style="color: #fbbf24; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              </div>
               <div style="text-align: left !important;">
                 <h2 style="font-size: 1.15rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Innervation</h2>
-                <p style="color: #94a3b8 !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">Nervale Versorgung</p>
+                <p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">Nervale Versorgung</p>
               </div>
             </div>
 
             <!-- Option 3: Funktion -->
             <div onclick="window.openHub('FUN')"
-                 style="background: rgba(15, 23, 42, 0.85) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.2) !important;"
-                 onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.5)'; this.style.background='rgba(25, 35, 55, 0.95)'; this.style.transform='translateY(-3px)';"
-                 onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'; this.style.background='rgba(15, 23, 42, 0.85)'; this.style.transform='translateY(0)';">
-              <div style="font-size: 1.5rem !important; color: #e2e8f0; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;">⚙️</div>
+                 style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(255,255,255,0.05) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;"
+                 onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';"
+                 onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'; this.style.background='rgba(10, 15, 30, 0.8)'; this.style.transform='translateY(0)';">
+              <div style="color: #e2e8f0; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              </div>
               <div style="text-align: left !important;">
                 <h2 style="font-size: 1.15rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Funktion</h2>
-                <p style="color: #94a3b8 !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">Biokinetik & Bewegung</p>
+                <p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">Biokinetik & Bewegung</p>
               </div>
             </div>
 
