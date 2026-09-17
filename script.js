@@ -219,16 +219,16 @@ function initAnatomyApp() {
     { muskel: "Mm. interossei dorsales I-IV (Fuß)", gruppe: "Bein: Fuß", ursprung: "Zweiköpfig von einander zugekehrten Seiten der Ossa metatarsi I-V.", ansatz: "Basis der Grundphalangen, Dorsalaponeurosen der 2.–4. Zehe.", innervation: "N. plantaris lateralis (S1, 2).", funktion: "Spreizen (Abduktion) der Zehen." }
   ];
 
- // ... (Dein Array muskelDaten bleibt hier unverändert) ...
-
-  let sessionList = [];
+let sessionList = [];
   let currentIndex = 0;
   let userAnswers = {};
   let currentMode = "";
+  
+  // NEU: Wir speichern, in welchem "Raum" (Hub) sich der Nutzer befindet
+  let currentHub = ""; 
 
   let container = document.getElementById("app-container");
 
-  // HILFSFUNKTION FÜR ZÄHLER
   window.updateSelectionCount = function() {
     const total = document.querySelectorAll('.m-check').length;
     const selected = document.querySelectorAll('.m-check:checked').length;
@@ -239,88 +239,106 @@ function initAnatomyApp() {
   };
 
   // ==========================================
-  // NEU: 1. DER STARTBILDSCHIRM (HOME SCREEN)
+  // 1. DER STARTBILDSCHIRM (HOME SCREEN)
   // ==========================================
   window.renderHomeScreen = function() {
     let html = `
       <div class="fade-in" style="text-align:center; padding: 40px 20px;">
-        <h1 style="font-size: 2.8rem; color: var(--primary, #3b82f6); margin-bottom: 10px; text-shadow: 0 0 20px rgba(59, 130, 246, 0.4);">
+        <h1 style="font-size: 2.8rem; color: var(--primary, #3b82f6); margin-bottom: 10px;">
           🦴 Anatomie Trainer Ultimate Pro
         </h1>
-        <p style="color: var(--text-muted, #94a3b8); font-size: 1.2rem; margin-bottom: 50px;">Wähle deinen Trainings-Schwerpunkt</p>
+        <p style="color: var(--text-muted, #94a3b8); font-size: 1.2rem; margin-bottom: 50px;">Wähle deinen Trainings-Raum</p>
 
         <div style="display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; margin-bottom: 50px;">
           
-          <!-- Kachel 1: Ursprung & Ansatz -->
-          <div onclick="window.goToMenu(['ursprung', 'ansatz'])"
-               style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 35px 25px; width: 280px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.2);"
-               onmouseover="this.style.transform='translateY(-8px)'; this.style.background='rgba(51, 65, 85, 0.9)'; this.style.borderColor='var(--primary, #3b82f6)';"
-               onmouseout="this.style.transform='none'; this.style.background='rgba(30, 41, 59, 0.7)'; this.style.borderColor='rgba(255,255,255,0.1)';">
+          <!-- Kachel: Ursprung & Ansatz -->
+          <div onclick="window.openHub('UA')"
+               style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 35px 25px; width: 280px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px);">
             <div style="font-size: 3.5rem; margin-bottom: 15px;">🔗</div>
             <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 10px;">Ursprung & Ansatz</h2>
-            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.5;">Trainiere die mechanische Fixierung am Skelett.</p>
+            <p style="color: #94a3b8; font-size: 0.95rem;">Trainiere die mechanische Fixierung am Skelett.</p>
           </div>
 
-          <!-- Kachel 2: Innervation -->
-          <div onclick="window.goToMenu(['innervation'])"
-               style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 35px 25px; width: 280px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.2);"
-               onmouseover="this.style.transform='translateY(-8px)'; this.style.background='rgba(51, 65, 85, 0.9)'; this.style.borderColor='var(--primary, #3b82f6)';"
-               onmouseout="this.style.transform='none'; this.style.background='rgba(30, 41, 59, 0.7)'; this.style.borderColor='rgba(255,255,255,0.1)';">
+          <!-- Kachel: Innervation -->
+          <div onclick="window.openHub('INN')"
+               style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 35px 25px; width: 280px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px);">
             <div style="font-size: 3.5rem; margin-bottom: 15px;">⚡</div>
             <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 10px;">Innervation</h2>
-            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.5;">Fokus auf die nervale Versorgung der Muskelgruppen.</p>
+            <p style="color: #94a3b8; font-size: 0.95rem;">Fokus auf die nervale Versorgung der Muskeln.</p>
           </div>
 
-          <!-- Kachel 3: Funktion -->
-          <div onclick="window.goToMenu(['funktion'])"
-               style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 35px 25px; width: 280px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.2);"
-               onmouseover="this.style.transform='translateY(-8px)'; this.style.background='rgba(51, 65, 85, 0.9)'; this.style.borderColor='var(--primary, #3b82f6)';"
-               onmouseout="this.style.transform='none'; this.style.background='rgba(30, 41, 59, 0.7)'; this.style.borderColor='rgba(255,255,255,0.1)';">
+          <!-- Kachel: Funktion -->
+          <div onclick="window.openHub('FUN')"
+               style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 35px 25px; width: 280px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px);">
             <div style="font-size: 3.5rem; margin-bottom: 15px;">⚙️</div>
             <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 10px;">Funktion</h2>
-            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.5;">Lerne die Biokinetik und Bewegungsausführung.</p>
+            <p style="color: #94a3b8; font-size: 0.95rem;">Lerne die Biokinetik und Bewegungsausführung.</p>
           </div>
-
         </div>
-
-        <button class="btn btn-menu" onclick="window.goToMenu(['ursprung', 'ansatz', 'innervation', 'funktion'])" style="padding: 15px 35px; font-size: 1.2rem; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2);">
-          🚀 Ultimativer Modus (Alle Bereiche)
-        </button>
       </div>
     `;
     container.innerHTML = html;
   };
 
   // ==========================================
-  // NEU: 2. ROUTING VOM HOME SCREEN ZUM MENÜ
+  // 2. HUB ÖFFNEN (Setzt den Raum und lädt das Menü)
   // ==========================================
-  window.goToMenu = function(activeCategories) {
-    // 1. Rendert deine bestehende Muskelauswahl (Main App)
+  window.openHub = function(hubName) {
+    currentHub = hubName; 
     window.renderMenu();
-
-    // 2. Schaltet die Checkboxen passend zur geklickten Kachel um!
-    const allKats = ['ursprung', 'ansatz', 'innervation', 'funktion'];
-    allKats.forEach(kat => {
-      const checkbox = document.getElementById(`kat-${kat}`);
-      if (checkbox) {
-        checkbox.checked = activeCategories.includes(kat);
-      }
-    });
   };
 
   // ==========================================
-  // 3. DEIN BESTEHENDES MENÜ (LEICHT ANGEPASST)
+  // 3. DAS DYNAMISCHE MENÜ
   // ==========================================
   window.renderMenu = function() {
     const gruppen = [...new Set(muskelDaten.map(m => m.gruppe))].sort();
 
+    // Wir bestimmen den Titel für die rechte Box basierend auf dem gewählten Raum
+    let settingsTitle = "";
+    let categorySettingsHtml = "";
+
+    if (currentHub === 'UA') {
+      settingsTitle = "🔗 Fokus: Ursprung & Ansatz";
+      categorySettingsHtml = `
+        <div class="settings-card">
+          <strong>Welchen Bereich abfragen?</strong>
+          <div class="toggle-wrapper">
+            <span class="toggle-label">Ursprung</span>
+            <label class="switch"><input type="checkbox" id="kat-ursprung" checked><span class="slider"></span></label>
+          </div>
+          <div class="toggle-wrapper">
+            <span class="toggle-label">Ansatz</span>
+            <label class="switch"><input type="checkbox" id="kat-ansatz" checked><span class="slider"></span></label>
+          </div>
+        </div>
+      `;
+    } else if (currentHub === 'INN') {
+      settingsTitle = "⚡ Fokus: Innervation";
+      // Keine Kategorie-Toggles, da es eh nur um Innervation geht!
+      categorySettingsHtml = `
+        <div class="settings-card" style="background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--primary);">
+          <strong style="color: var(--primary);">Gewähltes Thema: Innervation</strong>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">Alle Fragen beziehen sich ausschließlich auf die nervale Versorgung.</p>
+        </div>
+      `;
+    } else if (currentHub === 'FUN') {
+      settingsTitle = "⚙️ Fokus: Funktion";
+      // Keine Kategorie-Toggles, da es eh nur um Funktion geht!
+      categorySettingsHtml = `
+        <div class="settings-card" style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981;">
+          <strong style="color: #10b981;">Gewähltes Thema: Funktion</strong>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">Alle Fragen beziehen sich ausschließlich auf die Funktion/Biomechanik.</p>
+        </div>
+      `;
+    }
+
     let html = `
       <div class="fade-in">
-        <!-- NEU: Zurück-Button zum Home Screen -->
-        <button class="btn btn-menu" onclick="window.renderHomeScreen()" style="margin-bottom: 20px; font-size:0.9rem;">🏠 Zurück zum Startbildschirm</button>
+        <button class="btn btn-menu" onclick="window.renderHomeScreen()" style="margin-bottom: 20px; font-size:0.9rem;">🏠 Zurück zum Hauptmenü</button>
         
         <div class="main-layout">
-          <!-- LINKE BOX: MUSKELAUSWAHL -->
+          <!-- LINKE BOX: MUSKELAUSWAHL (Bleibt immer gleich) -->
           <div class="box scrollable">
             <div class="box-header" style="justify-content: space-between;">
               <span>1. Muskelauswahl</span>
@@ -348,32 +366,14 @@ function initAnatomyApp() {
             `).join('')}
           </div>
 
-          <!-- RECHTE BOX: EINSTELLUNGEN -->
+          <!-- RECHTE BOX: EINSTELLUNGEN (Passt sich dem Raum an) -->
           <div class="box">
-            <div class="box-header">2. Einstellungen & Inhalte</div>
+            <div class="box-header">${settingsTitle}</div>
             
-            <!-- KATEGORIEN TOGGLES -->
-            <div class="settings-card">
-              <strong>Kategorien</strong>
-              <div class="toggle-wrapper">
-                <span class="toggle-label">Ursprung</span>
-                <label class="switch"><input type="checkbox" id="kat-ursprung" checked><span class="slider"></span></label>
-              </div>
-              <div class="toggle-wrapper">
-                <span class="toggle-label">Ansatz</span>
-                <label class="switch"><input type="checkbox" id="kat-ansatz" checked><span class="slider"></span></label>
-              </div>
-              <div class="toggle-wrapper">
-                <span class="toggle-label">Innervation</span>
-                <label class="switch"><input type="checkbox" id="kat-innervation" checked><span class="slider"></span></label>
-              </div>
-              <div class="toggle-wrapper">
-                <span class="toggle-label">Funktion</span>
-                <label class="switch"><input type="checkbox" id="kat-funktion" checked><span class="slider"></span></label>
-              </div>
-            </div>
+            <!-- HIER WERDEN DIE SPEZIFISCHEN KATEGORIE-EINSTELLUNGEN GELADEN -->
+            ${categorySettingsHtml}
             
-            <!-- FRAGETYPEN TOGGLES -->
+            <!-- FRAGETYPEN TOGGLES (Immer verfügbar) -->
             <div class="settings-card">
               <strong>Fragetypen</strong>
               <div class="toggle-wrapper">
@@ -390,7 +390,7 @@ function initAnatomyApp() {
               </div>
             </div>
             
-            <!-- LIMIT INPUT -->
+            <!-- LIMIT INPUT (Immer verfügbar) -->
             <div class="settings-card">
               <div class="limit-input-wrapper">
                 <span class="toggle-label" style="font-weight:600;">Max. Fragen <span style="font-weight:400; color:var(--text-muted);">(0 = alle)</span>:</span>
@@ -400,8 +400,8 @@ function initAnatomyApp() {
             
             <!-- START BUTTONS -->
             <div class="action-area">
-              <button class="btn btn-practice" onclick="window.startSession('PRACTICE')">🚀 ÜBUNGSMODUS (Direktes Feedback)</button>
-              <button class="btn btn-exam" onclick="window.startSession('EXAM')">📝 PRÜFUNGSMODUS (Zusammenfassung)</button>
+              <button class="btn btn-practice" onclick="window.startSession('PRACTICE')">🚀 ÜBUNGSMODUS starten</button>
+              <button class="btn btn-exam" onclick="window.startSession('EXAM')">📝 PRÜFUNGSMODUS starten</button>
             </div>
 
           </div>
@@ -435,6 +435,9 @@ function initAnatomyApp() {
     window.updateSelectionCount();
   };
 
+  // ==========================================
+  // SESSION STARTEN (Passt sich nun dem Raum an)
+  // ==========================================
   window.startSession = function(mode, customPool = null) {
     currentMode = mode;
 
@@ -442,11 +445,17 @@ function initAnatomyApp() {
       sessionList = customPool;
     } else {
       const selectedMuscles = Array.from(document.querySelectorAll('.m-check:checked')).map(c => c.value);
+      
+      // KATEGORIEN AUSLESEN BASIEREND AUF DEM RAUM!
       const selectedKats = [];
-      if (document.getElementById('kat-ursprung').checked) selectedKats.push('ursprung');
-      if (document.getElementById('kat-ansatz').checked) selectedKats.push('ansatz');
-      if (document.getElementById('kat-innervation').checked) selectedKats.push('innervation');
-      if (document.getElementById('kat-funktion').checked) selectedKats.push('funktion');
+      if (currentHub === 'UA') {
+        if (document.getElementById('kat-ursprung') && document.getElementById('kat-ursprung').checked) selectedKats.push('ursprung');
+        if (document.getElementById('kat-ansatz') && document.getElementById('kat-ansatz').checked) selectedKats.push('ansatz');
+      } else if (currentHub === 'INN') {
+        selectedKats.push('innervation');
+      } else if (currentHub === 'FUN') {
+        selectedKats.push('funktion');
+      }
 
       const selectedTypes = [];
       if (document.getElementById('type-write').checked) selectedTypes.push('write');
@@ -491,8 +500,7 @@ function initAnatomyApp() {
     let html = `
       <div class="fade-in">
         <div class="header-bar">
-          <!-- Button zurück in die Einstellungen -->
-          <button class="btn btn-menu" onclick="window.renderMenu()">◀ Zurück zur Muskelauswahl</button>
+          <button class="btn btn-menu" onclick="window.renderMenu()">◀ Zurück zur Einstellung</button>
           <span>Frage ${currentIndex + 1} von ${sessionList.length} <strong style="color:var(--primary);">[${currentMode}]</strong></span>
         </div>
         <div class="progress-bar">
@@ -734,9 +742,6 @@ function initAnatomyApp() {
     window.startSession('PRACTICE', window.lastWrongQuestions);
   };
 
-  // ==========================================
-  // WICHTIG: ÄNDERUNG BEIM APP-START!
-  // ==========================================
-  // Statt window.renderMenu(); starten wir jetzt mit dem Startbildschirm:
+  // APP START: Lade den Startbildschirm
   window.renderHomeScreen();
 }
