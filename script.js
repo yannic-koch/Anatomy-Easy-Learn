@@ -239,66 +239,62 @@ let sessionList = [];
   };
 
 // ==========================================
-  // 1. DER STARTBILDSCHIRM (GLOW-STYLE & HINTERGRUNDBILD)
+  // 1. DER STARTBILDSCHIRM (FROSTED GLASS STYLE)
   // ==========================================
   window.renderHomeScreen = function() {
     
-    // HIER DEIN HINTERGRUNDBILD EINTRAGEN:
-    // Ersetze 'dein_hintergrundbild.jpg' mit dem echten Dateinamen deines Bildes!
-    const backgroundImage = "url('dein_hintergrundbild.jpg')"; 
+    // Hintergrundbild gesetzt auf home.jpg
+    const backgroundImage = "url('home.jpg')"; 
 
     let html = `
-      <div class="fade-in" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; background: ${backgroundImage} center/cover no-repeat, #050b14;">
+      <div class="fade-in" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; background: ${backgroundImage} center/cover fixed no-repeat, #0f172a; position: relative;">
         
-        <!-- Das zentrale Panel mit LEUCHTENDEM RAHMEN -->
-        <div style="background: rgba(15, 23, 42, 0.75) !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; border-radius: 16px !important; padding: 40px 30px !important; width: 100% !important; max-width: 400px !important; box-shadow: 0 0 25px rgba(56, 189, 248, 0.15), 0 15px 50px rgba(0, 0, 0, 0.8) !important; backdrop-filter: blur(12px) !important; text-align: center !important;">
+        <!-- Das zentrale Frosted Glass-Panel -->
+        <div style="background: rgba(255, 255, 255, 0.03) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; border-radius: 24px !important; padding: 45px 30px !important; width: 100% !important; max-width: 440px !important; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4) !important; backdrop-filter: blur(20px) !important; -webkit-backdrop-filter: blur(20px) !important; text-align: center !important; position: relative; z-index: 1;">
           
-          <!-- Leuchtender Titel -->
-          <h1 style="font-size: 1.7rem !important; color: #38bdf8 !important; margin-bottom: 8px !important; font-weight: 700 !important; font-family: sans-serif !important; text-shadow: 0 0 12px rgba(56, 189, 248, 0.5) !important; letter-spacing: 0.5px;">
+          <!-- Titel & Untertitel -->
+          <h1 style="font-size: 2rem !important; color: #3b82f6 !important; margin-bottom: 5px !important; font-weight: 700 !important; font-family: sans-serif !important; text-shadow: 0 0 20px rgba(59, 130, 246, 0.6) !important; letter-spacing: 0.5px;">
             Anatomie-Trainer
           </h1>
-          <p style="color: #94a3b8 !important; font-size: 0.85rem !important; margin-bottom: 20px !important; font-family: sans-serif !important;">
+          <p style="color: #94a3b8 !important; font-size: 0.95rem !important; margin-bottom: 35px !important; font-family: sans-serif !important; font-weight: 400;">
             Bitte Trainings-Raum wählen, um fortzufahren.
           </p>
 
-          <!-- Dezente Trennlinie wie im Login-Fenster -->
-          <div style="height: 1px; background: rgba(255, 255, 255, 0.1); width: 85%; margin: 0 auto 25px auto;"></div>
-
-          <div style="display: flex !important; flex-direction: column !important; gap: 12px !important;">
+          <div style="display: flex !important; flex-direction: column !important; gap: 16px !important;">
             
             <!-- Option 1: Ursprung & Ansatz -->
             <div onclick="window.openHub('UA')"
-                 style="background: rgba(0, 0, 0, 0.4) !important; border: 1px solid rgba(255,255,255,0.07) !important; border-radius: 10px !important; padding: 16px 20px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 15px !important; justify-content: flex-start !important;"
-                 onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59, 130, 246, 0.15)'; this.style.boxShadow='0 0 15px rgba(59, 130, 246, 0.4)';"
-                 onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'; this.style.background='rgba(0, 0, 0, 0.4)'; this.style.boxShadow='none';">
-              <div style="font-size: 1.6rem !important; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)) !important;">🔗</div>
+                 style="background: rgba(15, 23, 42, 0.85) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.2) !important;"
+                 onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.5)'; this.style.background='rgba(25, 35, 55, 0.95)'; this.style.transform='translateY(-3px)';"
+                 onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'; this.style.background='rgba(15, 23, 42, 0.85)'; this.style.transform='translateY(0)';">
+              <div style="font-size: 1.5rem !important; color: #e2e8f0; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;">🔗</div>
               <div style="text-align: left !important;">
-                <h2 style="font-size: 1.05rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important;">Ursprung & Ansatz</h2>
-                <p style="color: #64748b !important; font-size: 0.75rem !important; margin: 0 !important; font-family: sans-serif !important;">Mechanische Fixierung</p>
+                <h2 style="font-size: 1.15rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Ursprung & Ansatz</h2>
+                <p style="color: #94a3b8 !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">Mechanische Fixierung</p>
               </div>
             </div>
 
             <!-- Option 2: Innervation -->
             <div onclick="window.openHub('INN')"
-                 style="background: rgba(0, 0, 0, 0.4) !important; border: 1px solid rgba(255,255,255,0.07) !important; border-radius: 10px !important; padding: 16px 20px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 15px !important; justify-content: flex-start !important;"
-                 onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59, 130, 246, 0.15)'; this.style.boxShadow='0 0 15px rgba(59, 130, 246, 0.4)';"
-                 onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'; this.style.background='rgba(0, 0, 0, 0.4)'; this.style.boxShadow='none';">
-              <div style="font-size: 1.6rem !important; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)) !important;">⚡</div>
+                 style="background: rgba(15, 23, 42, 0.85) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.2) !important;"
+                 onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.5)'; this.style.background='rgba(25, 35, 55, 0.95)'; this.style.transform='translateY(-3px)';"
+                 onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'; this.style.background='rgba(15, 23, 42, 0.85)'; this.style.transform='translateY(0)';">
+              <div style="font-size: 1.5rem !important; color: #e2e8f0; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;">⚡</div>
               <div style="text-align: left !important;">
-                <h2 style="font-size: 1.05rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important;">Innervation</h2>
-                <p style="color: #64748b !important; font-size: 0.75rem !important; margin: 0 !important; font-family: sans-serif !important;">Nervale Versorgung</p>
+                <h2 style="font-size: 1.15rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Innervation</h2>
+                <p style="color: #94a3b8 !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">Nervale Versorgung</p>
               </div>
             </div>
 
             <!-- Option 3: Funktion -->
             <div onclick="window.openHub('FUN')"
-                 style="background: rgba(0, 0, 0, 0.4) !important; border: 1px solid rgba(255,255,255,0.07) !important; border-radius: 10px !important; padding: 16px 20px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 15px !important; justify-content: flex-start !important;"
-                 onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59, 130, 246, 0.15)'; this.style.boxShadow='0 0 15px rgba(59, 130, 246, 0.4)';"
-                 onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'; this.style.background='rgba(0, 0, 0, 0.4)'; this.style.boxShadow='none';">
-              <div style="font-size: 1.6rem !important; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)) !important;">⚙️</div>
+                 style="background: rgba(15, 23, 42, 0.85) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.2) !important;"
+                 onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.5)'; this.style.background='rgba(25, 35, 55, 0.95)'; this.style.transform='translateY(-3px)';"
+                 onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'; this.style.background='rgba(15, 23, 42, 0.85)'; this.style.transform='translateY(0)';">
+              <div style="font-size: 1.5rem !important; color: #e2e8f0; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;">⚙️</div>
               <div style="text-align: left !important;">
-                <h2 style="font-size: 1.05rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important;">Funktion</h2>
-                <p style="color: #64748b !important; font-size: 0.75rem !important; margin: 0 !important; font-family: sans-serif !important;">Biokinetik & Bewegung</p>
+                <h2 style="font-size: 1.15rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Funktion</h2>
+                <p style="color: #94a3b8 !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">Biokinetik & Bewegung</p>
               </div>
             </div>
 
