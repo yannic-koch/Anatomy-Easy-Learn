@@ -219,6 +219,8 @@ function initAnatomyApp() {
     { muskel: "Mm. interossei dorsales I-IV (Fuß)", gruppe: "Bein: Fuß", ursprung: "Zweiköpfig von einander zugekehrten Seiten der Ossa metatarsi I-V.", ansatz: "Basis der Grundphalangen, Dorsalaponeurosen der 2.–4. Zehe.", innervation: "N. plantaris lateralis (S1, 2).", funktion: "Spreizen (Abduktion) der Zehen." }
   ];
 
+  // ... (Dein Array muskelDaten bleibt hier unverändert) ...
+
   let sessionList = [];
   let currentIndex = 0;
   let userAnswers = {};
@@ -236,12 +238,86 @@ function initAnatomyApp() {
     }
   };
 
+  // ==========================================
+  // NEU: 1. DER STARTBILDSCHIRM (HOME SCREEN)
+  // ==========================================
+  window.renderHomeScreen = function() {
+    let html = `
+      <div class="fade-in" style="text-align:center; padding: 40px 20px;">
+        <h1 style="font-size: 2.8rem; color: var(--primary, #3b82f6); margin-bottom: 10px; text-shadow: 0 0 20px rgba(59, 130, 246, 0.4);">
+          🦴 Anatomie Trainer Ultimate Pro
+        </h1>
+        <p style="color: var(--text-muted, #94a3b8); font-size: 1.2rem; margin-bottom: 50px;">Wähle deinen Trainings-Schwerpunkt</p>
+
+        <div style="display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; margin-bottom: 50px;">
+          
+          <!-- Kachel 1: Ursprung & Ansatz -->
+          <div onclick="window.goToMenu(['ursprung', 'ansatz'])"
+               style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 35px 25px; width: 280px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.2);"
+               onmouseover="this.style.transform='translateY(-8px)'; this.style.background='rgba(51, 65, 85, 0.9)'; this.style.borderColor='var(--primary, #3b82f6)';"
+               onmouseout="this.style.transform='none'; this.style.background='rgba(30, 41, 59, 0.7)'; this.style.borderColor='rgba(255,255,255,0.1)';">
+            <div style="font-size: 3.5rem; margin-bottom: 15px;">🔗</div>
+            <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 10px;">Ursprung & Ansatz</h2>
+            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.5;">Trainiere die mechanische Fixierung am Skelett.</p>
+          </div>
+
+          <!-- Kachel 2: Innervation -->
+          <div onclick="window.goToMenu(['innervation'])"
+               style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 35px 25px; width: 280px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.2);"
+               onmouseover="this.style.transform='translateY(-8px)'; this.style.background='rgba(51, 65, 85, 0.9)'; this.style.borderColor='var(--primary, #3b82f6)';"
+               onmouseout="this.style.transform='none'; this.style.background='rgba(30, 41, 59, 0.7)'; this.style.borderColor='rgba(255,255,255,0.1)';">
+            <div style="font-size: 3.5rem; margin-bottom: 15px;">⚡</div>
+            <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 10px;">Innervation</h2>
+            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.5;">Fokus auf die nervale Versorgung der Muskelgruppen.</p>
+          </div>
+
+          <!-- Kachel 3: Funktion -->
+          <div onclick="window.goToMenu(['funktion'])"
+               style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 35px 25px; width: 280px; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px); box-shadow: 0 10px 25px rgba(0,0,0,0.2);"
+               onmouseover="this.style.transform='translateY(-8px)'; this.style.background='rgba(51, 65, 85, 0.9)'; this.style.borderColor='var(--primary, #3b82f6)';"
+               onmouseout="this.style.transform='none'; this.style.background='rgba(30, 41, 59, 0.7)'; this.style.borderColor='rgba(255,255,255,0.1)';">
+            <div style="font-size: 3.5rem; margin-bottom: 15px;">⚙️</div>
+            <h2 style="font-size: 1.4rem; color: #fff; margin-bottom: 10px;">Funktion</h2>
+            <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.5;">Lerne die Biokinetik und Bewegungsausführung.</p>
+          </div>
+
+        </div>
+
+        <button class="btn btn-menu" onclick="window.goToMenu(['ursprung', 'ansatz', 'innervation', 'funktion'])" style="padding: 15px 35px; font-size: 1.2rem; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2);">
+          🚀 Ultimativer Modus (Alle Bereiche)
+        </button>
+      </div>
+    `;
+    container.innerHTML = html;
+  };
+
+  // ==========================================
+  // NEU: 2. ROUTING VOM HOME SCREEN ZUM MENÜ
+  // ==========================================
+  window.goToMenu = function(activeCategories) {
+    // 1. Rendert deine bestehende Muskelauswahl (Main App)
+    window.renderMenu();
+
+    // 2. Schaltet die Checkboxen passend zur geklickten Kachel um!
+    const allKats = ['ursprung', 'ansatz', 'innervation', 'funktion'];
+    allKats.forEach(kat => {
+      const checkbox = document.getElementById(`kat-${kat}`);
+      if (checkbox) {
+        checkbox.checked = activeCategories.includes(kat);
+      }
+    });
+  };
+
+  // ==========================================
+  // 3. DEIN BESTEHENDES MENÜ (LEICHT ANGEPASST)
+  // ==========================================
   window.renderMenu = function() {
     const gruppen = [...new Set(muskelDaten.map(m => m.gruppe))].sort();
 
     let html = `
       <div class="fade-in">
-        <h1>🦴 Anatomie Trainer Ultimate Pro</h1>
+        <!-- NEU: Zurück-Button zum Home Screen -->
+        <button class="btn btn-menu" onclick="window.renderHomeScreen()" style="margin-bottom: 20px; font-size:0.9rem;">🏠 Zurück zum Startbildschirm</button>
         
         <div class="main-layout">
           <!-- LINKE BOX: MUSKELAUSWAHL -->
@@ -415,7 +491,8 @@ function initAnatomyApp() {
     let html = `
       <div class="fade-in">
         <div class="header-bar">
-          <button class="btn btn-menu" onclick="window.renderMenu()">◀ Zurück ins Menü</button>
+          <!-- Button zurück in die Einstellungen -->
+          <button class="btn btn-menu" onclick="window.renderMenu()">◀ Zurück zur Muskelauswahl</button>
           <span>Frage ${currentIndex + 1} von ${sessionList.length} <strong style="color:var(--primary);">[${currentMode}]</strong></span>
         </div>
         <div class="progress-bar">
@@ -644,7 +721,7 @@ function initAnatomyApp() {
             `;
           }).join('')}
         </div>
-        <button class="btn" onclick="window.renderMenu()" style="background:#0f172a; margin-top:25px; padding:18px; font-size:1.1rem; box-shadow:0 10px 15px -3px rgba(15, 23, 42, 0.3);">🏠 Zurück zum Hauptmenü</button>
+        <button class="btn" onclick="window.renderHomeScreen()" style="background:#0f172a; margin-top:25px; padding:18px; font-size:1.1rem; box-shadow:0 10px 15px -3px rgba(15, 23, 42, 0.3);">🏠 Zurück zum Startbildschirm</button>
       </div>
     `;
 
@@ -657,5 +734,9 @@ function initAnatomyApp() {
     window.startSession('PRACTICE', window.lastWrongQuestions);
   };
 
-  window.renderMenu();
+  // ==========================================
+  // WICHTIG: ÄNDERUNG BEIM APP-START!
+  // ==========================================
+  // Statt window.renderMenu(); starten wir jetzt mit dem Startbildschirm:
+  window.renderHomeScreen();
 }
