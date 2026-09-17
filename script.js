@@ -243,7 +243,7 @@ let sessionList = [];
   // ==========================================
   window.renderHomeScreen = function() {
     
-    const backgroundImage = "url('home.jpg')"; 
+    const backgroundImage = "url('home.png')"; 
 
     // AGGRESSIVES CSS: Zwingt die Seite, alle Balken und Ränder zu entfernen
     let styleEl = document.getElementById("fullscreen-bg-style");
