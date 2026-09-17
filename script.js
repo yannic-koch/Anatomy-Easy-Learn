@@ -219,7 +219,7 @@ function initAnatomyApp() {
     { muskel: "Mm. interossei dorsales I-IV (Fuß)", gruppe: "Bein: Fuß", ursprung: "Zweiköpfig von einander zugekehrten Seiten der Ossa metatarsi I-V.", ansatz: "Basis der Grundphalangen, Dorsalaponeurosen der 2.–4. Zehe.", innervation: "N. plantaris lateralis (S1, 2).", funktion: "Spreizen (Abduktion) der Zehen." }
   ];
 
-  // ... (Dein Array muskelDaten bleibt hier unverändert) ...
+ // ... (Dein Array muskelDaten bleibt hier unverändert) ...
 
   let sessionList = [];
   let currentIndex = 0;
