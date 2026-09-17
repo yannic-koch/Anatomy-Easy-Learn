@@ -238,61 +238,59 @@ let sessionList = [];
     }
   };
 
-  // ==========================================
-  // 1. DER STARTBILDSCHIRM (HOME SCREEN)
-  // ==========================================
  // ==========================================
-  // 1. DER STARTBILDSCHIRM (IM LOGIN-STYLE)
+  // 1. DER STARTBILDSCHIRM (IM DUNKLEN LOGIN-STYLE)
   // ==========================================
   window.renderHomeScreen = function() {
     let html = `
       <div class="fade-in" style="display: flex; justify-content: center; align-items: center; min-height: 75vh; padding: 20px;">
         
         <!-- Das zentrale "Login-Style" Panel -->
-        <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 40px 30px; width: 100%; max-width: 420px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); backdrop-filter: blur(12px); text-align: center;">
+        <div style="background: rgba(15, 23, 42, 0.85) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 16px !important; padding: 40px 30px !important; width: 100% !important; max-width: 420px !important; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important; backdrop-filter: blur(12px) !important; text-align: center !important;">
           
-          <h1 style="font-size: 1.6rem; color: #3b82f6; margin-bottom: 8px; font-weight: 700; letter-spacing: 0.5px;">
+          <h1 style="font-size: 1.6rem !important; color: #3b82f6 !important; margin-bottom: 8px !important; font-weight: 700 !important; font-family: sans-serif !important;">
             Anatomie-Trainer
           </h1>
-          <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 30px;">
+          <p style="color: #64748b !important; font-size: 0.85rem !important; margin-bottom: 30px !important; font-family: sans-serif !important;">
             Bitte Trainings-Raum wählen, um fortzufahren.
           </p>
 
-          <div style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- flex-direction: column zwingt die Elemente UNTEREINANDER -->
+          <div style="display: flex !important; flex-direction: column !important; gap: 12px !important;">
             
             <!-- Option 1: Ursprung & Ansatz -->
             <div onclick="window.openHub('UA')"
-                 style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 18px 20px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 15px;"
+                 style="background: rgba(0, 0, 0, 0.3) !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 10px !important; padding: 18px 20px !important; cursor: pointer !important; transition: all 0.2s ease !important; display: flex !important; align-items: center !important; gap: 15px !important; justify-content: flex-start !important;"
                  onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59, 130, 246, 0.1)';"
                  onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.background='rgba(0, 0, 0, 0.3)';">
-              <div style="font-size: 1.8rem; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));">🔗</div>
-              <div style="text-align: left;">
-                <h2 style="font-size: 1.05rem; color: #e2e8f0; margin: 0 0 4px 0; font-weight: 600;">Ursprung & Ansatz</h2>
-                <p style="color: #64748b; font-size: 0.75rem; margin: 0;">Mechanische Fixierung</p>
+              <div style="font-size: 1.8rem !important; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)) !important;">🔗</div>
+              <div style="text-align: left !important;">
+                <h2 style="font-size: 1.05rem !important; color: #e2e8f0 !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important;">Ursprung & Ansatz</h2>
+                <p style="color: #64748b !important; font-size: 0.75rem !important; margin: 0 !important; font-family: sans-serif !important;">Mechanische Fixierung</p>
               </div>
             </div>
 
             <!-- Option 2: Innervation -->
             <div onclick="window.openHub('INN')"
-                 style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 18px 20px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 15px;"
+                 style="background: rgba(0, 0, 0, 0.3) !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 10px !important; padding: 18px 20px !important; cursor: pointer !important; transition: all 0.2s ease !important; display: flex !important; align-items: center !important; gap: 15px !important; justify-content: flex-start !important;"
                  onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59, 130, 246, 0.1)';"
                  onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.background='rgba(0, 0, 0, 0.3)';">
-              <div style="font-size: 1.8rem; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));">⚡</div>
-              <div style="text-align: left;">
-                <h2 style="font-size: 1.05rem; color: #e2e8f0; margin: 0 0 4px 0; font-weight: 600;">Innervation</h2>
-                <p style="color: #64748b; font-size: 0.75rem; margin: 0;">Nervale Versorgung</p>
+              <div style="font-size: 1.8rem !important; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)) !important;">⚡</div>
+              <div style="text-align: left !important;">
+                <h2 style="font-size: 1.05rem !important; color: #e2e8f0 !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important;">Innervation</h2>
+                <p style="color: #64748b !important; font-size: 0.75rem !important; margin: 0 !important; font-family: sans-serif !important;">Nervale Versorgung</p>
               </div>
             </div>
 
             <!-- Option 3: Funktion -->
             <div onclick="window.openHub('FUN')"
-                 style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 18px 20px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 15px;"
+                 style="background: rgba(0, 0, 0, 0.3) !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 10px !important; padding: 18px 20px !important; cursor: pointer !important; transition: all 0.2s ease !important; display: flex !important; align-items: center !important; gap: 15px !important; justify-content: flex-start !important;"
                  onmouseover="this.style.borderColor='#3b82f6'; this.style.background='rgba(59, 130, 246, 0.1)';"
                  onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.background='rgba(0, 0, 0, 0.3)';">
-              <div style="font-size: 1.8rem; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));">⚙️</div>
-              <div style="text-align: left;">
-                <h2 style="font-size: 1.05rem; color: #e2e8f0; margin: 0 0 4px 0; font-weight: 600;">Funktion</h2>
-                <p style="color: #64748b; font-size: 0.75rem; margin: 0;">Biokinetik & Bewegung</p>
+              <div style="font-size: 1.8rem !important; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)) !important;">⚙️</div>
+              <div style="text-align: left !important;">
+                <h2 style="font-size: 1.05rem !important; color: #e2e8f0 !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important;">Funktion</h2>
+                <p style="color: #64748b !important; font-size: 0.75rem !important; margin: 0 !important; font-family: sans-serif !important;">Biokinetik & Bewegung</p>
               </div>
             </div>
 
@@ -300,6 +298,9 @@ let sessionList = [];
         </div>
       </div>
     `;
+    
+    // Falls deine CSS-Datei im Hintergrund eine weiße Box erzwingt, entfernen wir hier Klassen, die stören könnten
+    container.className = ""; 
     container.innerHTML = html;
   };
 
