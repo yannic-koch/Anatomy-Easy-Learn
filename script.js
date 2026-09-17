@@ -239,36 +239,45 @@ let sessionList = [];
   };
 
 // ==========================================
-  // 1. DER STARTBILDSCHIRM (FULLSCREEN BACKGROUND)
+  // 1. DER STARTBILDSCHIRM (FULLSCREEN OHNE BALKEN)
   // ==========================================
   window.renderHomeScreen = function() {
     
-    // Wichtig: Das Bild muss exakt so heißen und im selben Ordner liegen!
     const backgroundImage = "url('home.jpg')"; 
 
-    // Dies erzwingt per JavaScript, dass der gesamte Body (die ganze Webseite)
-    // das Hintergrundbild übernimmt und keine weißen Ränder lässt.
-    document.body.style.margin = "0";
-    document.body.style.padding = "0";
-    document.body.style.minHeight = "100vh";
-    document.body.style.background = `${backgroundImage} center/cover fixed no-repeat`;
-    document.body.style.backgroundColor = "#0f172a"; // Fallback-Farbe
-    
-    // Falls der Haupt-HTML-Tag auch noch Ränder hat, entfernen wir diese
-    document.documentElement.style.margin = "0";
-    document.documentElement.style.padding = "0";
-    document.documentElement.style.minHeight = "100vh";
+    // AGGRESSIVES CSS: Zwingt die Seite, alle Balken und Ränder zu entfernen
+    let styleEl = document.getElementById("fullscreen-bg-style");
+    if (!styleEl) {
+      styleEl = document.createElement("style");
+      styleEl.id = "fullscreen-bg-style";
+      document.head.appendChild(styleEl);
+    }
+    styleEl.innerHTML = `
+      html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100vw !important;
+        min-height: 100vh !important;
+        background: ${backgroundImage} center/cover fixed no-repeat, #0f172a !important;
+      }
+      #app-container {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 100vh !important;
+        background: transparent !important;
+        box-sizing: border-box !important;
+      }
+    `;
 
     let html = `
-      <!-- Wir entfernen hier den background, da ihn jetzt der body hat. -->
-      <!-- So stellen wir sicher, dass das Layout zentriert bleibt. -->
-      <div class="fade-in" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; position: relative;">
+      <!-- Der Container ist jetzt komplett transparent, das Bild kommt vom Body -->
+      <div class="fade-in" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; width: 100%; padding: 20px; box-sizing: border-box; position: relative;">
         
         <!-- Das zentrale Frosted Glass-Panel -->
-        <!-- WICHTIG: Die Hintergrundfarbe der Box wurde auf ein dunkleres, bläuliches Schwarz geändert, damit sie nicht wie "Milchglas", sondern edel wie im Login aussieht -->
         <div style="background: rgba(15, 23, 42, 0.75) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 24px !important; padding: 45px 30px !important; width: 100% !important; max-width: 440px !important; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(24px) !important; -webkit-backdrop-filter: blur(24px) !important; text-align: center !important; position: relative; z-index: 1;">
           
-          <!-- Titel & Untertitel -->
           <h1 style="font-size: 2rem !important; color: #3b82f6 !important; margin-bottom: 5px !important; font-weight: 700 !important; font-family: sans-serif !important; text-shadow: 0 0 20px rgba(59, 130, 246, 0.6) !important; letter-spacing: 0.5px;">
             Anatomie-Trainer
           </h1>
