@@ -155,7 +155,7 @@ function initAnatomyApp() {
     { muskel: "M. opponens digiti minimi (Hand)", gruppe: "Handmuskeln", ursprung: "Hamulus ossis hamati.", ansatz: "Ulnarer Rand des 5. Mittelhandknochens.", innervation: "N. ulnaris (C8-Th1).", funktion: "Zieht das Os metacarpi nach palmar (Opposition)." },
     { muskel: "Mm. lumbricales I-IV (Hand)", gruppe: "Handmuskeln", ursprung: "Radiale Seiten der Sehnen des M. flexor digitorum profundus.", ansatz: "Dorsalaponeurosen des 2.–5. Fingers.", innervation: "N. medianus (I+II), N. ulnaris (III+IV) (C8-Th1).", funktion: "Fingergrundgelenke Flexion, Mittel-/Endgelenke Extension." },
     { muskel: "Mm. interossei dorsales I-IV (Hand)", gruppe: "Handmuskeln", ursprung: "Einander zugekehrte Seiten der Ossa metatarsi I-V (zweiköpfig).", ansatz: "Dorsalaponeurose 2.-4. Finger, Basis proximale Phalanx.", innervation: "N. ulnaris (C8-Th1).", funktion: "Grundgelenk Flexion, Endgelenk Extension, Spreizen der Finger." },
-    { muskel: "Mm. interossei palmares I-III (Hand)", gruppe: "Handmuskeln", ursprung: "Ulnare Seite 2., radiale Seite 4. und 5. Mittelhandknochen.", ansatz: "Dorsalaponeurose und Basis der proximalen Phalanx.", innervation: "N. ulnaris (C8-Th1).", funktion: "Schließen der gespreizten Finger (Adduktion zum Mittelfinger)." },
+    { muskel: "Mm. interossei palmares I-III (Hand)", gruppe: "Handmuskulatur", ursprung: "Ulnare Seite 2., radiale Seite 4. und 5. Mittelhandknochen.", ansatz: "Dorsalaponeurose und Basis der proximalen Phalanx.", innervation: "N. ulnaris (C8-Th1).", funktion: "Schließen der gespreizten Finger (Adduktion zum Mittelfinger)." },
 
     // --- 13. BEIN: INNERE & ÄUSSERE HÜFTMUSKELN ---
     { muskel: "M. psoas major", gruppe: "Bein: Hüfte", ursprung: "Seitenflächen 12. Brust- bis 4. Lendenwirbelkörper/Disci.", ansatz: "Trochanter minor des Femurs.", innervation: "Direkte Äste aus Plexus lumbalis und N. femoralis (L1-4).", funktion: "Hüftgelenk: Flexion und Außenrotation." },
@@ -574,7 +574,7 @@ function initAnatomyApp() {
     if (customPool) {
       sessionList = customPool;
     } else {
-      const selectedMuscles = Array.from(document.querySelectorAll('.muscle-cb:checked')).map(c => c.value);
+      const selectedMuscles = Array.from(document.querySelectorAll('.m-check:checked')).map(c => c.value);
       
       // KATEGORIEN AUSLESEN BASIEREND AUF DEM RAUM!
       const selectedKats = [];
@@ -875,15 +875,26 @@ function initAnatomyApp() {
   // 3. DAS NEUE DYNAMISCHE MENÜ (CLEAN LAYOUT)
   // ==========================================
 
-  window.selectAllMuscles = function(status) {
-    document.querySelectorAll('.muscle-cb').forEach(cb => cb.checked = status);
+  // --- NEU: EINE MASTER-CHECKBOX FÜR ALLES ---
+  window.toggleMasterCheckbox = function(checkbox) {
+    const status = checkbox.checked;
+    // Setzt alle Muskel-Checkboxen und alle Gruppen-Checkboxen auf den gleichen Wert
+    document.querySelectorAll('.m-check, .group-check').forEach(cb => {
+      cb.checked = status;
+      cb.indeterminate = false; // Zur Sicherheit Indeterminate löschen
+    });
     window.updateSelectionCount();
   };
 
   window.selectRandomMuscles = function() {
-    window.selectAllMuscles(false);
+    // Erst alles abwählen
+    document.querySelectorAll('.m-check, .group-check, #master-cb').forEach(cb => {
+      cb.checked = false;
+      cb.indeterminate = false;
+    });
+    
     const randomCount = Math.floor(Math.random() * (13 - 5 + 1)) + 5;
-    const checkboxes = Array.from(document.querySelectorAll('.muscle-cb'));
+    const checkboxes = Array.from(document.querySelectorAll('.m-check'));
     checkboxes.sort(() => Math.random() - 0.5);
     checkboxes.slice(0, randomCount).forEach(cb => {
         cb.checked = true;
@@ -892,15 +903,15 @@ function initAnatomyApp() {
   };
 
   window.toggleGroupCheckbox = function(event, checkbox, gruppe) {
-    event.stopPropagation(); 
-    document.querySelectorAll(`.muscle-cb[data-gruppe="${gruppe}"]`).forEach(cb => {
+    event.stopPropagation(); // Verhindert Auf-/Zuklappen
+    document.querySelectorAll(`.m-check[data-gruppe="${gruppe}"]`).forEach(cb => {
       cb.checked = checkbox.checked;
     });
     window.updateSelectionCount();
   };
 
   window.updateSelectionCount = function() {
-    const muscleCheckboxes = document.querySelectorAll('.muscle-cb');
+    const muscleCheckboxes = document.querySelectorAll('.m-check');
     const total = muscleCheckboxes.length;
     let selected = 0;
     
@@ -908,13 +919,31 @@ function initAnatomyApp() {
       if (cb.checked) selected++;
     });
     
+    // Gesamt-Zähler oben
     const globalCounter = document.getElementById('global-counter-text');
     if (globalCounter) {
       globalCounter.innerHTML = `<span style="color:#3b82f6;">${selected}</span> / ${total} ausgewählt`;
     }
 
+    // --- MASTER CHECKBOX STATUS AKTUALISIEREN ---
+    const masterCb = document.getElementById('master-cb');
+    if (masterCb) {
+      if (selected === total) {
+        masterCb.checked = true;
+        masterCb.indeterminate = false;
+      } else if (selected === 0) {
+        masterCb.checked = false;
+        masterCb.indeterminate = false;
+      } else {
+        // "Teilweise"-Status
+        masterCb.checked = false;
+        masterCb.indeterminate = true;
+      }
+    }
+
+    // Gruppen-Zähler und Gruppen-Checkboxen anpassen
     document.querySelectorAll('.accordion-group').forEach(groupDiv => {
-      const groupCheckboxes = groupDiv.querySelectorAll('.muscle-cb');
+      const groupCheckboxes = groupDiv.querySelectorAll('.m-check');
       const totalInGroup = groupCheckboxes.length;
       let selectedInGroup = 0;
       
@@ -923,11 +952,19 @@ function initAnatomyApp() {
       });
       
       const countBadge = groupDiv.querySelector('.group-count');
-      const groupCb = groupDiv.querySelector('.group-cb');
+      const groupCb = groupDiv.querySelector('.group-check');
       
       if (groupCb) {
-        groupCb.checked = (selectedInGroup === totalInGroup);
-        groupCb.indeterminate = (selectedInGroup > 0 && selectedInGroup < totalInGroup);
+        if (selectedInGroup === totalInGroup) {
+          groupCb.checked = true;
+          groupCb.indeterminate = false;
+        } else if (selectedInGroup === 0) {
+          groupCb.checked = false;
+          groupCb.indeterminate = false;
+        } else {
+          groupCb.checked = false;
+          groupCb.indeterminate = true;
+        }
       }
 
       if (countBadge) {
@@ -1031,11 +1068,6 @@ function initAnatomyApp() {
       .search-bar input { width: 100%; padding: 12px 15px 12px 40px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.95rem; outline: none; transition: all 0.2s; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2394a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 15px center; background-size: 16px; box-sizing: border-box; }
       .search-bar input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
       
-      /* Action Buttons */
-      .action-btn-group { display: flex; gap: 10px; margin-bottom: 25px; }
-      .action-btn { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; background: #f8fafc; color: #334155; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
-      .action-btn:hover { background: #e2e8f0; }
-
       /* Accordion */
       .accordion-group { margin-bottom: 10px; border: 1px solid #f1f5f9; border-radius: 10px; overflow: hidden; background: white; }
       .accordion-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: #f8fafc; cursor: pointer; user-select: none; transition: background 0.2s; }
@@ -1045,7 +1077,7 @@ function initAnatomyApp() {
       .muscle-item:last-child { border-bottom: none; }
       
       /* Native Checkboxen (Groß) */
-      .group-cb, .muscle-cb { transform: scale(1.4); margin-right: 15px; cursor: pointer; accent-color: #3b82f6; }
+      .group-check, .m-check, #master-cb { transform: scale(1.4); margin-right: 15px; cursor: pointer; accent-color: #3b82f6; }
       
       /* Toggle Switch */
       .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
@@ -1090,10 +1122,15 @@ function initAnatomyApp() {
               <input type="text" id="muscle-search" onkeyup="window.filterMuscles()" placeholder="Suche nach Muskel ...">
             </div>
 
-            <div class="action-btn-group">
-              <button class="action-btn" onclick="window.selectAllMuscles(true)">☑️ Alle an</button>
-              <button class="action-btn" onclick="window.selectAllMuscles(false)">☐ Alle aus</button>
-              <button class="action-btn" onclick="window.selectRandomMuscles()">🎲 Zufall</button>
+            <!-- NEU: Master Checkbox + Zufalls-Button -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: #f8fafc; border-radius: 10px; border: 1px solid #f1f5f9; margin-bottom: 20px;">
+              <label style="font-weight: 600; color: #1e293b; display: flex; align-items: center; cursor: pointer; margin:0;">
+                <input type="checkbox" id="master-cb" onchange="window.toggleMasterCheckbox(this)" checked>
+                Alle auswählen
+              </label>
+              <button onclick="window.selectRandomMuscles()" style="background: white; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; color: #334155; font-size: 0.85rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                🎲 Zufall
+              </button>
             </div>
             
             <div style="max-height: 500px; overflow-y: auto; padding-right: 5px;">
@@ -1104,7 +1141,7 @@ function initAnatomyApp() {
                 <div class="accordion-group" data-group="${g}">
                   <div class="accordion-header" onclick="window.toggleAccordion(this)">
                     <div style="font-weight: 600; color: #1e293b; display:flex; align-items:center;">
-                      <input type="checkbox" class="group-cb" onchange="window.toggleGroupCheckbox(event, this, '${g}')" checked>
+                      <input type="checkbox" class="group-check" onchange="window.toggleGroupCheckbox(event, this, '${g}')" checked>
                       ${g}
                     </div>
                     <div style="display: flex; align-items: center; gap: 12px;">
@@ -1115,7 +1152,7 @@ function initAnatomyApp() {
                   <div class="accordion-content" style="display: ${isFirst ? 'block' : 'none'};">
                     ${muskeln.map(m => `
                       <label class="muscle-item">
-                        <input type="checkbox" class="muscle-cb" data-gruppe="${g}" value="${m.muskel}" onchange="window.updateSelectionCount()" checked> 
+                        <input type="checkbox" class="m-check" data-gruppe="${g}" value="${m.muskel}" onchange="window.updateSelectionCount()" checked> 
                         <div style="display:flex; flex-direction:column;">
                           <span style="font-size: 0.95rem; color: #334155;">${m.muskel}</span>
                           <span style="font-size: 0.75rem; color: #94a3b8;">${m.muskel.replace('M. ', '')}</span>
