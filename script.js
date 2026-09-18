@@ -578,7 +578,16 @@ window.evaluateCR = function() {
   // 3. DAS NEUE DYNAMISCHE MENÜ (CLEAN LAYOUT)
   // ==========================================
 
-  // --- NEU: Zähler dynamisch für jede Gruppe aktualisieren ---
+  // --- NEU: Ganze Muskelgruppe an-/abwählen ---
+  window.toggleGroupCheckbox = function(event, checkbox, gruppe) {
+    event.stopPropagation(); // WICHTIG: Verhindert, dass das Akkordeon auf-/zuklappt
+    document.querySelectorAll(`.m-check[data-gruppe="${gruppe}"]`).forEach(cb => {
+      cb.checked = checkbox.checked;
+    });
+    window.updateSelectionCount();
+  };
+
+  // --- UPDATE: Zähler & Checkbox-Status dynamisch aktualisieren ---
   window.updateSelectionCount = function() {
     const total = document.querySelectorAll('.m-check').length;
     const selected = document.querySelectorAll('.m-check:checked').length;
@@ -595,7 +604,14 @@ window.evaluateCR = function() {
       const totalInGroup = groupDiv.querySelectorAll('.m-check').length;
       const selectedInGroup = groupDiv.querySelectorAll('.m-check:checked').length;
       const countBadge = groupDiv.querySelector('.group-count');
+      const groupCb = groupDiv.querySelector('.group-check');
       
+      // Status der Gruppen-Checkbox synchronisieren
+      if (groupCb) {
+        groupCb.checked = (selectedInGroup === totalInGroup);
+        groupCb.indeterminate = (selectedInGroup > 0 && selectedInGroup < totalInGroup);
+      }
+
       if (countBadge) {
         countBadge.innerText = `${selectedInGroup}/${totalInGroup}`;
         // Visuelles Feedback: Grau, wenn nichts ausgewählt ist, sonst Blau
@@ -763,13 +779,12 @@ window.evaluateCR = function() {
             <div style="max-height: 550px; overflow-y: auto; padding-right: 5px;">
               ${gruppen.map(g => {
                 const muskeln = muskelDaten.filter(m => m.gruppe === g);
-                // Standardmäßig ist der erste Eintrag aufgeklappt, die anderen zu (wie im Layout)
                 const isFirst = g === gruppen[0];
                 return `
                 <div class="accordion-group" data-group="${g}">
                   <div class="accordion-header" onclick="window.toggleAccordion(this)">
-                    <div style="font-weight: 600; color: #1e293b; display:flex; align-items:center; gap:10px;">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    <div style="font-weight: 600; color: #1e293b; display:flex; align-items:center; gap:12px;">
+                      <input type="checkbox" class="group-check" onchange="window.toggleGroupCheckbox(event, this, '${g}')" checked style="width: 18px; height: 18px; accent-color: #3b82f6; cursor: pointer;">
                       ${g}
                     </div>
                     <div style="display: flex; align-items: center; gap: 12px;">
@@ -827,7 +842,6 @@ window.evaluateCR = function() {
             
             <!-- Buttons -->
             <button class="btn-blue" onclick="window.startSession('PRACTICE')">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 5px;"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg> 
               Übung starten
             </button>
             <button class="btn-outline-red" onclick="window.startSession('EXAM')">
