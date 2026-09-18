@@ -219,7 +219,7 @@ function initAnatomyApp() {
     { muskel: "Mm. interossei dorsales I-IV (Fuß)", gruppe: "Bein: Fuß", ursprung: "Zweiköpfig von einander zugekehrten Seiten der Ossa metatarsi I-V.", ansatz: "Basis der Grundphalangen, Dorsalaponeurosen der 2.–4. Zehe.", innervation: "N. plantaris lateralis (S1, 2).", funktion: "Spreizen (Abduktion) der Zehen." }
   ];
 
-  // ==========================================
+ // ==========================================
   // DATENBANK 2: CLINICAL REASONING FÄLLE
   // ==========================================
   const crDaten = [
@@ -228,11 +228,13 @@ function initAnatomyApp() {
       muster: "Lumbale Radikulopathie (L5)",
       fall_text: "Ein 45-jähriger Bodenleger klagt über einschießende, elektrisierende Schmerzen vom unteren Rücken bis in die rechte Großzehe. Die Schmerzen begannen gestern nach dem Heben einer schweren Kiste. Husten und Niesen verstärken den Schmerz extrem. Er hat große Angst, dass er seinen Job aufgeben muss.",
       loesung_strukturen: "Nervenwurzel L5 rechts, Bandscheibe L4/L5.",
-      loesung_mechanismen: "Primär Neuropathischer Schmerz (einschießend, elektrisierend, durch Husten auslösbar).",
+      loesung_schmerztyp: "Neuropathisch",
+      loesung_schmerztyp_begruendung: "Primär Neuropathischer Schmerz (einschießend, elektrisierend, durch Husten auslösbar).",
       loesung_yellow_flags: "Kognitive Einflüsse: Ausgeprägte Existenz- und Zukunftsangst bzgl. der Arbeit.",
       loesung_tests: "Lasègue-Test / Slump-Test zur Provokation der Nervenwurzel.",
-      loesung_neuro: "Sensibilität (Dermatom L5 - Großzehe prüfen), Kraft (Kennmuskel M. extensor hallucis longus prüfen), Reflexe (Tibialis-posterior-Reflex).",
-      loesung_prioritaeten: "S/I/N: Hohe Irritierbarkeit (MIN Untersuch). Priorität: Neurologische Untersuchung hat absoluten Vorrang, um Red Flags (motorische Ausfälle) auszuschließen!"
+      loesung_neuro: "Sensibilität (Dermatom L5 - Großzehe), Kraft (M. ext. hallucis longus), Reflexe (TPR).",
+      loesung_ausmass: "MIN",
+      loesung_ausmass_begruendung: "S/I/N: Hohe Irritierbarkeit. Neurologische Untersuchung hat Vorrang zum Ausschluss von Red Flags (Kavernensyndrom etc.)."
     }
   ];
 
@@ -285,24 +287,23 @@ function initAnatomyApp() {
         background: transparent !important;
         box-sizing: border-box !important;
       }
-      /* Custom CSS für die CR Textareas */
-      textarea.cr-input {
-        width: 100%;
-        background: rgba(30, 41, 59, 0.7);
-        border: 1px solid rgba(255,255,255,0.1);
-        color: #f8fafc;
-        padding: 12px;
-        border-radius: 8px;
-        margin-bottom: 15px;
-        min-height: 70px;
-        font-family: inherit;
-        font-size: 0.95rem;
-        resize: vertical;
+      /* Custom CSS für Clinical Reasoning */
+      .cr-input {
+        width: 100%; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1);
+        color: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 10px;
+        font-family: inherit; font-size: 0.95rem; box-sizing: border-box; transition: all 0.3s ease;
       }
-      textarea.cr-input:focus {
-        outline: none;
-        border-color: #38bdf8;
-        background: rgba(15, 23, 42, 0.9);
+      textarea.cr-input { min-height: 70px; resize: vertical; }
+      select.cr-input { appearance: auto; cursor: pointer; }
+      .cr-input:focus { outline: none; border-color: #38bdf8; background: rgba(15, 23, 42, 0.9); }
+      
+      .cr-input.correct { border-color: #10b981 !important; background: rgba(16, 185, 129, 0.15) !important; color: #10b981; font-weight: bold; }
+      .cr-input.wrong { border-color: #ef4444 !important; background: rgba(239, 68, 68, 0.15) !important; color: #ef4444; font-weight: bold; }
+      
+      .cr-solution {
+        background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981;
+        padding: 15px; margin-top: -5px; margin-bottom: 25px; border-radius: 0 0 8px 8px;
+        color: #e2e8f0; font-size: 0.95rem; display: none;
       }
     `;
 
@@ -364,7 +365,7 @@ function initAnatomyApp() {
               </div>
             </div>
 
-            <!-- NEU: Option 4: Clinical Reasoning -->
+            <!-- Option 4: Clinical Reasoning -->
             <div onclick="window.openClinicalReasoning()"
                  style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;"
                  onmouseover="this.style.borderColor='rgba(16, 185, 129, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';"
@@ -388,13 +389,14 @@ function initAnatomyApp() {
   };
 
   // ==========================================
-  // NEU: CLINICAL REASONING MODUL
+  // NEU: CLINICAL REASONING MODUL MIT DIREKT-VERGLEICH
   // ==========================================
   window.openClinicalReasoning = function(caseIndex = -1) {
     if (caseIndex === -1) {
        caseIndex = Math.floor(Math.random() * crDaten.length);
     }
     const currentCase = crDaten[caseIndex];
+    window.currentCRCase = currentCase; // Speichern für die Auswertung
 
     let html = `
       <div class="fade-in" style="padding: 20px; max-width: 900px; margin: 0 auto; color: #f8fafc; text-align: left;">
@@ -417,47 +419,65 @@ function initAnatomyApp() {
 
           <h3 style="color: #e2e8f0; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">I. Hypothesenbildung</h3>
           
+          <!-- Strukturen -->
           <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Beteiligte Strukturen (Gelenke, Weichteile, Muskeln, Nerven)</label>
-          <textarea class="cr-input" placeholder="Welche Gewebe könnten die Symptome verursachen?"></textarea>
+          <textarea id="cr-strukturen" class="cr-input eval-lock" placeholder="Welche Gewebe könnten die Symptome verursachen?"></textarea>
+          <div id="sol-strukturen" class="cr-solution">
+             <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_strukturen}
+          </div>
 
-          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Schmerzmechanismen</label>
-          <textarea class="cr-input" placeholder="Nozizeptiv, Neuropathisch oder Noziplastisch?"></textarea>
+          <!-- Schmerzmechanismus (DROPDOWN) -->
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Schmerzmechanismus (Primär)</label>
+          <select id="cr-schmerztyp" class="cr-input eval-lock">
+             <option value="">-- Typ wählen --</option>
+             <option value="Nozizeptiv">Nozizeptiv</option>
+             <option value="Neuropathisch">Neuropathisch</option>
+             <option value="Noziplastisch">Noziplastisch</option>
+             <option value="Mixed">Mixed Pain</option>
+          </select>
+          <div id="sol-schmerztyp" class="cr-solution">
+             <strong style="color:#10b981;">Begründung:</strong> ${currentCase.loesung_schmerztyp_begruendung}
+          </div>
 
+          <!-- Yellow Flags -->
           <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Yellow Flags & Kontextfaktoren</label>
-          <textarea class="cr-input" placeholder="Psychosoziale Faktoren, Kognitive Einflüsse..."></textarea>
+          <textarea id="cr-flags" class="cr-input eval-lock" placeholder="Psychosoziale Faktoren, Kognitive Einflüsse..."></textarea>
+          <div id="sol-flags" class="cr-solution">
+             <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_yellow_flags}
+          </div>
 
           <h3 style="color: #e2e8f0; margin-top: 35px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">II. Planung der Untersuchung (P/E)</h3>
 
+          <!-- Funktionstests -->
           <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Spezifische Funktionstests & Palpation</label>
-          <textarea class="cr-input" placeholder="Welche Tests bestätigen oder widerlegen die Hypothesen?"></textarea>
-
-          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Neurologische Untersuchung</label>
-          <textarea class="cr-input" placeholder="Sensibilität, Kraft, Reflexe?"></textarea>
-
-          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Prioritäten (Max/Min Untersuch)</label>
-          <textarea class="cr-input" placeholder="Was muss zuerst geklärt werden wegen der aktuellen Reizlage?"></textarea>
-
-          <button onclick="window.toggleCRSolution()" class="btn btn-primary" style="width: 100%; margin-top: 30px; padding: 18px; font-size: 1.15rem; background: linear-gradient(135deg, #0ea5e9, #2563eb); border: none; font-weight: bold; cursor: pointer; color: white; border-radius: 8px;">Musterlösung anzeigen / Vergleichen</button>
-
-          <div id="cr-solution-section" style="display: none; margin-top: 40px; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-left: 5px solid #10b981; padding: 25px; border-radius: 12px;">
-             <h3 style="color: #10b981; margin-top: 0; margin-bottom: 20px;">🎓 Expertenlösung (Muster)</h3>
-             
-             <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
-               <div><strong style="color:#e2e8f0;">Strukturen:</strong> <span style="color:#94a3b8;">${currentCase.loesung_strukturen}</span></div>
-               <hr style="border:0; border-top: 1px solid rgba(255,255,255,0.05);">
-               <div><strong style="color:#e2e8f0;">Mechanismen:</strong> <span style="color:#94a3b8;">${currentCase.loesung_mechanismen}</span></div>
-               <hr style="border:0; border-top: 1px solid rgba(255,255,255,0.05);">
-               <div><strong style="color:#e2e8f0;">Yellow Flags:</strong> <span style="color:#94a3b8;">${currentCase.loesung_yellow_flags}</span></div>
-               <hr style="border:0; border-top: 1px solid rgba(255,255,255,0.05);">
-               <div><strong style="color:#e2e8f0;">Funktionstests:</strong> <span style="color:#94a3b8;">${currentCase.loesung_tests}</span></div>
-               <hr style="border:0; border-top: 1px solid rgba(255,255,255,0.05);">
-               <div><strong style="color:#e2e8f0;">Neuro. Untersuch:</strong> <span style="color:#94a3b8;">${currentCase.loesung_neuro}</span></div>
-               <hr style="border:0; border-top: 1px solid rgba(255,255,255,0.05);">
-               <div><strong style="color:#e2e8f0;">Prioritäten:</strong> <span style="color:#94a3b8;">${currentCase.loesung_prioritaeten}</span></div>
-             </div>
-
-             <button onclick="window.openClinicalReasoning()" class="btn btn-menu" style="width: 100%; margin-top: 30px; padding: 15px; border: 1px solid #10b981; color: #10b981; background: transparent; cursor: pointer; border-radius: 8px;">Nächster zufälliger Fall ➡</button>
+          <textarea id="cr-tests" class="cr-input eval-lock" placeholder="Welche Tests bestätigen oder widerlegen die Hypothesen?"></textarea>
+          <div id="sol-tests" class="cr-solution">
+             <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_tests}
           </div>
+
+          <!-- Neurologie -->
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Neurologische Untersuchung</label>
+          <textarea id="cr-neuro" class="cr-input eval-lock" placeholder="Sensibilität, Kraft, Reflexe?"></textarea>
+          <div id="sol-neuro" class="cr-solution">
+             <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_neuro}
+          </div>
+
+          <!-- Ausmass (DROPDOWN) -->
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Ausmass der Untersuchung (Reizlage)</label>
+          <select id="cr-ausmass" class="cr-input eval-lock">
+             <option value="">-- Ausmass wählen --</option>
+             <option value="MAX">MAX (Ausführlich)</option>
+             <option value="MIN">MIN (Minimal)</option>
+             <option value="KUR">KUR (Kursorisch)</option>
+          </select>
+          <div id="sol-ausmass" class="cr-solution">
+             <strong style="color:#10b981;">Begründung:</strong> ${currentCase.loesung_ausmass_begruendung}
+          </div>
+
+          <!-- Buttons -->
+          <button id="cr-eval-btn" onclick="window.evaluateCR()" class="btn btn-primary" style="width: 100%; margin-top: 20px; padding: 18px; font-size: 1.15rem; background: linear-gradient(135deg, #0ea5e9, #2563eb); border: none; font-weight: bold; cursor: pointer; color: white; border-radius: 8px;">Ergebnisse überprüfen</button>
+          
+          <button id="cr-next-btn" onclick="window.openClinicalReasoning()" class="btn btn-menu" style="display: none; width: 100%; margin-top: 15px; padding: 15px; border: 1px solid #10b981; color: #10b981; background: transparent; cursor: pointer; border-radius: 8px;">Nächster zufälliger Fall ➡</button>
 
         </div>
       </div>
@@ -466,14 +486,27 @@ function initAnatomyApp() {
     container.innerHTML = html;
   };
 
-  window.toggleCRSolution = function() {
-    const solution = document.getElementById('cr-solution-section');
-    if (solution.style.display === 'none') {
-        solution.style.display = 'block';
-        solution.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-        solution.style.display = 'none';
-    }
+  window.evaluateCR = function() {
+    const c = window.currentCRCase;
+    
+    // Eingabefelder sperren
+    document.querySelectorAll('.eval-lock').forEach(el => el.disabled = true);
+    
+    // Dropdowns automatisch auswerten
+    const typDrop = document.getElementById('cr-schmerztyp');
+    if(typDrop.value === c.loesung_schmerztyp) { typDrop.classList.add('correct'); } else { typDrop.classList.add('wrong'); }
+    
+    const ausDrop = document.getElementById('cr-ausmass');
+    if(ausDrop.value === c.loesung_ausmass) { ausDrop.classList.add('correct'); } else { ausDrop.classList.add('wrong'); }
+
+    // Lösungsboxen einblenden (Fade-in Effekt)
+    document.querySelectorAll('.cr-solution').forEach(sol => {
+        sol.style.display = 'block';
+    });
+
+    // Button austauschen
+    document.getElementById('cr-eval-btn').style.display = 'none';
+    document.getElementById('cr-next-btn').style.display = 'block';
   };
 
   // ==========================================
