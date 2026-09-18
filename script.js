@@ -489,22 +489,79 @@ function initAnatomyApp() {
   window.evaluateCR = function() {
     const c = window.currentCRCase;
     
-    // Eingabefelder sperren
-    document.querySelectorAll('.eval-lock').forEach(el => el.disabled = true);
+    // 1. Dropdowns sperren und klassisch auswerten
+    document.querySelectorAll('select.eval-lock').forEach(el => el.disabled = true);
     
-    // Dropdowns automatisch auswerten
     const typDrop = document.getElementById('cr-schmerztyp');
     if(typDrop.value === c.loesung_schmerztyp) { typDrop.classList.add('correct'); } else { typDrop.classList.add('wrong'); }
     
     const ausDrop = document.getElementById('cr-ausmass');
     if(ausDrop.value === c.loesung_ausmass) { ausDrop.classList.add('correct'); } else { ausDrop.classList.add('wrong'); }
 
-    // Lösungsboxen einblenden (Fade-in Effekt)
+    // 2. Freitext-Felder: Identische Wörter grün markieren
+    const ignoreWords = ["und", "im", "am", "der", "die", "das", "an", "von", "zu", "ist", "sind", "oder", "bei", "mit", "ein", "eine", "einer", "einem", "den", "dem", "des", "sich", "als", "für", "auf", "aus"];
+    
+    const getCleanWords = (text) => {
+      if (!text) return [];
+      // Sucht nach echten Wörtern inkl. Umlauten
+      const matched = text.toLowerCase().match(/[a-zäöüß]+/g);
+      return matched ? matched.filter(w => !ignoreWords.includes(w)) : [];
+    };
+
+    const checkTextAndHighlight = (inputId, correctText) => {
+       const inputEl = document.getElementById(inputId);
+       const userText = inputEl.value;
+       const correctWords = getCleanWords(correctText);
+       
+       // Suchen und Ersetzen: Jedes Treffer-Wort wird mit HTML formatiert
+       const highlightedHTML = userText.replace(/[a-zA-ZäöüÄÖÜß]+/g, (match) => {
+          const lowerMatch = match.toLowerCase();
+          if (!ignoreWords.includes(lowerMatch) && correctWords.includes(lowerMatch)) {
+              return `<span style="color: #10b981; font-weight: bold; background: rgba(16, 185, 129, 0.2); border-radius: 3px; padding: 0 4px;">${match}</span>`;
+          }
+          return match;
+       });
+
+       // Das Original-Textfeld verstecken
+       inputEl.style.display = 'none';
+
+       // Eine Box im exakt gleichen Design erstellen, um den markierten Text anzuzeigen
+       const displayDiv = document.createElement('div');
+       displayDiv.className = 'cr-input'; // Nutzt dein bestehendes Design
+       displayDiv.style.minHeight = '70px';
+       displayDiv.style.whiteSpace = 'pre-wrap'; // Damit Zeilenumbrüche erhalten bleiben
+       
+       if (userText.trim() === "") {
+           displayDiv.innerHTML = `<span style="color: #ef4444; font-style: italic;">Keine Antwort eingegeben.</span>`;
+           displayDiv.style.borderColor = '#ef4444';
+       } else {
+           displayDiv.innerHTML = highlightedHTML;
+           // Den Rahmen der Box grün oder rot färben, je nachdem ob es überhaupt Treffer gab
+           const userWordsClean = getCleanWords(userText);
+           const hasMatches = userWordsClean.some(w => correctWords.includes(w));
+           if (hasMatches) {
+               displayDiv.style.borderColor = '#10b981'; // Leichter grüner Rand
+           } else {
+               displayDiv.style.borderColor = '#ef4444'; // Roter Rand bei 0 Treffern
+           }
+       }
+
+       // Die neue Box direkt unter dem versteckten Textfeld einfügen
+       inputEl.parentNode.insertBefore(displayDiv, inputEl.nextSibling);
+    };
+
+    // Alle Textfelder durch die neue Highlight-Funktion jagen
+    checkTextAndHighlight('cr-strukturen', c.loesung_strukturen);
+    checkTextAndHighlight('cr-flags', c.loesung_yellow_flags);
+    checkTextAndHighlight('cr-tests', c.loesung_tests);
+    checkTextAndHighlight('cr-neuro', c.loesung_neuro);
+
+    // 3. Experten-Lösungsboxen einblenden
     document.querySelectorAll('.cr-solution').forEach(sol => {
         sol.style.display = 'block';
     });
 
-    // Button austauschen
+    // 4. Buttons austauschen
     document.getElementById('cr-eval-btn').style.display = 'none';
     document.getElementById('cr-next-btn').style.display = 'block';
   };
