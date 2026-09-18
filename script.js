@@ -486,7 +486,7 @@ function initAnatomyApp() {
     container.innerHTML = html;
   };
 
-  window.evaluateCR = function() {
+ window.evaluateCR = function() {
     const c = window.currentCRCase;
     
     // 1. Dropdowns sperren und klassisch auswerten
@@ -499,12 +499,12 @@ function initAnatomyApp() {
     if(ausDrop.value === c.loesung_ausmass) { ausDrop.classList.add('correct'); } else { ausDrop.classList.add('wrong'); }
 
     // 2. Freitext-Felder: Identische Wörter grün markieren
-    const ignoreWords = ["und", "im", "am", "der", "die", "das", "an", "von", "zu", "ist", "sind", "oder", "bei", "mit", "ein", "eine", "einer", "einem", "den", "dem", "des", "sich", "als", "für", "auf", "aus"];
+    const ignoreWords = ["und", "im", "am", "der", "die", "das", "an", "von", "zu", "ist", "sind", "oder", "bei", "mit", "ein", "eine", "einer", "einem", "den", "dem", "des", "sich", "als", "für", "auf", "aus", "zur"];
     
     const getCleanWords = (text) => {
       if (!text) return [];
-      // Sucht nach echten Wörtern inkl. Umlauten
-      const matched = text.toLowerCase().match(/[a-zäöüß]+/g);
+      // HIER GEÄNDERT: Jetzt sind auch Zahlen (0-9) erlaubt, damit "L5" als Wort erkannt wird
+      const matched = text.toLowerCase().match(/[a-zäöüß0-9]+/g);
       return matched ? matched.filter(w => !ignoreWords.includes(w)) : [];
     };
 
@@ -513,8 +513,8 @@ function initAnatomyApp() {
        const userText = inputEl.value;
        const correctWords = getCleanWords(correctText);
        
-       // Suchen und Ersetzen: Jedes Treffer-Wort wird mit HTML formatiert
-       const highlightedHTML = userText.replace(/[a-zA-ZäöüÄÖÜß]+/g, (match) => {
+       // HIER GEÄNDERT: Auch hier die Zahlen (0-9) hinzugefügt, um sie im Text zu finden
+       const highlightedHTML = userText.replace(/[a-zA-ZäöüÄÖÜß0-9]+/g, (match) => {
           const lowerMatch = match.toLowerCase();
           if (!ignoreWords.includes(lowerMatch) && correctWords.includes(lowerMatch)) {
               return `<span style="color: #10b981; font-weight: bold; background: rgba(16, 185, 129, 0.2); border-radius: 3px; padding: 0 4px;">${match}</span>`;
