@@ -219,7 +219,24 @@ function initAnatomyApp() {
     { muskel: "Mm. interossei dorsales I-IV (Fuß)", gruppe: "Bein: Fuß", ursprung: "Zweiköpfig von einander zugekehrten Seiten der Ossa metatarsi I-V.", ansatz: "Basis der Grundphalangen, Dorsalaponeurosen der 2.–4. Zehe.", innervation: "N. plantaris lateralis (S1, 2).", funktion: "Spreizen (Abduktion) der Zehen." }
   ];
 
-let sessionList = [];
+  // ==========================================
+  // DATENBANK 2: CLINICAL REASONING FÄLLE
+  // ==========================================
+  const crDaten = [
+    {
+      id: 1,
+      muster: "Lumbale Radikulopathie (L5)",
+      fall_text: "Ein 45-jähriger Bodenleger klagt über einschießende, elektrisierende Schmerzen vom unteren Rücken bis in die rechte Großzehe. Die Schmerzen begannen gestern nach dem Heben einer schweren Kiste. Husten und Niesen verstärken den Schmerz extrem. Er hat große Angst, dass er seinen Job aufgeben muss.",
+      loesung_strukturen: "Nervenwurzel L5 rechts, Bandscheibe L4/L5.",
+      loesung_mechanismen: "Primär Neuropathischer Schmerz (einschießend, elektrisierend, durch Husten auslösbar).",
+      loesung_yellow_flags: "Kognitive Einflüsse: Ausgeprägte Existenz- und Zukunftsangst bzgl. der Arbeit.",
+      loesung_tests: "Lasègue-Test / Slump-Test zur Provokation der Nervenwurzel.",
+      loesung_neuro: "Sensibilität (Dermatom L5 - Großzehe prüfen), Kraft (Kennmuskel M. extensor hallucis longus prüfen), Reflexe (Tibialis-posterior-Reflex).",
+      loesung_prioritaeten: "S/I/N: Hohe Irritierbarkeit (MIN Untersuch). Priorität: Neurologische Untersuchung hat absoluten Vorrang, um Red Flags (motorische Ausfälle) auszuschließen!"
+    }
+  ];
+
+  let sessionList = [];
   let currentIndex = 0;
   let userAnswers = {};
   let currentMode = "";
@@ -238,11 +255,10 @@ let sessionList = [];
     }
   };
 
-// ==========================================
+  // ==========================================
   // 1. DER STARTBILDSCHIRM (FULLSCREEN OHNE BALKEN)
   // ==========================================
   window.renderHomeScreen = function() {
-    
     const backgroundImage = "url('home.png')"; 
 
     // AGGRESSIVES CSS: Zwingt die Seite, alle Balken und Ränder zu entfernen
@@ -268,6 +284,25 @@ let sessionList = [];
         min-height: 100vh !important;
         background: transparent !important;
         box-sizing: border-box !important;
+      }
+      /* Custom CSS für die CR Textareas */
+      textarea.cr-input {
+        width: 100%;
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #f8fafc;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        min-height: 70px;
+        font-family: inherit;
+        font-size: 0.95rem;
+        resize: vertical;
+      }
+      textarea.cr-input:focus {
+        outline: none;
+        border-color: #38bdf8;
+        background: rgba(15, 23, 42, 0.9);
       }
     `;
 
@@ -329,6 +364,20 @@ let sessionList = [];
               </div>
             </div>
 
+            <!-- NEU: Option 4: Clinical Reasoning -->
+            <div onclick="window.openClinicalReasoning()"
+                 style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;"
+                 onmouseover="this.style.borderColor='rgba(16, 185, 129, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';"
+                 onmouseout="this.style.borderColor='rgba(56, 189, 248, 0.3)'; this.style.background='rgba(10, 15, 30, 0.8)'; this.style.transform='translateY(0)';">
+              <div style="color: #10b981; background: rgba(16, 185, 129, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+              </div>
+              <div style="text-align: left !important;">
+                <h2 style="font-size: 1.15rem !important; color: #38bdf8 !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Clinical Reasoning</h2>
+                <p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">ZHAW Befund & Hypothesen</p>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -336,6 +385,95 @@ let sessionList = [];
     
     container.className = ""; 
     container.innerHTML = html;
+  };
+
+  // ==========================================
+  // NEU: CLINICAL REASONING MODUL
+  // ==========================================
+  window.openClinicalReasoning = function(caseIndex = -1) {
+    if (caseIndex === -1) {
+       caseIndex = Math.floor(Math.random() * crDaten.length);
+    }
+    const currentCase = crDaten[caseIndex];
+
+    let html = `
+      <div class="fade-in" style="padding: 20px; max-width: 900px; margin: 0 auto; color: #f8fafc; text-align: left;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <button class="btn btn-menu" onclick="window.renderHomeScreen()">◀ Zurück zum Hauptmenü</button>
+            <span style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">Modul: ZHAW Reasoning</span>
+        </div>
+
+        <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); backdrop-filter: blur(12px);">
+          
+          <h1 style="color: #38bdf8; font-size: 1.8rem; margin-top: 0; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+             📝 ${currentCase.muster}
+          </h1>
+
+          <div style="background: rgba(255,255,255,0.03); padding: 25px; border-radius: 12px; margin-bottom: 35px; border-left: 4px solid #38bdf8;">
+            <strong style="color: #94a3b8; display: block; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem;">Patientenfall / Kasuistik:</strong>
+            <p style="font-size: 1.1rem; line-height: 1.7; margin: 0;">${currentCase.fall_text}</p>
+          </div>
+
+          <h3 style="color: #e2e8f0; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">I. Hypothesenbildung</h3>
+          
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Beteiligte Strukturen (Gelenke, Weichteile, Muskeln, Nerven)</label>
+          <textarea class="cr-input" placeholder="Welche Gewebe könnten die Symptome verursachen?"></textarea>
+
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Schmerzmechanismen</label>
+          <textarea class="cr-input" placeholder="Nozizeptiv, Neuropathisch oder Noziplastisch?"></textarea>
+
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Yellow Flags & Kontextfaktoren</label>
+          <textarea class="cr-input" placeholder="Psychosoziale Faktoren, Kognitive Einflüsse..."></textarea>
+
+          <h3 style="color: #e2e8f0; margin-top: 35px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">II. Planung der Untersuchung (P/E)</h3>
+
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Spezifische Funktionstests & Palpation</label>
+          <textarea class="cr-input" placeholder="Welche Tests bestätigen oder widerlegen die Hypothesen?"></textarea>
+
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Neurologische Untersuchung</label>
+          <textarea class="cr-input" placeholder="Sensibilität, Kraft, Reflexe?"></textarea>
+
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Prioritäten (Max/Min Untersuch)</label>
+          <textarea class="cr-input" placeholder="Was muss zuerst geklärt werden wegen der aktuellen Reizlage?"></textarea>
+
+          <button onclick="window.toggleCRSolution()" class="btn btn-primary" style="width: 100%; margin-top: 30px; padding: 18px; font-size: 1.15rem; background: linear-gradient(135deg, #0ea5e9, #2563eb); border: none; font-weight: bold; cursor: pointer; color: white; border-radius: 8px;">Musterlösung anzeigen / Vergleichen</button>
+
+          <div id="cr-solution-section" style="display: none; margin-top: 40px; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-left: 5px solid #10b981; padding: 25px; border-radius: 12px;">
+             <h3 style="color: #10b981; margin-top: 0; margin-bottom: 20px;">🎓 Expertenlösung (Muster)</h3>
+             
+             <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+               <div><strong style="color:#e2e8f0;">Strukturen:</strong> <span style="color:#94a3b8;">${currentCase.loesung_strukturen}</span></div>
+               <hr style="border:0; border-top: 1px solid rgba(255,255,255,0.05);">
+               <div><strong style="color:#e2e8f0;">Mechanismen:</strong> <span style="color:#94a3b8;">${currentCase.loesung_mechanismen}</span></div>
+               <hr style="border:0; border-top: 1px solid rgba(255,255,255,0.05);">
+               <div><strong style="color:#e2e8f0;">Yellow Flags:</strong> <span style="color:#94a3b8;">${currentCase.loesung_yellow_flags}</span></div>
+               <hr style="border:0; border-top: 1px solid rgba(255,255,255,0.05);">
+               <div><strong style="color:#e2e8f0;">Funktionstests:</strong> <span style="color:#94a3b8;">${currentCase.loesung_tests}</span></div>
+               <hr style="border:0; border-top: 1px solid rgba(255,255,255,0.05);">
+               <div><strong style="color:#e2e8f0;">Neuro. Untersuch:</strong> <span style="color:#94a3b8;">${currentCase.loesung_neuro}</span></div>
+               <hr style="border:0; border-top: 1px solid rgba(255,255,255,0.05);">
+               <div><strong style="color:#e2e8f0;">Prioritäten:</strong> <span style="color:#94a3b8;">${currentCase.loesung_prioritaeten}</span></div>
+             </div>
+
+             <button onclick="window.openClinicalReasoning()" class="btn btn-menu" style="width: 100%; margin-top: 30px; padding: 15px; border: 1px solid #10b981; color: #10b981; background: transparent; cursor: pointer; border-radius: 8px;">Nächster zufälliger Fall ➡</button>
+          </div>
+
+        </div>
+      </div>
+    `;
+    container.className = "";
+    container.innerHTML = html;
+  };
+
+  window.toggleCRSolution = function() {
+    const solution = document.getElementById('cr-solution-section');
+    if (solution.style.display === 'none') {
+        solution.style.display = 'block';
+        solution.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+        solution.style.display = 'none';
+    }
   };
 
   // ==========================================
@@ -776,13 +914,12 @@ let sessionList = [];
                 <div style="font-size:1.1rem; margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-start;">
                   <strong style="display:flex; align-items:center;">
                     ${ans.success ? iconCheck : iconCross} 
-                    Frage ${i+1}: ${q.muskel ? q.muskel.muskel : 'Zuordnung'}
+                    Frage ${i+1}:${q.muskel ? q.muskel.muskel : 'Zuordnung'}
                   </strong> 
                   <span style="color:#64748b; font-size:0.85rem; background:#f1f5f9; padding:4px 8px; border-radius:6px; font-weight:600; margin-left:10px;">${q.type.toUpperCase()}</span>
                 </div>
                 <small style="color:#64748b; display:block; margin-bottom:12px; font-weight:600; letter-spacing:0.5px;">KATEGORIE: ${q.kat.toUpperCase()}</small>
-                <div class="user-ans" style="margin-bottom:8px; line-height:1.5;">Deine Antwort:<br><strong style="color:var(--text-main); font-style:normal;">${ans.user}</strong></div>
-                ${!ans.success ? `<div class="correct-ans" style="padding-top:8px; border-top:1px dashed #fecaca; line-height:1.5; margin-top:10px;">Richtige Lösung:<br><span style="color:#b91c1c;">${ans.correct}</span></div>` : ''}
+                <div class="user-ans" style="margin-bottom:8px; line-height:1.5;">Deine Antwort:<br><strong style="color:var(--text-main); font-style:normal;">${ans.user}</strong></div>${!ans.success ? `<div class="correct-ans" style="padding-top:8px; border-top:1px dashed #fecaca; line-height:1.5; margin-top:10px;">Richtige Lösung:<br><span style="color:#b91c1c;">${ans.correct}</span></div>` : ''}
               </div>
             `;
           }).join('')}
