@@ -252,6 +252,10 @@ function initAnatomyApp() {
   // 1. DER STARTBILDSCHIRM (FULLSCREEN OHNE BALKEN)
   // ==========================================
   window.renderHomeScreen = function() {
+    // LÖSCHE DAS HELLE MENÜ-CSS (verhindert Konflikt beim Zurückgehen)
+    const cleanStyle = document.getElementById("clean-layout-styles");
+    if (cleanStyle) cleanStyle.remove();
+
     const backgroundImage = "url('home.png')"; 
 
     // AGGRESSIVES CSS: Zwingt die Seite, alle Balken und Ränder zu entfernen
@@ -383,6 +387,10 @@ function initAnatomyApp() {
   // NEU: CLINICAL REASONING MODUL MIT DIREKT-VERGLEICH
   // ==========================================
   window.openClinicalReasoning = function(caseIndex = -1) {
+    // LÖSCHE DAS HELLE MENÜ-CSS HIER AUCH SICHERHEITSHALBER
+    const cleanStyle = document.getElementById("clean-layout-styles");
+    if (cleanStyle) cleanStyle.remove();
+
     if (caseIndex === -1) {
        caseIndex = Math.floor(Math.random() * crDaten.length);
     }
@@ -1022,6 +1030,10 @@ function initAnatomyApp() {
 
   // --- RENDER MENU ---
   window.renderMenu = function() {
+    // LÖSCHE DAS HOMESCREEN-CSS HIER (verhindert Konflikt beim Öffnen des Menüs)
+    const homeStyle = document.getElementById("fullscreen-bg-style");
+    if (homeStyle) homeStyle.remove();
+
     const gruppen = [...new Set(muskelDaten.map(m => m.gruppe))].sort();
 
     let settingsTitle = "";
@@ -1067,7 +1079,7 @@ function initAnatomyApp() {
       /* Search Bar */
       .search-bar input { width: 100%; padding: 12px 15px 12px 40px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.95rem; outline: none; transition: all 0.2s; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2394a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 15px center; background-size: 16px; box-sizing: border-box; }
       .search-bar input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-      
+
       /* Accordion */
       .accordion-group { margin-bottom: 10px; border: 1px solid #f1f5f9; border-radius: 10px; overflow: hidden; background: white; }
       .accordion-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: #f8fafc; cursor: pointer; user-select: none; transition: background 0.2s; }
@@ -1075,9 +1087,6 @@ function initAnatomyApp() {
       .accordion-content { padding: 10px 20px 20px 20px; display: none; background: white; }
       .muscle-item { padding: 8px 0; border-bottom: 1px solid #f8fafc; display: flex; align-items: center; }
       .muscle-item:last-child { border-bottom: none; }
-      
-      /* Native Checkboxen (Groß) */
-      .group-check, .m-check, #master-cb { transform: scale(1.4); margin-right: 15px; cursor: pointer; accent-color: #3b82f6; }
       
       /* Toggle Switch */
       .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
@@ -1122,10 +1131,10 @@ function initAnatomyApp() {
               <input type="text" id="muscle-search" onkeyup="window.filterMuscles()" placeholder="Suche nach Muskel ...">
             </div>
 
-            <!-- NEU: Master Checkbox + Zufalls-Button -->
+            <!-- Master Checkbox + Zufalls-Button -->
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: #f8fafc; border-radius: 10px; border: 1px solid #f1f5f9; margin-bottom: 20px;">
               <label style="font-weight: 600; color: #1e293b; display: flex; align-items: center; cursor: pointer; margin:0;">
-                <input type="checkbox" id="master-cb" onchange="window.toggleMasterCheckbox(this)" checked>
+                <input type="checkbox" id="master-cb" onchange="window.toggleMasterCheckbox(this)" checked style="transform: scale(1.4); margin-right: 15px; cursor: pointer; accent-color: #3b82f6;">
                 Alle auswählen
               </label>
               <button onclick="window.selectRandomMuscles()" style="background: white; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; color: #334155; font-size: 0.85rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
@@ -1141,7 +1150,7 @@ function initAnatomyApp() {
                 <div class="accordion-group" data-group="${g}">
                   <div class="accordion-header" onclick="window.toggleAccordion(this)">
                     <div style="font-weight: 600; color: #1e293b; display:flex; align-items:center;">
-                      <input type="checkbox" class="group-check" onchange="window.toggleGroupCheckbox(event, this, '${g}')" checked>
+                      <input type="checkbox" class="group-check" onchange="window.toggleGroupCheckbox(event, this, '${g}')" checked style="transform: scale(1.4); margin-right: 15px; cursor: pointer; accent-color: #3b82f6;">
                       ${g}
                     </div>
                     <div style="display: flex; align-items: center; gap: 12px;">
@@ -1152,7 +1161,7 @@ function initAnatomyApp() {
                   <div class="accordion-content" style="display: ${isFirst ? 'block' : 'none'};">
                     ${muskeln.map(m => `
                       <label class="muscle-item">
-                        <input type="checkbox" class="m-check" data-gruppe="${g}" value="${m.muskel}" onchange="window.updateSelectionCount()" checked> 
+                        <input type="checkbox" class="m-check" data-gruppe="${g}" value="${m.muskel}" onchange="window.updateSelectionCount()" checked style="transform: scale(1.4); margin-right: 15px; cursor: pointer; accent-color: #3b82f6;"> 
                         <div style="display:flex; flex-direction:column;">
                           <span style="font-size: 0.95rem; color: #334155;">${m.muskel}</span>
                           <span style="font-size: 0.75rem; color: #94a3b8;">${m.muskel.replace('M. ', '')}</span>
