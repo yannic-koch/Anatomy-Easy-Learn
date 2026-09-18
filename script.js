@@ -486,7 +486,7 @@ function initAnatomyApp() {
     container.innerHTML = html;
   };
 
- window.evaluateCR = function() {
+window.evaluateCR = function() {
     const c = window.currentCRCase;
     
     // 1. Dropdowns sperren und klassisch auswerten
@@ -503,8 +503,8 @@ function initAnatomyApp() {
     
     const getCleanWords = (text) => {
       if (!text) return [];
-      // HIER GEÄNDERT: Jetzt sind auch Zahlen (0-9) erlaubt, damit "L5" als Wort erkannt wird
-      const matched = text.toLowerCase().match(/[a-zäöüß0-9]+/g);
+      // UPDATE: Nutzt \w für alle alphanumerischen Zeichen, plus Umlaute und ß
+      const matched = text.toLowerCase().match(/[\wäöüß]+/g);
       return matched ? matched.filter(w => !ignoreWords.includes(w)) : [];
     };
 
@@ -513,8 +513,8 @@ function initAnatomyApp() {
        const userText = inputEl.value;
        const correctWords = getCleanWords(correctText);
        
-       // HIER GEÄNDERT: Auch hier die Zahlen (0-9) hinzugefügt, um sie im Text zu finden
-       const highlightedHTML = userText.replace(/[a-zA-ZäöüÄÖÜß0-9]+/g, (match) => {
+       // UPDATE: Exakt gleicher RegEx für das Ersetzen
+       const highlightedHTML = userText.replace(/[\wäöüÄÖÜß]+/g, (match) => {
           const lowerMatch = match.toLowerCase();
           if (!ignoreWords.includes(lowerMatch) && correctWords.includes(lowerMatch)) {
               return `<span style="color: #10b981; font-weight: bold; background: rgba(16, 185, 129, 0.2); border-radius: 3px; padding: 0 4px;">${match}</span>`;
