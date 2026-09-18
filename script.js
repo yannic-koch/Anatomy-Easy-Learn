@@ -578,9 +578,27 @@ window.evaluateCR = function() {
   // 3. DAS NEUE DYNAMISCHE MENÜ (CLEAN LAYOUT)
   // ==========================================
 
+  // --- NEU: Globale Auswahl (Alle an / Alle aus) ---
+  window.selectAllMuscles = function(status) {
+    document.querySelectorAll('.m-check').forEach(cb => cb.checked = status);
+    window.updateSelectionCount();
+  };
+
+  // --- NEU: Zufallsauswahl ---
+  window.selectRandomMuscles = function() {
+    window.selectAllMuscles(false);
+    const randomCount = Math.floor(Math.random() * (13 - 5 + 1)) + 5;
+    const checkboxes = Array.from(document.querySelectorAll('.m-check'));
+    checkboxes.sort(() => Math.random() - 0.5);
+    checkboxes.slice(0, randomCount).forEach(cb => {
+        cb.checked = true;
+    });
+    window.updateSelectionCount();
+  };
+
   // --- NEU: Ganze Muskelgruppe an-/abwählen ---
   window.toggleGroupCheckbox = function(event, checkbox, gruppe) {
-    event.stopPropagation(); // WICHTIG: Verhindert, dass das Akkordeon auf-/zuklappt
+    event.stopPropagation(); // Verhindert, dass das Akkordeon beim Klicken der Checkbox auf-/zuklappt
     document.querySelectorAll(`.m-check[data-gruppe="${gruppe}"]`).forEach(cb => {
       cb.checked = checkbox.checked;
     });
@@ -614,7 +632,6 @@ window.evaluateCR = function() {
 
       if (countBadge) {
         countBadge.innerText = `${selectedInGroup}/${totalInGroup}`;
-        // Visuelles Feedback: Grau, wenn nichts ausgewählt ist, sonst Blau
         if(selectedInGroup === 0) {
           countBadge.style.background = '#f1f5f9';
           countBadge.style.color = '#94a3b8';
@@ -657,10 +674,8 @@ window.evaluateCR = function() {
         }
       });
       
-      // Verstecke die ganze Gruppe, wenn kein Muskel zum Suchbegriff passt
       groupDiv.style.display = hasVisibleItem ? 'block' : 'none';
       
-      // Wenn gesucht wird, klappe die zutreffenden Gruppen automatisch auf
       const content = groupDiv.querySelector('.accordion-content');
       const chevron = groupDiv.querySelector('.chevron');
       if (term.length > 0 && hasVisibleItem) {
@@ -668,6 +683,206 @@ window.evaluateCR = function() {
         chevron.style.transform = 'rotate(180deg)';
       }
     });
+  };
+
+  // --- RENDER MENU (Neues Layout) ---
+  window.renderMenu = function() {
+    const gruppen = [...new Set(muskelDaten.map(m => m.gruppe))].sort();
+
+    let settingsTitle = "";
+    let categorySettingsHtml = "";
+
+    if (currentHub === 'UA') {
+      settingsTitle = "Fokus: Ursprung & Ansatz";
+      categorySettingsHtml = `
+        <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">Lege fest, welche Informationen in den Fragen berücksichtigt werden sollen.</p>
+        <div style="margin-bottom: 25px;">
+          <strong style="display: block; font-size: 0.9rem; color: #1e293b; margin-bottom: 15px;">Bereich abfragen</strong>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <span style="font-size: 0.95rem; color: #334155;">Ursprung</span>
+            <label class="switch"><input type="checkbox" id="kat-ursprung" checked><span class="slider round"></span></label>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.95rem; color: #334155;">Ansatz</span>
+            <label class="switch"><input type="checkbox" id="kat-ansatz" checked><span class="slider round"></span></label>
+          </div>
+        </div>
+      `;
+    } else if (currentHub === 'INN') {
+      settingsTitle = "Fokus: Innervation";
+      categorySettingsHtml = `<div style="background: #eff6ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;"><strong style="color: #3b82f6;">Innervation ausgewählt</strong></div>`;
+    } else if (currentHub === 'FUN') {
+      settingsTitle = "Fokus: Funktion";
+      categorySettingsHtml = `<div style="background: #ecfdf5; padding: 15px; border-radius: 8px; margin-bottom: 20px;"><strong style="color: #10b981;">Funktion ausgewählt</strong></div>`;
+    }
+
+    let styleEl = document.getElementById("clean-layout-styles");
+    if (!styleEl) {
+      styleEl = document.createElement("style");
+      styleEl.id = "clean-layout-styles";
+      document.head.appendChild(styleEl);
+    }
+    styleEl.innerHTML = `
+      body, html { background: #f8fafc !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+      .header-top { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: transparent; }
+      .main-grid { display: grid; grid-template-columns: 1fr 380px; gap: 30px; padding: 0 40px 40px 40px; max-width: 1400px; margin: 0 auto; align-items: start; }
+      .panel-box { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; }
+      
+      /* Search Bar */
+      .search-bar input { width: 100%; padding: 12px 15px 12px 40px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.95rem; outline: none; transition: all 0.2s; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2394a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 15px center; background-size: 16px; box-sizing: border-box; }
+      .search-bar input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+      
+      /* Accordion */
+      .accordion-group { margin-bottom: 10px; border: 1px solid #f1f5f9; border-radius: 10px; overflow: hidden; background: white; }
+      .accordion-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: #f8fafc; cursor: pointer; user-select: none; transition: background 0.2s; }
+      .accordion-header:hover { background: #f1f5f9; }
+      .accordion-content { padding: 10px 20px 20px 20px; display: none; background: white; }
+      .muscle-item { padding: 8px 0; border-bottom: 1px solid #f8fafc; display: flex; align-items: center; }
+      .muscle-item:last-child { border-bottom: none; }
+      
+      /* Custom Checkbox */
+      .m-check, .group-check { width: 18px; height: 18px; accent-color: #3b82f6; cursor: pointer; }
+      .m-check { margin-right: 12px; }
+      
+      /* Toggle Switch */
+      .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+      .switch input { opacity: 0; width: 0; height: 0; }
+      .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .3s; border-radius: 24px; }
+      .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+      input:checked + .slider { background-color: #3b82f6; }
+      input:checked + .slider:before { transform: translateX(20px); }
+      
+      /* Buttons */
+      .btn-blue { background: #3b82f6; color: white; border: none; padding: 16px; border-radius: 10px; width: 100%; font-weight: 600; font-size: 1rem; cursor: pointer; transition: background 0.2s; margin-bottom: 10px; }
+      .btn-blue:hover { background: #2563eb; }
+      .btn-outline-red { background: white; color: #ef4444; border: 1px solid #fca5a5; padding: 14px; border-radius: 10px; width: 100%; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: background 0.2s; }
+      .btn-outline-red:hover { background: #fef2f2; }
+      
+      /* Global Action Buttons */
+      .global-action-btn { flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0; background: white; color: #475569; font-size: 0.85rem; cursor: pointer; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+      .global-action-btn:hover { background: #f1f5f9; border-color: #cbd5e1; }
+    `;
+
+    let html = `
+      <div class="fade-in" style="min-height: 100vh;">
+        
+        <!-- TOP HEADER -->
+        <div class="header-top">
+          <button onclick="window.renderHomeScreen()" style="background:transparent; border:none; color:#64748b; font-size:1rem; cursor:pointer; display:flex; align-items:center; gap:8px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Zurück zum Trainings-Raum
+          </button>
+          <div style="display:flex; flex-direction:column; align-items:flex-end; width: 250px;">
+            <div id="global-counter" style="font-size: 0.85rem; color: #3b82f6; font-weight: 600; margin-bottom: 5px;"></div>
+            <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 4px; overflow:hidden;">
+              <div id="global-progress" style="height: 100%; background: #3b82f6; width: 100%; transition: width 0.3s;"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="main-grid">
+          
+          <!-- LINKE BOX: MUSKELAUSWAHL -->
+          <div class="panel-box">
+            <h2 style="margin: 0 0 5px 0; font-size: 1.4rem; color: #0f172a; display:flex; align-items:center; gap:10px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="6.5"></line></svg>
+              1. Muskelauswahl
+            </h2>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Wähle die gewünschten Muskeln aus, um den Trainingsinhalt zu personalisieren.</p>
+            
+            <!-- Suchleiste -->
+            <div class="search-bar" style="margin-bottom: 12px;">
+              <input type="text" id="muscle-search" onkeyup="window.filterMuscles()" placeholder="Suche nach Muskel ...">
+            </div>
+
+            <!-- Globale Buttons (Alle an/aus/Zufall) -->
+            <div style="display: flex; gap: 10px; margin-bottom: 25px;">
+              <button class="global-action-btn" onclick="window.selectAllMuscles(true)">☑️ Alle an</button>
+              <button class="global-action-btn" onclick="window.selectAllMuscles(false)">☐ Alle aus</button>
+              <button class="global-action-btn" onclick="window.selectRandomMuscles()">🎲 Zufall</button>
+            </div>
+            
+            <!-- Listen-Ansicht (Akkordeon) -->
+            <div style="max-height: 500px; overflow-y: auto; padding-right: 5px;">
+              ${gruppen.map(g => {
+                const muskeln = muskelDaten.filter(m => m.gruppe === g);
+                const isFirst = g === gruppen[0];
+                return `
+                <div class="accordion-group" data-group="${g}">
+                  <div class="accordion-header" onclick="window.toggleAccordion(this)">
+                    <div style="font-weight: 600; color: #1e293b; display:flex; align-items:center; gap:12px;">
+                      <!-- Checkbox für das gesamte Kapitel -->
+                      <input type="checkbox" class="group-check" onchange="window.toggleGroupCheckbox(event, this, '${g}')" checked>
+                      ${g}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                      <span class="group-count" style="font-size: 0.8rem; font-weight: 600; padding: 3px 10px; border-radius: 20px;">0/0</span>
+                      <svg class="chevron" style="transition: transform 0.3s; transform: rotate(${isFirst ? '180deg' : '0deg'});" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                  </div>
+                  <div class="accordion-content" style="display: ${isFirst ? 'block' : 'none'};">
+                    ${muskeln.map(m => `
+                      <label class="muscle-item">
+                        <input type="checkbox" class="m-check" data-gruppe="${g}" value="${m.muskel}" onchange="window.updateSelectionCount()" checked> 
+                        <div style="display:flex; flex-direction:column;">
+                          <span style="font-size: 0.95rem; color: #334155;">${m.muskel}</span>
+                          <span style="font-size: 0.75rem; color: #94a3b8;">${m.muskel.replace('M. ', '')}</span>
+                        </div>
+                      </label>
+                    `).join('')}
+                  </div>
+                </div>
+              `}).join('')}
+            </div>
+          </div>
+
+          <!-- RECHTE BOX: EINSTELLUNGEN -->
+          <div class="panel-box" style="position: sticky; top: 20px;">
+            <h2 style="margin: 0 0 25px 0; font-size: 1.2rem; color: #0f172a; display:flex; align-items:center; gap:10px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              ${settingsTitle}
+            </h2>
+            
+            ${categorySettingsHtml}
+            
+            <!-- Fragetypen -->
+            <div style="background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
+              <strong style="display: block; font-size: 0.9rem; color: #1e293b; margin-bottom: 15px;">Fragetypen</strong>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <span style="font-size: 0.95rem; color: #334155;">Freitext (Eintippen)</span>
+                <label class="switch"><input type="checkbox" id="type-write" checked><span class="slider round"></span></label>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <span style="font-size: 0.95rem; color: #334155;">Single Choice</span>
+                <label class="switch"><input type="checkbox" id="type-single" checked><span class="slider round"></span></label>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.95rem; color: #334155;">Zuordnung (Matching)</span>
+                <label class="switch"><input type="checkbox" id="type-match" checked><span class="slider round"></span></label>
+              </div>
+            </div>
+            
+            <!-- Fragenlimit -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border: 1px solid #f1f5f9; border-radius: 10px; padding: 15px 20px; margin-bottom: 25px;">
+              <span style="font-size: 0.95rem; color: #334155;">Max. Fragen <span style="color:#94a3b8; font-size:0.8rem;">(0 = alle)</span></span>
+              <input type="number" id="limit-input" value="10" min="0" style="width: 60px; text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px; font-size: 0.95rem;">
+            </div>
+            
+            <!-- Buttons ohne das Dollar-SVG -->
+            <button class="btn-blue" onclick="window.startSession('PRACTICE')">
+              Übung starten
+            </button>
+            <button class="btn-outline-red" onclick="window.startSession('EXAM')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 5px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> 
+              Prüfungsmodus starten
+            </button>
+          </div>
+
+        </div>
+      </div>
+    `;
+    
+    container.innerHTML = html;
+    window.updateSelectionCount();
   };
 
   // --- RENDER MENU (Neues Layout) ---
