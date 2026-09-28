@@ -220,35 +220,27 @@ function initAnatomyApp() {
   ];
 
   // ==========================================
-  // DATENBANK 2: CLINICAL REASONING FÄLLE
+  // DATENBANK 2: CLINICAL REASONING FÄLLE (ZHAW-konform)
   // ==========================================
   const crDaten = [
     {
       id: 1,
       muster: "Lumbale Radikulopathie (L5)",
       fall_text: "Ein 45-jähriger Bodenleger klagt über einschießende, elektrisierende Schmerzen vom unteren Rücken bis in die rechte Großzehe. Die Schmerzen begannen gestern nach dem Heben einer schweren Kiste. Husten und Niesen verstärken den Schmerz extrem. Er hat große Angst, dass er seinen Job aufgeben muss.",
+      loesung_aktivitaet: "Eingeschränktes Heben, Bücken, langes Stehen und Gehen (Arbeitsfähigkeit als Bodenleger gefährdet).",
       loesung_strukturen: "Nervenwurzel L5 rechts, Bandscheibe L4/L5.",
       loesung_schmerztyp: "Neuropathisch",
-      loesung_schmerztyp_begruendung: "Primär Neuropathischer Schmerz (einschießend, elektrisierend, durch Husten auslösbar).",
-      loesung_yellow_flags: "Kognitive Einflüsse: Ausgeprägte Existenz- und Zukunftsangst bzgl. der Arbeit.",
-      loesung_tests: "Lasègue-Test / Slump-Test zur Provokation der Nervenwurzel.",
-      loesung_neuro: "Sensibilität (Dermatom L5 - Großzehe), Kraft (M. ext. hallucis longus), Reflexe (TPR).",
+      loesung_schmerztyp_begruendung: "Primär neuropathischer Schmerz (einschießend, elektrisierend, radikulär ausstrahlend, durch Druckerhöhung wie Husten auslösbar)[cite: 2].",
+      loesung_yellow_flags: "Kognitive / affektive Einflüsse: Ausgeprägte Existenz- und Zukunftsangst bzgl. der Arbeit (Catastrophizing)[cite: 2].",
+      loesung_tests: "Lasègue-Test / Slump-Test zur Provokation der Nervenwurzel, Überprüfung der Isometrie der LWS.",
+      loesung_neuro: "Sensibilität (Dermatom L5 - Großzehe), Kraft (M. extensor hallucis longus), Reflexe (Tibialis-posterior-Reflex / Eigenreflexe)[cite: 2].",
       loesung_ausmass: "MIN",
-      loesung_ausmass_begruendung: "S/I/N: Hohe Irritierbarkeit. Neurologische Untersuchung hat Vorrang zum Ausschluss von Red Flags (Kavernensyndrom etc.)."
+      loesung_ausmass_begruendung: "Hohe Reizlage (S/I/N: Hohe Irritierbarkeit, starke Schmerzen). Die neurologische Untersuchung hat Priorität zum Ausschluss von Red Flags[cite: 2]."
     }
   ];
 
-  let sessionList = [];
-  let currentIndex = 0;
-  let userAnswers = {};
-  let currentMode = "";
-  
-  // Wir speichern, in welchem "Raum" (Hub) sich der Nutzer befindet
-  let currentHub = ""; 
-
-  let container = document.getElementById("app-container");
-
-  // ==========================================
+ 
+ // ==========================================
   // 1. DER STARTBILDSCHIRM (FULLSCREEN OHNE BALKEN)
   // ==========================================
   window.renderHomeScreen = function() {
@@ -383,11 +375,10 @@ function initAnatomyApp() {
     container.innerHTML = html;
   };
 
-  // ==========================================
-  // NEU: CLINICAL REASONING MODUL MIT DIREKT-VERGLEICH
+ // ==========================================
+  // NEU: CLINICAL REASONING MODUL (ZHAW-Standard)
   // ==========================================
   window.openClinicalReasoning = function(caseIndex = -1) {
-    // LÖSCHE DAS HELLE MENÜ-CSS HIER AUCH SICHERHEITSHALBER
     const cleanStyle = document.getElementById("clean-layout-styles");
     if (cleanStyle) cleanStyle.remove();
 
@@ -395,20 +386,20 @@ function initAnatomyApp() {
        caseIndex = Math.floor(Math.random() * crDaten.length);
     }
     const currentCase = crDaten[caseIndex];
-    window.currentCRCase = currentCase; // Speichern für die Auswertung
+    window.currentCRCase = currentCase;
 
     let html = `
-      <div class="fade-in" style="padding: 20px; max-width: 900px; margin: 0 auto; color: #f8fafc; text-align: left;">
+      <div class="fade-in" style="padding: 20px; max-width: 950px; margin: 0 auto; color: #f8fafc; text-align: left;">
         
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <button class="btn btn-menu" onclick="window.renderHomeScreen()">◀ Zurück zum Hauptmenü</button>
-            <span style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">Modul: ZHAW Reasoning</span>
+            <span style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">ZHAW Clinical Reasoning Formular (WB 1 & 2)</span>
         </div>
 
         <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); backdrop-filter: blur(12px);">
           
           <h1 style="color: #38bdf8; font-size: 1.8rem; margin-top: 0; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
-              📝 ${currentCase.muster}
+              📝 Fallbeispiel: ${currentCase.muster}
           </h1>
 
           <div style="background: rgba(255,255,255,0.03); padding: 25px; border-radius: 12px; margin-bottom: 35px; border-left: 4px solid #38bdf8;">
@@ -416,58 +407,62 @@ function initAnatomyApp() {
             <p style="font-size: 1.1rem; line-height: 1.7; margin: 0;">${currentCase.fall_text}</p>
           </div>
 
-          <h3 style="color: #e2e8f0; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">I. Hypothesenbildung</h3>
+          <!-- KATEGORIE I -->
+          <h3 style="color: #e2e8f0; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">I. Hypothesenkategorien (Beurteilung)</h3>
           
-          <!-- Strukturen -->
-          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Beteiligte Strukturen (Gelenke, Weichteile, Muskeln, Nerven)</label>
-          <textarea id="cr-strukturen" class="cr-input eval-lock" placeholder="Welche Gewebe könnten die Symptome verursachen?"></textarea>
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Aktivitäten & Partizipation (Funktionelle Einschränkungen)</label>
+          <textarea id="cr-aktivitaet" class="cr-input eval-lock" placeholder="Welche Alltagsaktivitäten und Teilhabe-Bereiche sind beeinträchtigt?"></textarea>
+          <div id="sol-aktivitaet" class="cr-solution">
+             <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_aktivitaet}
+          </div>
+
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Symptomverursachende Strukturen (Gelenke, Weichteile, Muskeln, Nerven)</label>
+          <textarea id="cr-strukturen" class="cr-input eval-lock" placeholder="Welche Gewebe sind lokal oder geleitet verantwortlich?"></textarea>
           <div id="sol-strukturen" class="cr-solution">
              <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_strukturen}
           </div>
 
-          <!-- Schmerzmechanismus (DROPDOWN) -->
           <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Schmerzmechanismus (Primär)</label>
           <select id="cr-schmerztyp" class="cr-input eval-lock">
-             <option value="">-- Typ wählen --</option>
-             <option value="Nozizeptiv">Nozizeptiv</option>
-             <option value="Neuropathisch">Neuropathisch</option>
-             <option value="Noziplastisch">Noziplastisch</option>
+             <option value="">-- Schmerzmechanismus wählen --</option>
+             <option value="Nozizeptiv">Nozizeptiver Schmerz</option>
+             <option value="Neuropathisch">Neuropathischer Schmerz</option>
+             <option value="Noziplastisch">Noziplastischer Schmerz</option>
              <option value="Mixed">Mixed Pain</option>
           </select>
           <div id="sol-schmerztyp" class="cr-solution">
              <strong style="color:#10b981;">Begründung:</strong> ${currentCase.loesung_schmerztyp_begruendung}
           </div>
 
-          <!-- Yellow Flags -->
-          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Yellow Flags & Kontextfaktoren</label>
-          <textarea id="cr-flags" class="cr-input eval-lock" placeholder="Psychosoziale Faktoren, Kognitive Einflüsse..."></textarea>
+          <!-- KATEGORIE II -->
+          <h3 style="color: #e2e8f0; margin-top: 35px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">II. Beitragende Faktoren / Kontextfaktoren</h3>
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Yellow Flags & Kognitive Einflüsse</label>
+          <textarea id="cr-flags" class="cr-input eval-lock" placeholder="Prädisponierende oder perpetuierende Faktoren, Ängste, Erwartungen..."></textarea>
           <div id="sol-flags" class="cr-solution">
              <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_yellow_flags}
           </div>
 
-          <h3 style="color: #e2e8f0; margin-top: 35px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">II. Planung der Untersuchung (P/E)</h3>
+          <!-- PLANUNG P/E -->
+          <h3 style="color: #e2e8f0; margin-top: 35px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">III. Planung P/E (Physikalische Untersuchung)</h3>
 
-          <!-- Funktionstests -->
           <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Spezifische Funktionstests & Palpation</label>
           <textarea id="cr-tests" class="cr-input eval-lock" placeholder="Welche Tests bestätigen oder widerlegen die Hypothesen?"></textarea>
           <div id="sol-tests" class="cr-solution">
              <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_tests}
           </div>
 
-          <!-- Neurologie -->
-          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Neurologische Untersuchung</label>
-          <textarea id="cr-neuro" class="cr-input eval-lock" placeholder="Sensibilität, Kraft, Reflexe?"></textarea>
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Neurologische Untersuchung (Leitfähigkeit)</label>
+          <textarea id="cr-neuro" class="cr-input eval-lock" placeholder="Sensibilität, Kraft, Reflexe erforderlich?"></textarea>
           <div id="sol-neuro" class="cr-solution">
              <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_neuro}
           </div>
 
-          <!-- Ausmass (DROPDOWN) -->
-          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Ausmass der Untersuchung (Reizlage)</label>
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Ausmass & Reizlage (S / I / N)</label>
           <select id="cr-ausmass" class="cr-input eval-lock">
-             <option value="">-- Ausmass wählen --</option>
-             <option value="MAX">MAX (Ausführlich)</option>
-             <option value="MIN">MIN (Minimal)</option>
-             <option value="KUR">KUR (Kursorisch)</option>
+             <option value="">-- Untersuchungs-Ausmass wählen --</option>
+             <option value="MAX">MAX (Ausführlicher Untersuch)</option>
+             <option value="MIN">MIN (Minimaler Untersuch bei hoher Reizlage)</option>
+             <option value="KUR">KUR (Kursorische Untersuchung)</option>
           </select>
           <div id="sol-ausmass" class="cr-solution">
              <strong style="color:#10b981;">Begründung:</strong> ${currentCase.loesung_ausmass_begruendung}
@@ -476,7 +471,7 @@ function initAnatomyApp() {
           <!-- Buttons -->
           <button id="cr-eval-btn" onclick="window.evaluateCR()" class="btn btn-primary" style="width: 100%; margin-top: 20px; padding: 18px; font-size: 1.15rem; background: linear-gradient(135deg, #0ea5e9, #2563eb); border: none; font-weight: bold; cursor: pointer; color: white; border-radius: 8px;">Ergebnisse überprüfen</button>
           
-          <button id="cr-next-btn" onclick="window.openClinicalReasoning()" class="btn btn-menu" style="display: none; width: 100%; margin-top: 15px; padding: 15px; border: 1px solid #10b981; color: #10b981; background: transparent; cursor: pointer; border-radius: 8px;">Nächster zufälliger Fall ➡</button>
+          <button id="cr-next-btn" onclick="window.openClinicalReasoning()" class="btn btn-menu" style="display: none; width: 100%; margin-top: 15px; padding: 15px; border: 1px solid #10b981; color: #10b981; background: transparent; cursor: pointer; border-radius: 8px;">Nächster Fall ➡</button>
 
         </div>
       </div>
@@ -484,7 +479,7 @@ function initAnatomyApp() {
     container.className = "";
     container.innerHTML = html;
   };
-
+  
   window.evaluateCR = function() {
     const c = window.currentCRCase;
     
