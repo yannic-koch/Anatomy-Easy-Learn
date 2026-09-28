@@ -224,23 +224,37 @@ function initAnatomyApp() {
     { muskel: "Mm. interossei dorsales I-IV (Fuß)", gruppe: "Bein: Fuß", ursprung: "Zweiköpfig von einander zugekehrten Seiten der Ossa metatarsi I-V.", ansatz: "Basis der Grundphalangen, Dorsalaponeurosen der 2.–4. Zehe.", innervation: "N. plantaris lateralis (S1, 2).", funktion: "Spreizen (Abduktion) der Zehen." }
   ];
 
-  // ==========================================
-  // DATENBANK 2: CLINICAL REASONING FÄLLE (ZHAW-konform)
+ // ==========================================
+  // DATENBANK 2: CLINICAL REASONING FÄLLE (Vollständiger ZHAW-Standard)
   // ==========================================
   const crDaten = [
     {
       id: 1,
       muster: "Lumbale Radikulopathie (L5)",
       fall_text: "Ein 45-jähriger Bodenleger klagt über einschießende, elektrisierende Schmerzen vom unteren Rücken bis in die rechte Großzehe. Die Schmerzen begannen gestern nach dem Heben einer schweren Kiste. Husten und Niesen verstärken den Schmerz extrem. Er hat große Angst, dass er seinen Job aufgeben muss.",
+      
+      // I. Hypothesenkategorien
       loesung_aktivitaet: "Eingeschränktes Heben, Bücken, langes Stehen und Gehen (Arbeitsfähigkeit als Bodenleger gefährdet).",
       loesung_strukturen: "Nervenwurzel L5 rechts, Bandscheibe L4/L5.",
+      
+      // II. Kontextfaktoren
+      loesung_yellow_flags: "Kognitive / affektive Einflüsse: Ausgeprägte Existenz- und Zukunftsangst bzgl. der Arbeit.",
+      
+      // III. Pathobiologische Mechanismen
+      loesung_kausalitaet: "Trauma / mechanische Überbelastung (Heben einer schweren Kiste).",
+      loesung_stadium: "Akut",
       loesung_schmerztyp: "Neuropathisch",
-      loesung_schmerztyp_begruendung: "Primär neuropathischer Schmerz (einschießend, elektrisierend, radikulär ausstrahlend, durch Druckerhöhung wie Husten auslösbar).",
-      loesung_yellow_flags: "Kognitive / affektive Einflüsse: Ausgeprägte Existenz- und Zukunftsangst bzgl. der Arbeit (Catastrophizing).",
-      loesung_tests: "Lasègue-Test / Slump-Test zur Provokation der Nervenwurzel, Überprüfung der Isometrie der LWS.",
-      loesung_neuro: "Sensibilität (Dermatom L5 - Großzehe), Kraft (M. extensor hallucis longus), Reflexe (Tibialis-posterior-Reflex / Eigenreflexe).",
+      loesung_schmerztyp_begruendung: "Primär neuropathischer Schmerz (einschießend, elektrisierend, radikulär, durch Husten auslösbar).",
+      
+      // IV. & V. Vorsichtsmassnahmen & Prognose
+      loesung_vorsichtsmassnahmen: "Husten/Niesen extrem schmerzhaft. Red Flags (Kavernensyndrom, Paresen) ausschliessen.",
+      loesung_prognose: "Positiv: Guter Allgemeinzustand. Negativ: Zukunftsangst, hohe körperliche Arbeitsbelastung (Bodenleger).",
+      
+      // Planung P/E
+      loesung_tests: "Lasègue-Test / Slump-Test zur Provokation der Nervenwurzel, Isometrie LWS.",
+      loesung_neuro: "Sensibilität (Dermatom L5), Kraft (M. extensor hallucis longus), Reflexe (TPR).",
       loesung_ausmass: "MIN",
-      loesung_ausmass_begruendung: "Hohe Reizlage (S/I/N: Hohe Irritierbarkeit, starke Schmerzen). Die neurologische Untersuchung hat Priorität zum Ausschluss von Red Flags."
+      loesung_ausmass_begruendung: "Hohe Reizlage (S/I/N: Hohe Irritierbarkeit, starke Schmerzen). Neurologie hat Priorität."
     }
   ];
 
@@ -253,10 +267,8 @@ function initAnatomyApp() {
   let currentMode = "";
   let currentHub = ""; 
 
-  // SICHERHEITSCHECK: Verhindert, dass das Skript abstürzt, falls der Container in HTML fehlt.
   let container = document.getElementById("app-container");
   if (!container) {
-    console.warn("Container #app-container nicht gefunden. Erstelle ihn neu.");
     container = document.createElement("div");
     container.id = "app-container";
     document.body.appendChild(container);
@@ -269,7 +281,6 @@ function initAnatomyApp() {
   // 1. DER STARTBILDSCHIRM (FULLSCREEN)
   // ==========================================
   window.renderHomeScreen = function() {
-    console.log("Lade HomeScreen...");
     const cleanStyle = document.getElementById("clean-layout-styles");
     if (cleanStyle) cleanStyle.remove();
 
@@ -283,118 +294,49 @@ function initAnatomyApp() {
     }
     
     styleEl.innerHTML = `
-      html, body {
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 100vw !important;
-        min-height: 100vh !important;
-        background: ${backgroundImage} center/cover fixed no-repeat, #0f172a !important;
-      }
-      #app-container {
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        min-height: 100vh !important;
-        background: transparent !important;
-        box-sizing: border-box !important;
-      }
-      .cr-input {
-        width: 100%; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1);
-        color: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 10px;
-        font-family: inherit; font-size: 0.95rem; box-sizing: border-box; transition: all 0.3s ease;
-      }
+      html, body { margin: 0 !important; padding: 0 !important; width: 100vw !important; min-height: 100vh !important; background: ${backgroundImage} center/cover fixed no-repeat, #0f172a !important; }
+      #app-container { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; min-height: 100vh !important; background: transparent !important; box-sizing: border-box !important; }
+      .cr-input { width: 100%; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); color: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-family: inherit; font-size: 0.95rem; box-sizing: border-box; transition: all 0.3s ease; }
       textarea.cr-input { min-height: 70px; resize: vertical; }
       select.cr-input { appearance: auto; cursor: pointer; }
       .cr-input:focus { outline: none; border-color: #38bdf8; background: rgba(15, 23, 42, 0.9); }
-      
       .cr-input.correct { border-color: #10b981 !important; background: rgba(16, 185, 129, 0.15) !important; color: #10b981; font-weight: bold; }
       .cr-input.wrong { border-color: #ef4444 !important; background: rgba(239, 68, 68, 0.15) !important; color: #ef4444; font-weight: bold; }
-      
-      .cr-solution {
-        background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981;
-        padding: 15px; margin-top: -5px; margin-bottom: 25px; border-radius: 0 0 8px 8px;
-        color: #e2e8f0; font-size: 0.95rem; display: none;
-      }
+      .cr-solution { background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981; padding: 15px; margin-top: -5px; margin-bottom: 25px; border-radius: 0 0 8px 8px; color: #e2e8f0; font-size: 0.95rem; display: none; }
     `;
 
     let html = `
       <div class="fade-in" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; width: 100%; padding: 20px; box-sizing: border-box; position: relative;">
-        
         <div style="background: rgba(15, 23, 42, 0.75) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 24px !important; padding: 45px 30px !important; width: 100% !important; max-width: 440px !important; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(24px) !important; -webkit-backdrop-filter: blur(24px) !important; text-align: center !important; position: relative; z-index: 1;">
-          
-          <h1 style="font-size: 2rem !important; color: #3b82f6 !important; margin-bottom: 5px !important; font-weight: 700 !important; font-family: sans-serif !important; text-shadow: 0 0 20px rgba(59, 130, 246, 0.6) !important; letter-spacing: 0.5px;">
-            Anatomie-Trainer
-          </h1>
-          <p style="color: #94a3b8 !important; font-size: 0.95rem !important; margin-bottom: 35px !important; font-family: sans-serif !important; font-weight: 400;">
-            Bitte Trainings-Raum wählen, um fortzufahren.
-          </p>
-
+          <h1 style="font-size: 2rem !important; color: #3b82f6 !important; margin-bottom: 5px !important; font-weight: 700 !important; font-family: sans-serif !important; text-shadow: 0 0 20px rgba(59, 130, 246, 0.6) !important; letter-spacing: 0.5px;">Anatomie-Trainer</h1>
+          <p style="color: #94a3b8 !important; font-size: 0.95rem !important; margin-bottom: 35px !important; font-family: sans-serif !important; font-weight: 400;">Bitte Trainings-Raum wählen, um fortzufahren.</p>
           <div style="display: flex !important; flex-direction: column !important; gap: 16px !important;">
-            
-            <div onclick="window.openHub('UA')"
-                 style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(255,255,255,0.05) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;"
-                 onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';"
-                 onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'; this.style.background='rgba(10, 15, 30, 0.8)'; this.style.transform='translateY(0)';">
-              <div style="color: #e2e8f0; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-              </div>
-              <div style="text-align: left !important;">
-                <h2 style="font-size: 1.15rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Ursprung & Ansatz</h2>
-                <p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">Mechanische Fixierung</p>
-              </div>
+            <div onclick="window.openHub('UA')" style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(255,255,255,0.05) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;" onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'; this.style.background='rgba(10, 15, 30, 0.8)'; this.style.transform='translateY(0)';">
+              <div style="color: #e2e8f0; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></div>
+              <div style="text-align: left !important;"><h2 style="font-size: 1.15rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Ursprung & Ansatz</h2><p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">Mechanische Fixierung</p></div>
             </div>
-
-            <div onclick="window.openHub('INN')"
-                 style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(255,255,255,0.05) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;"
-                 onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';"
-                 onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'; this.style.background='rgba(10, 15, 30, 0.8)'; this.style.transform='translateY(0)';">
-              <div style="color: #fbbf24; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-              </div>
-              <div style="text-align: left !important;">
-                <h2 style="font-size: 1.15rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Innervation</h2>
-                <p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">Nervale Versorgung</p>
-              </div>
+            <div onclick="window.openHub('INN')" style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(255,255,255,0.05) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;" onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'; this.style.background='rgba(10, 15, 30, 0.8)'; this.style.transform='translateY(0)';">
+              <div style="color: #fbbf24; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
+              <div style="text-align: left !important;"><h2 style="font-size: 1.15rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Innervation</h2><p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">Nervale Versorgung</p></div>
             </div>
-
-            <div onclick="window.openHub('FUN')"
-                 style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(255,255,255,0.05) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;"
-                 onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';"
-                 onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'; this.style.background='rgba(10, 15, 30, 0.8)'; this.style.transform='translateY(0)';">
-              <div style="color: #e2e8f0; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-              </div>
-              <div style="text-align: left !important;">
-                <h2 style="font-size: 1.15rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Funktion</h2>
-                <p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">Biokinetik & Bewegung</p>
-              </div>
+            <div onclick="window.openHub('FUN')" style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(255,255,255,0.05) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;" onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'; this.style.background='rgba(10, 15, 30, 0.8)'; this.style.transform='translateY(0)';">
+              <div style="color: #e2e8f0; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></div>
+              <div style="text-align: left !important;"><h2 style="font-size: 1.15rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Funktion</h2><p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">Biokinetik & Bewegung</p></div>
             </div>
-
-            <div onclick="window.openClinicalReasoning()"
-                 style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;"
-                 onmouseover="this.style.borderColor='rgba(16, 185, 129, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';"
-                 onmouseout="this.style.borderColor='rgba(56, 189, 248, 0.3)'; this.style.background='rgba(10, 15, 30, 0.8)'; this.style.transform='translateY(0)';">
-              <div style="color: #10b981; background: rgba(16, 185, 129, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
-              </div>
-              <div style="text-align: left !important;">
-                <h2 style="font-size: 1.15rem !important; color: #38bdf8 !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Clinical Reasoning</h2>
-                <p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">ZHAW Befund & Hypothesen</p>
-              </div>
+            <div onclick="window.openClinicalReasoning()" style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;" onmouseover="this.style.borderColor='rgba(16, 185, 129, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';" onmouseout="this.style.borderColor='rgba(56, 189, 248, 0.3)'; this.style.background='rgba(10, 15, 30, 0.8)'; this.style.transform='translateY(0)';">
+              <div style="color: #10b981; background: rgba(16, 185, 129, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg></div>
+              <div style="text-align: left !important;"><h2 style="font-size: 1.15rem !important; color: #38bdf8 !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Clinical Reasoning</h2><p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">ZHAW Befund & Hypothesen</p></div>
             </div>
-
           </div>
         </div>
       </div>
     `;
-    
     container.className = ""; 
     container.innerHTML = html;
   };
 
   // ==========================================
-  // 2. CLINICAL REASONING MODUL (ZHAW-Standard)
+  // 2. CLINICAL REASONING MODUL (VOLLSTÄNDIGER ZHAW-STANDARD)
   // ==========================================
   window.openClinicalReasoning = function(caseIndex = -1) {
     const cleanStyle = document.getElementById("clean-layout-styles");
@@ -407,9 +349,9 @@ function initAnatomyApp() {
     window.currentCRCase = currentCase;
 
     let html = `
-      <div class="fade-in" style="padding: 20px; max-width: 950px; margin: 0 auto; color: #f8fafc; text-align: left;">
+      <div class="fade-in" style="padding: 20px; max-width: 950px; margin: 0 auto; color: #f8fafc; text-align: left; height: 100vh; overflow-y: auto;">
         
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; position: sticky; top: 0; background: #0f172a; padding: 10px 0; z-index: 10;">
             <button class="btn btn-menu" onclick="window.renderHomeScreen()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 8px 16px; border-radius: 8px; cursor: pointer;">◀ Zurück zum Hauptmenü</button>
             <span style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">ZHAW Clinical Reasoning Formular</span>
         </div>
@@ -440,28 +382,71 @@ function initAnatomyApp() {
              <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_strukturen}
           </div>
 
-          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Schmerzmechanismus (Primär)</label>
-          <select id="cr-schmerztyp" class="cr-input eval-lock">
-             <option value="">-- Schmerzmechanismus wählen --</option>
-             <option value="Nozizeptiv">Nozizeptiver Schmerz</option>
-             <option value="Neuropathisch">Neuropathischer Schmerz</option>
-             <option value="Noziplastisch">Noziplastischer Schmerz</option>
-             <option value="Mixed">Mixed Pain</option>
-          </select>
-          <div id="sol-schmerztyp" class="cr-solution">
-             <strong style="color:#10b981;">Begründung:</strong> ${currentCase.loesung_schmerztyp_begruendung}
-          </div>
-
           <!-- KATEGORIE II -->
           <h3 style="color: #e2e8f0; margin-top: 35px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">II. Beitragende Faktoren / Kontextfaktoren</h3>
-          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Yellow Flags & Kognitive Einflüsse</label>
+          
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Yellow Flags & Kognitive/Affektive Einflüsse</label>
           <textarea id="cr-flags" class="cr-input eval-lock" placeholder="Prädisponierende oder perpetuierende Faktoren, Ängste, Erwartungen..."></textarea>
           <div id="sol-flags" class="cr-solution">
              <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_yellow_flags}
           </div>
 
+          <!-- KATEGORIE III -->
+          <h3 style="color: #e2e8f0; margin-top: 35px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">III. Pathobiologische Mechanismen</h3>
+
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Kausalität / Entstehungsmechanismus</label>
+          <textarea id="cr-kausalitaet" class="cr-input eval-lock" placeholder="Ursache der Funktionseinschränkung (z.B. Trauma, Immobilisation...)"></textarea>
+          <div id="sol-kausalitaet" class="cr-solution">
+             <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_kausalitaet}
+          </div>
+
+          <div style="display: flex; gap: 15px;">
+            <div style="flex: 1;">
+              <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Gewebemechanismus (Stadium)</label>
+              <select id="cr-stadium" class="cr-input eval-lock">
+                <option value="">-- Stadium wählen --</option>
+                <option value="Akut">Akut</option>
+                <option value="Subakut">Subakut</option>
+                <option value="Rezidivierend">Rezidivierend</option>
+                <option value="Chronisch">Chronisch</option>
+              </select>
+              <div id="sol-stadium" class="cr-solution">
+                <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_stadium}
+              </div>
+            </div>
+
+            <div style="flex: 1;">
+              <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Schmerzmechanismus (Primär)</label>
+              <select id="cr-schmerztyp" class="cr-input eval-lock">
+                <option value="">-- Schmerzmechanismus wählen --</option>
+                <option value="Nozizeptiv">Nozizeptiver Schmerz</option>
+                <option value="Neuropathisch">Neuropathischer Schmerz</option>
+                <option value="Noziplastisch">Noziplastischer Schmerz</option>
+                <option value="Mixed">Mixed Pain</option>
+              </select>
+              <div id="sol-schmerztyp" class="cr-solution">
+                <strong style="color:#10b981;">Begründung:</strong> ${currentCase.loesung_schmerztyp_begruendung}
+              </div>
+            </div>
+          </div>
+
+          <!-- KATEGORIE IV & V -->
+          <h3 style="color: #e2e8f0; margin-top: 35px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">IV. & V. Vorsichtsmassnahmen & Prognose</h3>
+
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Vorsichtsmassnahmen / Kontraindikationen</label>
+          <textarea id="cr-vorsichtsmassnahmen" class="cr-input eval-lock" placeholder="Hinweise für ein vorsichtiges Vorgehen (Red Flags)..."></textarea>
+          <div id="sol-vorsichtsmassnahmen" class="cr-solution">
+             <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_vorsichtsmassnahmen}
+          </div>
+
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Prognose / Ressourcen</label>
+          <textarea id="cr-prognose" class="cr-input eval-lock" placeholder="Was beeinflusst die Prognose positiv (Ressourcen) oder negativ?"></textarea>
+          <div id="sol-prognose" class="cr-solution">
+             <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_prognose}
+          </div>
+
           <!-- PLANUNG P/E -->
-          <h3 style="color: #e2e8f0; margin-top: 35px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">III. Planung P/E (Physikalische Untersuchung)</h3>
+          <h3 style="color: #e2e8f0; margin-top: 35px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Planung P/E (Physikalische Untersuchung)</h3>
 
           <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Spezifische Funktionstests & Palpation</label>
           <textarea id="cr-tests" class="cr-input eval-lock" placeholder="Welche Tests bestätigen oder widerlegen die Hypothesen?"></textarea>
@@ -505,10 +490,13 @@ function initAnatomyApp() {
     document.querySelectorAll('select.eval-lock').forEach(el => el.disabled = true);
     
     const typDrop = document.getElementById('cr-schmerztyp');
-    if(typDrop.value === c.loesung_schmerztyp) { typDrop.classList.add('correct'); } else { typDrop.classList.add('wrong'); }
+    if(typDrop && typDrop.value === c.loesung_schmerztyp) { typDrop.classList.add('correct'); } else if(typDrop) { typDrop.classList.add('wrong'); }
     
+    const stadDrop = document.getElementById('cr-stadium');
+    if(stadDrop && stadDrop.value === c.loesung_stadium) { stadDrop.classList.add('correct'); } else if(stadDrop) { stadDrop.classList.add('wrong'); }
+
     const ausDrop = document.getElementById('cr-ausmass');
-    if(ausDrop.value === c.loesung_ausmass) { ausDrop.classList.add('correct'); } else { ausDrop.classList.add('wrong'); }
+    if(ausDrop && ausDrop.value === c.loesung_ausmass) { ausDrop.classList.add('correct'); } else if(ausDrop) { ausDrop.classList.add('wrong'); }
 
     // 2. Freitext-Felder: Identische Wörter grün markieren
     const ignoreWords = ["und", "im", "am", "der", "die", "das", "an", "von", "zu", "ist", "sind", "oder", "bei", "mit", "ein", "eine", "einer", "einem", "den", "dem", "des", "sich", "als", "für", "auf", "aus", "zur"];
@@ -521,7 +509,7 @@ function initAnatomyApp() {
 
     const checkTextAndHighlight = (inputId, correctText) => {
        const inputEl = document.getElementById(inputId);
-       if(!inputEl) return;
+       if(!inputEl || !correctText) return;
        const userText = inputEl.value;
        const correctWords = getCleanWords(correctText);
        
@@ -560,6 +548,9 @@ function initAnatomyApp() {
     checkTextAndHighlight('cr-aktivitaet', c.loesung_aktivitaet);
     checkTextAndHighlight('cr-strukturen', c.loesung_strukturen);
     checkTextAndHighlight('cr-flags', c.loesung_yellow_flags);
+    checkTextAndHighlight('cr-kausalitaet', c.loesung_kausalitaet);
+    checkTextAndHighlight('cr-vorsichtsmassnahmen', c.loesung_vorsichtsmassnahmen);
+    checkTextAndHighlight('cr-prognose', c.loesung_prognose);
     checkTextAndHighlight('cr-tests', c.loesung_tests);
     checkTextAndHighlight('cr-neuro', c.loesung_neuro);
 
