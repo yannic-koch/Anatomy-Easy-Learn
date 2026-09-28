@@ -48,7 +48,9 @@ document.addEventListener("DOMContentLoaded", function () {
 function initAnatomyApp() {
   window.appInitialized = true;
 
-  // KOMplette Einzelmuskel-Datenbank (Rücken, Arm, Hand, Bein, Fuß)
+  // ==========================================
+  // DATENBANK 1: MUSKELN
+  // ==========================================
   const muskelDaten = [
     // --- 1. RÜCKEN: LATERALER TRAKT ---
     { muskel: "M. iliocostalis", gruppe: "Rücken (Lateraler Trakt)", ursprung: "Os sacrum, Crista iliaca, oberflächliches Blatt der Fascia thoracolumbalis, 3.-12. Rippe.", ansatz: "1.-12. Rippe, tiefes Blatt der Fascia thoracolumbalis, Querfortsätze der LWS und HWS (C4-C6).", innervation: "laterale Äste der Rr. dorsales der Spinalnerven (C8-L1).", funktion: "Dorsalextension (beidseitig), Lateralflexion zur ipsilateralen Seite (einseitig)." },
@@ -230,15 +232,18 @@ function initAnatomyApp() {
       loesung_aktivitaet: "Eingeschränktes Heben, Bücken, langes Stehen und Gehen (Arbeitsfähigkeit als Bodenleger gefährdet).",
       loesung_strukturen: "Nervenwurzel L5 rechts, Bandscheibe L4/L5.",
       loesung_schmerztyp: "Neuropathisch",
-      loesung_schmerztyp_begruendung: "Primär neuropathischer Schmerz (einschießend, elektrisierend, radikulär ausstrahlend, durch Druckerhöhung wie Husten auslösbar)[cite: 2].",
-      loesung_yellow_flags: "Kognitive / affektive Einflüsse: Ausgeprägte Existenz- und Zukunftsangst bzgl. der Arbeit (Catastrophizing)[cite: 2].",
+      loesung_schmerztyp_begruendung: "Primär neuropathischer Schmerz (einschießend, elektrisierend, radikulär ausstrahlend, durch Druckerhöhung wie Husten auslösbar).",
+      loesung_yellow_flags: "Kognitive / affektive Einflüsse: Ausgeprägte Existenz- und Zukunftsangst bzgl. der Arbeit (Catastrophizing).",
       loesung_tests: "Lasègue-Test / Slump-Test zur Provokation der Nervenwurzel, Überprüfung der Isometrie der LWS.",
-      loesung_neuro: "Sensibilität (Dermatom L5 - Großzehe), Kraft (M. extensor hallucis longus), Reflexe (Tibialis-posterior-Reflex / Eigenreflexe)[cite: 2].",
+      loesung_neuro: "Sensibilität (Dermatom L5 - Großzehe), Kraft (M. extensor hallucis longus), Reflexe (Tibialis-posterior-Reflex / Eigenreflexe).",
       loesung_ausmass: "MIN",
-      loesung_ausmass_begruendung: "Hohe Reizlage (S/I/N: Hohe Irritierbarkeit, starke Schmerzen). Die neurologische Untersuchung hat Priorität zum Ausschluss von Red Flags[cite: 2]."
+      loesung_ausmass_begruendung: "Hohe Reizlage (S/I/N: Hohe Irritierbarkeit, starke Schmerzen). Die neurologische Untersuchung hat Priorität zum Ausschluss von Red Flags."
     }
   ];
 
+  // ==========================================
+  // GLOBALE VARIABLEN (WICHTIG! Dürfen nicht fehlen)
+  // ==========================================
   let sessionList = [];
   let currentIndex = 0;
   let userAnswers = {};
@@ -246,8 +251,9 @@ function initAnatomyApp() {
   let currentHub = ""; 
   let container = document.getElementById("app-container");
 
+
   // ==========================================
-  // 1. STARTBILDSCHIRM
+  // 1. DER STARTBILDSCHIRM (FULLSCREEN)
   // ==========================================
   window.renderHomeScreen = function() {
     const cleanStyle = document.getElementById("clean-layout-styles");
@@ -263,12 +269,20 @@ function initAnatomyApp() {
     }
     styleEl.innerHTML = `
       html, body {
-        margin: 0 !important; padding: 0 !important; width: 100vw !important; min-height: 100vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100vw !important;
+        min-height: 100vh !important;
         background: ${backgroundImage} center/cover fixed no-repeat, #0f172a !important;
       }
       #app-container {
-        margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important;
-        min-height: 100vh !important; background: transparent !important; box-sizing: border-box !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 100vh !important;
+        background: transparent !important;
+        box-sizing: border-box !important;
       }
       .cr-input {
         width: 100%; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1);
@@ -278,8 +292,10 @@ function initAnatomyApp() {
       textarea.cr-input { min-height: 70px; resize: vertical; }
       select.cr-input { appearance: auto; cursor: pointer; }
       .cr-input:focus { outline: none; border-color: #38bdf8; background: rgba(15, 23, 42, 0.9); }
+      
       .cr-input.correct { border-color: #10b981 !important; background: rgba(16, 185, 129, 0.15) !important; color: #10b981; font-weight: bold; }
       .cr-input.wrong { border-color: #ef4444 !important; background: rgba(239, 68, 68, 0.15) !important; color: #ef4444; font-weight: bold; }
+      
       .cr-solution {
         background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981;
         padding: 15px; margin-top: -5px; margin-bottom: 25px; border-radius: 0 0 8px 8px;
@@ -289,105 +305,182 @@ function initAnatomyApp() {
 
     let html = `
       <div class="fade-in" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; width: 100%; padding: 20px; box-sizing: border-box; position: relative;">
-        <div style="background: rgba(15, 23, 42, 0.75) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 24px !important; padding: 45px 30px !important; width: 100% !important; max-width: 440px !important; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6) !important; backdrop-filter: blur(24px) !important; text-align: center !important; position: relative; z-index: 1;">
-          <h1 style="font-size: 2rem !important; color: #3b82f6 !important; margin-bottom: 5px !important; font-weight: 700 !important;">Anatomie-Trainer</h1>
-          <p style="color: #94a3b8 !important; font-size: 0.95rem !important; margin-bottom: 35px !important;">Bitte Trainings-Raum wählen, um fortzufahren.</p>
+        
+        <!-- Das zentrale Frosted Glass-Panel -->
+        <div style="background: rgba(15, 23, 42, 0.75) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 24px !important; padding: 45px 30px !important; width: 100% !important; max-width: 440px !important; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(24px) !important; -webkit-backdrop-filter: blur(24px) !important; text-align: center !important; position: relative; z-index: 1;">
+          
+          <h1 style="font-size: 2rem !important; color: #3b82f6 !important; margin-bottom: 5px !important; font-weight: 700 !important; font-family: sans-serif !important; text-shadow: 0 0 20px rgba(59, 130, 246, 0.6) !important; letter-spacing: 0.5px;">
+            Anatomie-Trainer
+          </h1>
+          <p style="color: #94a3b8 !important; font-size: 0.95rem !important; margin-bottom: 35px !important; font-family: sans-serif !important; font-weight: 400;">
+            Bitte Trainings-Raum wählen, um fortzufahren.
+          </p>
+
           <div style="display: flex !important; flex-direction: column !important; gap: 16px !important;">
-            <div onclick="window.openHub('UA')" style="background: rgba(10, 15, 30, 0.8) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; display: flex !important; align-items: center !important; gap: 18px !important;">
-              <div style="text-align: left !important;"><h2 style="font-size: 1.15rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important;">Ursprung & Ansatz</h2><p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important;">Mechanische Fixierung</p></div>
+            
+            <!-- Option 1: Ursprung & Ansatz -->
+            <div onclick="window.openHub('UA')"
+                 style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(255,255,255,0.05) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;"
+                 onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';"
+                 onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'; this.style.background='rgba(10, 15, 30, 0.8)'; this.style.transform='translateY(0)';">
+              <div style="color: #e2e8f0; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+              </div>
+              <div style="text-align: left !important;">
+                <h2 style="font-size: 1.15rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Ursprung & Ansatz</h2>
+                <p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">Mechanische Fixierung</p>
+              </div>
             </div>
-            <div onclick="window.openHub('INN')" style="background: rgba(10, 15, 30, 0.8) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; display: flex !important; align-items: center !important; gap: 18px !important;">
-              <div style="text-align: left !important;"><h2 style="font-size: 1.15rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important;">Innervation</h2><p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important;">Nervale Versorgung</p></div>
+
+            <!-- Option 2: Innervation -->
+            <div onclick="window.openHub('INN')"
+                 style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(255,255,255,0.05) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;"
+                 onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';"
+                 onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'; this.style.background='rgba(10, 15, 30, 0.8)'; this.style.transform='translateY(0)';">
+              <div style="color: #fbbf24; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              </div>
+              <div style="text-align: left !important;">
+                <h2 style="font-size: 1.15rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Innervation</h2>
+                <p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">Nervale Versorgung</p>
+              </div>
             </div>
-            <div onclick="window.openHub('FUN')" style="background: rgba(10, 15, 30, 0.8) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; display: flex !important; align-items: center !important; gap: 18px !important;">
-              <div style="text-align: left !important;"><h2 style="font-size: 1.15rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important;">Funktion</h2><p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important;">Biokinetik & Bewegung</p></div>
+
+            <!-- Option 3: Funktion -->
+            <div onclick="window.openHub('FUN')"
+                 style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(255,255,255,0.05) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;"
+                 onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';"
+                 onmouseout="this.style.borderColor='rgba(255,255,255,0.05)'; this.style.background='rgba(10, 15, 30, 0.8)'; this.style.transform='translateY(0)';">
+              <div style="color: #e2e8f0; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              </div>
+              <div style="text-align: left !important;">
+                <h2 style="font-size: 1.15rem !important; color: #f8fafc !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Funktion</h2>
+                <p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">Biokinetik & Bewegung</p>
+              </div>
             </div>
-            <div onclick="window.openClinicalReasoning()" style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; display: flex !important; align-items: center !important; gap: 18px !important;">
-              <div style="text-align: left !important;"><h2 style="font-size: 1.15rem !important; color: #38bdf8 !important; margin: 0 0 4px 0 !important;">Clinical Reasoning</h2><p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important;">ZHAW Befund & Hypothesen</p></div>
+
+            <!-- Option 4: Clinical Reasoning -->
+            <div onclick="window.openClinicalReasoning()"
+                 style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;"
+                 onmouseover="this.style.borderColor='rgba(16, 185, 129, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';"
+                 onmouseout="this.style.borderColor='rgba(56, 189, 248, 0.3)'; this.style.background='rgba(10, 15, 30, 0.8)'; this.style.transform='translateY(0)';">
+              <div style="color: #10b981; background: rgba(16, 185, 129, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+              </div>
+              <div style="text-align: left !important;">
+                <h2 style="font-size: 1.15rem !important; color: #38bdf8 !important; margin: 0 0 4px 0 !important; font-weight: 600 !important; font-family: sans-serif !important; letter-spacing: 0.3px;">Clinical Reasoning</h2>
+                <p style="color: #64748b !important; font-size: 0.85rem !important; margin: 0 !important; font-family: sans-serif !important;">ZHAW Befund & Hypothesen</p>
+              </div>
             </div>
+
           </div>
         </div>
       </div>
     `;
-    container.className = "";
+    
+    container.className = ""; 
     container.innerHTML = html;
   };
 
   // ==========================================
-  // 2. CLINICAL REASONING MODUL (ZHAW)
+  // 2. CLINICAL REASONING MODUL (ZHAW-Standard)
   // ==========================================
   window.openClinicalReasoning = function(caseIndex = -1) {
     const cleanStyle = document.getElementById("clean-layout-styles");
     if (cleanStyle) cleanStyle.remove();
 
     if (caseIndex === -1) {
-      caseIndex = Math.floor(Math.random() * crDaten.length);
+       caseIndex = Math.floor(Math.random() * crDaten.length);
     }
     const currentCase = crDaten[caseIndex];
     window.currentCRCase = currentCase;
 
     let html = `
       <div class="fade-in" style="padding: 20px; max-width: 950px; margin: 0 auto; color: #f8fafc; text-align: left;">
+        
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-          <button class="btn btn-menu" onclick="window.renderHomeScreen()">◀ Zurück zum Hauptmenü</button>
-          <span style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">ZHAW Clinical Reasoning Formular (WB 1 & 2)</span>
+            <button class="btn btn-menu" onclick="window.renderHomeScreen()">◀ Zurück zum Hauptmenü</button>
+            <span style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">ZHAW Clinical Reasoning Formular (WB 1 & 2)</span>
         </div>
 
-        <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);">
+        <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); backdrop-filter: blur(12px);">
+          
           <h1 style="color: #38bdf8; font-size: 1.8rem; margin-top: 0; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
-            📝 Fallbeispiel: ${currentCase.muster}
+              📝 Fallbeispiel: ${currentCase.muster}
           </h1>
 
           <div style="background: rgba(255,255,255,0.03); padding: 25px; border-radius: 12px; margin-bottom: 35px; border-left: 4px solid #38bdf8;">
-            <strong style="color: #94a3b8; display: block; margin-bottom: 10px; text-transform: uppercase; font-size: 0.85rem;">Patientenfall / Kasuistik:</strong>
+            <strong style="color: #94a3b8; display: block; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem;">Patientenfall / Kasuistik:</strong>
             <p style="font-size: 1.1rem; line-height: 1.7; margin: 0;">${currentCase.fall_text}</p>
           </div>
 
+          <!-- KATEGORIE I -->
           <h3 style="color: #e2e8f0; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">I. Hypothesenkategorien (Beurteilung)</h3>
           
           <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Aktivitäten & Partizipation (Funktionelle Einschränkungen)</label>
-          <textarea id="cr-aktivitaet" class="cr-input eval-lock" placeholder="Welche Alltagsaktivitäten sind beeinträchtigt?"></textarea>
-          <div id="sol-aktivitaet" class="cr-solution"><strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_aktivitaet}</div>
+          <textarea id="cr-aktivitaet" class="cr-input eval-lock" placeholder="Welche Alltagsaktivitäten und Teilhabe-Bereiche sind beeinträchtigt?"></textarea>
+          <div id="sol-aktivitaet" class="cr-solution">
+             <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_aktivitaet}
+          </div>
 
-          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Symptomverursachende Strukturen</label>
+          <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Symptomverursachende Strukturen (Gelenke, Weichteile, Muskeln, Nerven)</label>
           <textarea id="cr-strukturen" class="cr-input eval-lock" placeholder="Welche Gewebe sind lokal oder geleitet verantwortlich?"></textarea>
-          <div id="sol-strukturen" class="cr-solution"><strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_strukturen}</div>
+          <div id="sol-strukturen" class="cr-solution">
+             <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_strukturen}
+          </div>
 
           <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Schmerzmechanismus (Primär)</label>
           <select id="cr-schmerztyp" class="cr-input eval-lock">
-            <option value="">-- Schmerzmechanismus wählen --</option>
-            <option value="Nozizeptiv">Nozizeptiver Schmerz</option>
-            <option value="Neuropathisch">Neuropathischer Schmerz</option>
-            <option value="Noziplastisch">Noziplastischer Schmerz</option>
-            <option value="Mixed">Mixed Pain</option>
+             <option value="">-- Schmerzmechanismus wählen --</option>
+             <option value="Nozizeptiv">Nozizeptiver Schmerz</option>
+             <option value="Neuropathisch">Neuropathischer Schmerz</option>
+             <option value="Noziplastisch">Noziplastischer Schmerz</option>
+             <option value="Mixed">Mixed Pain</option>
           </select>
-          <div id="sol-schmerztyp" class="cr-solution"><strong style="color:#10b981;">Begründung:</strong> ${currentCase.loesung_schmerztyp_begruendung}</div>
+          <div id="sol-schmerztyp" class="cr-solution">
+             <strong style="color:#10b981;">Begründung:</strong> ${currentCase.loesung_schmerztyp_begruendung}
+          </div>
 
+          <!-- KATEGORIE II -->
           <h3 style="color: #e2e8f0; margin-top: 35px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">II. Beitragende Faktoren / Kontextfaktoren</h3>
           <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Yellow Flags & Kognitive Einflüsse</label>
-          <textarea id="cr-flags" class="cr-input eval-lock" placeholder="Ängste, Erwartungen..."></textarea>
-          <div id="sol-flags" class="cr-solution"><strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_yellow_flags}</div>
+          <textarea id="cr-flags" class="cr-input eval-lock" placeholder="Prädisponierende oder perpetuierende Faktoren, Ängste, Erwartungen..."></textarea>
+          <div id="sol-flags" class="cr-solution">
+             <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_yellow_flags}
+          </div>
 
+          <!-- PLANUNG P/E -->
           <h3 style="color: #e2e8f0; margin-top: 35px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">III. Planung P/E (Physikalische Untersuchung)</h3>
+
           <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Spezifische Funktionstests & Palpation</label>
-          <textarea id="cr-tests" class="cr-input eval-lock" placeholder="Welche Tests bestätigen Hypothesen?"></textarea>
-          <div id="sol-tests" class="cr-solution"><strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_tests}</div>
+          <textarea id="cr-tests" class="cr-input eval-lock" placeholder="Welche Tests bestätigen oder widerlegen die Hypothesen?"></textarea>
+          <div id="sol-tests" class="cr-solution">
+             <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_tests}
+          </div>
 
           <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Neurologische Untersuchung (Leitfähigkeit)</label>
-          <textarea id="cr-neuro" class="cr-input eval-lock" placeholder="Sensibilität, Kraft, Reflexe?"></textarea>
-          <div id="sol-neuro" class="cr-solution"><strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_neuro}</div>
+          <textarea id="cr-neuro" class="cr-input eval-lock" placeholder="Sensibilität, Kraft, Reflexe erforderlich?"></textarea>
+          <div id="sol-neuro" class="cr-solution">
+             <strong style="color:#10b981;">Expertenlösung:</strong> ${currentCase.loesung_neuro}
+          </div>
 
           <label style="display:block; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">Ausmass & Reizlage (S / I / N)</label>
           <select id="cr-ausmass" class="cr-input eval-lock">
-            <option value="">-- Untersuchungs-Ausmass wählen --</option>
-            <option value="MAX">MAX (Ausführlicher Untersuch)</option>
-            <option value="MIN">MIN (Minimaler Untersuch bei hoher Reizlage)</option>
-            <option value="KUR">KUR (Kursorische Untersuchung)</option>
+             <option value="">-- Untersuchungs-Ausmass wählen --</option>
+             <option value="MAX">MAX (Ausführlicher Untersuch)</option>
+             <option value="MIN">MIN (Minimaler Untersuch bei hoher Reizlage)</option>
+             <option value="KUR">KUR (Kursorische Untersuchung)</option>
           </select>
-          <div id="sol-ausmass" class="cr-solution"><strong style="color:#10b981;">Begründung:</strong> ${currentCase.loesung_ausmass_begruendung}</div>
+          <div id="sol-ausmass" class="cr-solution">
+             <strong style="color:#10b981;">Begründung:</strong> ${currentCase.loesung_ausmass_begruendung}
+          </div>
 
+          <!-- Buttons -->
           <button id="cr-eval-btn" onclick="window.evaluateCR()" class="btn btn-primary" style="width: 100%; margin-top: 20px; padding: 18px; font-size: 1.15rem; background: linear-gradient(135deg, #0ea5e9, #2563eb); border: none; font-weight: bold; cursor: pointer; color: white; border-radius: 8px;">Ergebnisse überprüfen</button>
+          
           <button id="cr-next-btn" onclick="window.openClinicalReasoning()" class="btn btn-menu" style="display: none; width: 100%; margin-top: 15px; padding: 15px; border: 1px solid #10b981; color: #10b981; background: transparent; cursor: pointer; border-radius: 8px;">Nächster Fall ➡</button>
+
         </div>
       </div>
     `;
@@ -395,9 +488,10 @@ function initAnatomyApp() {
     container.innerHTML = html;
   };
 
-  // Auswertungslogik für Clinical Reasoning
   window.evaluateCR = function() {
     const c = window.currentCRCase;
+    
+    // 1. Dropdowns sperren und klassisch auswerten
     document.querySelectorAll('select.eval-lock').forEach(el => el.disabled = true);
     
     const typDrop = document.getElementById('cr-schmerztyp');
@@ -406,7 +500,9 @@ function initAnatomyApp() {
     const ausDrop = document.getElementById('cr-ausmass');
     if(ausDrop.value === c.loesung_ausmass) { ausDrop.classList.add('correct'); } else { ausDrop.classList.add('wrong'); }
 
+    // 2. Freitext-Felder: Identische Wörter grün markieren
     const ignoreWords = ["und", "im", "am", "der", "die", "das", "an", "von", "zu", "ist", "sind", "oder", "bei", "mit", "ein", "eine", "einer", "einem", "den", "dem", "des", "sich", "als", "für", "auf", "aus", "zur"];
+    
     const getCleanWords = (text) => {
       if (!text) return [];
       const matched = text.toLowerCase().match(/[\wäöüß]+/g);
@@ -414,35 +510,41 @@ function initAnatomyApp() {
     };
 
     const checkTextAndHighlight = (inputId, correctText) => {
-      const inputEl = document.getElementById(inputId);
-      if(!inputEl) return;
-      const userText = inputEl.value;
-      const correctWords = getCleanWords(correctText);
-      
-      const highlightedHTML = userText.replace(/[\wäöüÄÖÜß]+/g, (match) => {
-        const lowerMatch = match.toLowerCase();
-        if (!ignoreWords.includes(lowerMatch) && correctWords.includes(lowerMatch)) {
-          return `<span style="color: #10b981; font-weight: bold; background: rgba(16, 185, 129, 0.2); border-radius: 3px; padding: 0 4px;">${match}</span>`;
-        }
-        return match;
-      });
+       const inputEl = document.getElementById(inputId);
+       if(!inputEl) return;
+       const userText = inputEl.value;
+       const correctWords = getCleanWords(correctText);
+       
+       const highlightedHTML = userText.replace(/[\wäöüÄÖÜß]+/g, (match) => {
+          const lowerMatch = match.toLowerCase();
+          if (!ignoreWords.includes(lowerMatch) && correctWords.includes(lowerMatch)) {
+              return `<span style="color: #10b981; font-weight: bold; background: rgba(16, 185, 129, 0.2); border-radius: 3px; padding: 0 4px;">${match}</span>`;
+          }
+          return match;
+       });
 
-      inputEl.style.display = 'none';
-      const displayDiv = document.createElement('div');
-      displayDiv.className = 'cr-input';
-      displayDiv.style.minHeight = '70px';
-      displayDiv.style.whiteSpace = 'pre-wrap';
-      
-      if (userText.trim() === "") {
-        displayDiv.innerHTML = `<span style="color: #ef4444; font-style: italic;">Keine Antwort eingegeben.</span>`;
-        displayDiv.style.borderColor = '#ef4444';
-      } else {
-        displayDiv.innerHTML = highlightedHTML;
-        const userWordsClean = getCleanWords(userText);
-        const hasMatches = userWordsClean.some(w => correctWords.includes(w));
-        displayDiv.style.borderColor = hasMatches ? '#10b981' : '#ef4444';
-      }
-      inputEl.parentNode.insertBefore(displayDiv, inputEl.nextSibling);
+       inputEl.style.display = 'none';
+
+       const displayDiv = document.createElement('div');
+       displayDiv.className = 'cr-input'; 
+       displayDiv.style.minHeight = '70px';
+       displayDiv.style.whiteSpace = 'pre-wrap'; 
+       
+       if (userText.trim() === "") {
+           displayDiv.innerHTML = `<span style="color: #ef4444; font-style: italic;">Keine Antwort eingegeben.</span>`;
+           displayDiv.style.borderColor = '#ef4444';
+       } else {
+           displayDiv.innerHTML = highlightedHTML;
+           const userWordsClean = getCleanWords(userText);
+           const hasMatches = userWordsClean.some(w => correctWords.includes(w));
+           if (hasMatches) {
+               displayDiv.style.borderColor = '#10b981'; 
+           } else {
+               displayDiv.style.borderColor = '#ef4444'; 
+           }
+       }
+
+       inputEl.parentNode.insertBefore(displayDiv, inputEl.nextSibling);
     };
 
     checkTextAndHighlight('cr-aktivitaet', c.loesung_aktivitaet);
@@ -451,11 +553,19 @@ function initAnatomyApp() {
     checkTextAndHighlight('cr-tests', c.loesung_tests);
     checkTextAndHighlight('cr-neuro', c.loesung_neuro);
 
-    document.querySelectorAll('.cr-solution').forEach(sol => { sol.style.display = 'block'; });
+    // 3. Experten-Lösungsboxen einblenden
+    document.querySelectorAll('.cr-solution').forEach(sol => {
+        sol.style.display = 'block';
+    });
+
+    // 4. Buttons austauschen
     document.getElementById('cr-eval-btn').style.display = 'none';
     document.getElementById('cr-next-btn').style.display = 'block';
   };
 
+  // ==========================================
+  // 3. REGULÄRES TRAINING / MENÜS
+  // ==========================================
   window.openHub = function(hubName) {
     currentHub = hubName; 
     window.renderMenu();
@@ -463,10 +573,12 @@ function initAnatomyApp() {
 
   window.startSession = function(mode, customPool = null) {
     currentMode = mode;
+
     if (customPool) {
       sessionList = customPool;
     } else {
       const selectedMuscles = Array.from(document.querySelectorAll('.m-check:checked')).map(c => c.value);
+      
       const selectedKats = [];
       if (currentHub === 'UA') {
         if (document.getElementById('kat-ursprung') && document.getElementById('kat-ursprung').checked) selectedKats.push('ursprung');
@@ -489,6 +601,7 @@ function initAnatomyApp() {
 
       const limit = parseInt(document.getElementById('limit-input').value) || 0;
       let pool = [];
+
       selectedMuscles.forEach(mName => {
         const mObj = muskelDaten.find(m => m.muskel === mName);
         selectedKats.forEach(kat => {
@@ -565,6 +678,7 @@ function initAnatomyApp() {
       
       const leftSide = [...subSet].sort(() => Math.random() - 0.5);
       const rightSide = subSet.map(m => m[currentCategory]).sort(() => Math.random() - 0.5);
+
       q.matchingSubSet = subSet;
 
       html += `
@@ -572,6 +686,7 @@ function initAnatomyApp() {
         <p style="color:var(--text-muted); font-size:0.95rem;">Kategorie: <strong style="color:var(--text-main); text-transform:uppercase;">${currentCategory}</strong></p>
         <br>
         <p style="font-weight:600; margin-bottom:15px; font-size:1.1rem; color:var(--text-main);">Ordne jedem Muskel den passenden Wert zu:</p>
+        
         <div class="match-list">
           ${leftSide.map((m) => `
             <div class="match-item">
@@ -606,6 +721,7 @@ function initAnatomyApp() {
     
     const userWords = clean(userAns);
     const correctWords = clean(correct);
+    
     const matches = userWords.filter(w => correctWords.includes(w));
     const isCorrect = correctWords.length > 0 && (matches.length / correctWords.length) >= 0.6;
 
@@ -613,6 +729,7 @@ function initAnatomyApp() {
       inputEl.disabled = true;
       inputEl.classList.add(isCorrect ? 'correct' : 'wrong');
     }
+
     saveAndRoute(userAns, correct, isCorrect);
   };
 
@@ -620,8 +737,8 @@ function initAnatomyApp() {
     const q = sessionList[currentIndex];
     const selected = document.querySelector('input[name="single-opt"]:checked');
     if(!selected && currentMode === "PRACTICE") {
-      alert("⚠️ Bitte wähle eine Option aus!");
-      return;
+        alert("⚠️ Bitte wähle eine Option aus!");
+        return;
     }
     const userAns = selected ? selected.value : "Keine Auswahl getroffen";
     const correct = q.muskel[q.kat];
@@ -631,18 +748,24 @@ function initAnatomyApp() {
       document.querySelectorAll('.option-item').forEach(lbl => {
         const radio = lbl.querySelector('input');
         radio.disabled = true;
-        if (radio.value === correct) lbl.classList.add('correct');
-        else if (radio.checked && radio.value !== correct) lbl.classList.add('wrong');
+        if (radio.value === correct) {
+          lbl.classList.add('correct');
+        } else if (radio.checked && radio.value !== correct) {
+          lbl.classList.add('wrong');
+        }
       });
     }
+
     saveAndRoute(userAns, correct, isCorrect);
   };
 
   window.checkMatchAnswer = function() {
     const q = sessionList[currentIndex];
     const selects = document.querySelectorAll('.match-select');
-    let totalPairs = selects.length, correctPairs = 0;
-    let userSummary = [], correctSummary = [];
+    let totalPairs = selects.length;
+    let correctPairs = 0;
+    let userSummary = [];
+    let correctSummary = [];
 
     selects.forEach(sel => {
       const muskelName = sel.getAttribute('data-muskel');
@@ -652,7 +775,10 @@ function initAnatomyApp() {
 
       userSummary.push(`${muskelName}: ${selectedVal || 'Keine Wahl'}`);
       correctSummary.push(`${muskelName}: ${correctVal}`);
-      if (selectedVal === correctVal) correctPairs++;
+
+      if (selectedVal === correctVal) {
+        correctPairs++;
+      }
 
       if (currentMode === "PRACTICE") {
         sel.disabled = true;
@@ -666,6 +792,7 @@ function initAnatomyApp() {
 
   function saveAndRoute(userAns, correctAns, isCorrect) {
     userAnswers[currentIndex] = { user: userAns, correct: correctAns, success: isCorrect };
+
     if (currentMode === "PRACTICE") {
       const submitBtn = document.getElementById("submit-btn");
       if (submitBtn) submitBtn.style.display = "none";
@@ -673,6 +800,7 @@ function initAnatomyApp() {
       const feedbackArea = document.getElementById("feedback-area");
       feedbackArea.style.display = "block";
       feedbackArea.className = isCorrect ? "feedback correct" : "feedback wrong";
+
       feedbackArea.innerHTML = isCorrect 
         ? `<div style="display:flex; align-items:center;">${iconCheck} <span><strong>Exzellent!</strong> Die Antwort ist richtig.</span></div>` 
         : `<div style="display:flex; align-items:center; margin-bottom:10px;">${iconCross} <span><strong>Leider falsch.</strong></span></div><span style="color:#991b1b; font-size:0.9rem; text-transform:uppercase; display:block; margin-top:10px;">Richtige Lösung:</span><span style="font-size:1.05rem; display:block; margin-top:4px;">${correctAns}</span>`;
@@ -706,7 +834,11 @@ function initAnatomyApp() {
     `;
 
     if (wrongQuestions.length > 0) {
-      html += `<button class="btn btn-repeat" onclick="window.startRepetition()" style="font-size:1.1rem; padding:16px;">🔄 Falsche Fragen wiederholen (${wrongQuestions.length})</button>`;
+      html += `
+        <button class="btn btn-repeat" onclick="window.startRepetition()" style="font-size:1.1rem; padding:16px;">
+          🔄 Falsche Fragen wiederholen (${wrongQuestions.length})
+        </button>
+      `;
     }
 
     html += `
@@ -716,18 +848,22 @@ function initAnatomyApp() {
             return `
               <div class="result-box ${ans.success ? 'result-correct' : 'result-wrong'}">
                 <div style="font-size:1.1rem; margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-start;">
-                  <strong style="display:flex; align-items:center;">${ans.success ? iconCheck : iconCross} Frage ${i+1}:${q.muskel ? q.muskel.muskel : 'Zuordnung'}</strong> 
-                  <span style="color:#64748b; font-size:0.85rem; background:#f1f5f9; padding:4px 8px; border-radius:6px; font-weight:600;">${q.type.toUpperCase()}</span>
+                  <strong style="display:flex; align-items:center;">
+                    ${ans.success ? iconCheck : iconCross} 
+                    Frage ${i+1}:${q.muskel ? q.muskel.muskel : 'Zuordnung'}
+                  </strong> 
+                  <span style="color:#64748b; font-size:0.85rem; background:#f1f5f9; padding:4px 8px; border-radius:6px; font-weight:600; margin-left:10px;">${q.type.toUpperCase()}</span>
                 </div>
-                <small style="color:#64748b; display:block; margin-bottom:12px; font-weight:600;">KATEGORIE: ${q.kat.toUpperCase()}</small>
-                <div class="user-ans" style="margin-bottom:8px;">Deine Antwort:<br><strong style="color:var(--text-main);">${ans.user}</strong></div>${!ans.success ? `<div class="correct-ans" style="padding-top:8px; border-top:1px dashed #fecaca; margin-top:10px;">Richtige Lösung:<br><span style="color:#b91c1c;">${ans.correct}</span></div>` : ''}
+                <small style="color:#64748b; display:block; margin-bottom:12px; font-weight:600; letter-spacing:0.5px;">KATEGORIE: ${q.kat.toUpperCase()}</small>
+                <div class="user-ans" style="margin-bottom:8px; line-height:1.5;">Deine Antwort:<br><strong style="color:var(--text-main); font-style:normal;">${ans.user}</strong></div>${!ans.success ? `<div class="correct-ans" style="padding-top:8px; border-top:1px dashed #fecaca; line-height:1.5; margin-top:10px;">Richtige Lösung:<br><span style="color:#b91c1c;">${ans.correct}</span></div>` : ''}
               </div>
             `;
           }).join('')}
         </div>
-        <button class="btn" onclick="window.renderHomeScreen()" style="background:#0f172a; margin-top:25px; padding:18px; font-size:1.1rem;">🏠 Zurück zum Trainings-Raum</button>
+        <button class="btn" onclick="window.renderHomeScreen()" style="background:#0f172a; margin-top:25px; padding:18px; font-size:1.1rem; box-shadow:0 10px 15px -3px rgba(15, 23, 42, 0.3);">🏠 Zurück zum Trainings-Raum</button>
       </div>
     `;
+
     window.lastWrongQuestions = wrongQuestions;
     container.innerHTML = html;
   }
@@ -739,22 +875,33 @@ function initAnatomyApp() {
 
   window.toggleMasterCheckbox = function(checkbox) {
     const status = checkbox.checked;
-    document.querySelectorAll('.m-check, .group-check').forEach(cb => { cb.checked = status; cb.indeterminate = false; });
+    document.querySelectorAll('.m-check, .group-check').forEach(cb => {
+      cb.checked = status;
+      cb.indeterminate = false; 
+    });
     window.updateSelectionCount();
   };
 
   window.selectRandomMuscles = function() {
-    document.querySelectorAll('.m-check, .group-check, #master-cb').forEach(cb => { cb.checked = false; cb.indeterminate = false; });
+    document.querySelectorAll('.m-check, .group-check, #master-cb').forEach(cb => {
+      cb.checked = false;
+      cb.indeterminate = false;
+    });
+    
     const randomCount = Math.floor(Math.random() * (13 - 5 + 1)) + 5;
     const checkboxes = Array.from(document.querySelectorAll('.m-check'));
     checkboxes.sort(() => Math.random() - 0.5);
-    checkboxes.slice(0, randomCount).forEach(cb => { cb.checked = true; });
+    checkboxes.slice(0, randomCount).forEach(cb => {
+        cb.checked = true;
+    });
     window.updateSelectionCount();
   };
 
   window.toggleGroupCheckbox = function(event, checkbox, gruppe) {
     event.stopPropagation();
-    document.querySelectorAll(`.m-check[data-gruppe="${gruppe}"]`).forEach(cb => { cb.checked = checkbox.checked; });
+    document.querySelectorAll(`.m-check[data-gruppe="${gruppe}"]`).forEach(cb => {
+      cb.checked = checkbox.checked;
+    });
     window.updateSelectionCount();
   };
 
@@ -762,34 +909,64 @@ function initAnatomyApp() {
     const muscleCheckboxes = document.querySelectorAll('.m-check');
     const total = muscleCheckboxes.length;
     let selected = 0;
-    muscleCheckboxes.forEach(cb => { if (cb.checked) selected++; });
+    
+    muscleCheckboxes.forEach(cb => {
+      if (cb.checked) selected++;
+    });
     
     const globalCounter = document.getElementById('global-counter-text');
-    if (globalCounter) globalCounter.innerHTML = `<span style="color:#3b82f6;">${selected}</span> / ${total} ausgewählt`;
+    if (globalCounter) {
+      globalCounter.innerHTML = `<span style="color:#3b82f6;">${selected}</span> / ${total} ausgewählt`;
+    }
 
     const masterCb = document.getElementById('master-cb');
     if (masterCb) {
-      if (selected === total) { masterCb.checked = true; masterCb.indeterminate = false; }
-      else if (selected === 0) { masterCb.checked = false; masterCb.indeterminate = false; }
-      else { masterCb.checked = false; masterCb.indeterminate = true; }
+      if (selected === total) {
+        masterCb.checked = true;
+        masterCb.indeterminate = false;
+      } else if (selected === 0) {
+        masterCb.checked = false;
+        masterCb.indeterminate = false;
+      } else {
+        masterCb.checked = false;
+        masterCb.indeterminate = true;
+      }
     }
 
     document.querySelectorAll('.accordion-group').forEach(groupDiv => {
       const groupCheckboxes = groupDiv.querySelectorAll('.m-check');
       const totalInGroup = groupCheckboxes.length;
       let selectedInGroup = 0;
-      groupCheckboxes.forEach(cb => { if (cb.checked) selectedInGroup++; });
+      
+      groupCheckboxes.forEach(cb => {
+        if (cb.checked) selectedInGroup++;
+      });
+      
       const countBadge = groupDiv.querySelector('.group-count');
       const groupCb = groupDiv.querySelector('.group-check');
+      
       if (groupCb) {
-        if (selectedInGroup === totalInGroup) { groupCb.checked = true; groupCb.indeterminate = false; }
-        else if (selectedInGroup === 0) { groupCb.checked = false; groupCb.indeterminate = false; }
-        else { groupCb.checked = false; groupCb.indeterminate = true; }
+        if (selectedInGroup === totalInGroup) {
+          groupCb.checked = true;
+          groupCb.indeterminate = false;
+        } else if (selectedInGroup === 0) {
+          groupCb.checked = false;
+          groupCb.indeterminate = false;
+        } else {
+          groupCb.checked = false;
+          groupCb.indeterminate = true;
+        }
       }
+
       if (countBadge) {
         countBadge.innerText = `${selectedInGroup}/${totalInGroup}`;
-        countBadge.style.background = selectedInGroup === 0 ? '#f1f5f9' : '#eff6ff';
-        countBadge.style.color = selectedInGroup === 0 ? '#94a3b8' : '#3b82f6';
+        if(selectedInGroup === 0) {
+          countBadge.style.background = '#f1f5f9';
+          countBadge.style.color = '#94a3b8';
+        } else {
+          countBadge.style.background = '#eff6ff';
+          countBadge.style.color = '#3b82f6';
+        }
       }
     });
   };
@@ -797,6 +974,7 @@ function initAnatomyApp() {
   window.toggleAccordion = function(element) {
     const content = element.nextElementSibling;
     const chevron = element.querySelector('.chevron');
+    
     if (content.style.display === 'none') {
       content.style.display = 'block';
       chevron.style.transform = 'rotate(180deg)';
@@ -808,14 +986,22 @@ function initAnatomyApp() {
 
   window.filterMuscles = function() {
     const term = document.getElementById('muscle-search').value.toLowerCase();
+    
     document.querySelectorAll('.accordion-group').forEach(groupDiv => {
       let hasVisibleItem = false;
+      
       groupDiv.querySelectorAll('.muscle-item').forEach(itemDiv => {
         const text = itemDiv.innerText.toLowerCase();
-        if (text.includes(term)) { itemDiv.style.display = 'flex'; hasVisibleItem = true; }
-        else { itemDiv.style.display = 'none'; }
+        if (text.includes(term)) {
+          itemDiv.style.display = 'flex';
+          hasVisibleItem = true;
+        } else {
+          itemDiv.style.display = 'none';
+        }
       });
+      
       groupDiv.style.display = hasVisibleItem ? 'block' : 'none';
+      
       const content = groupDiv.querySelector('.accordion-content');
       const chevron = groupDiv.querySelector('.chevron');
       if (term.length > 0 && hasVisibleItem) {
@@ -830,15 +1016,24 @@ function initAnatomyApp() {
     if (homeStyle) homeStyle.remove();
 
     const gruppen = [...new Set(muskelDaten.map(m => m.gruppe))].sort();
-    let settingsTitle = "", categorySettingsHtml = "";
+
+    let settingsTitle = "";
+    let categorySettingsHtml = "";
 
     if (currentHub === 'UA') {
       settingsTitle = "Fokus: Ursprung & Ansatz";
       categorySettingsHtml = `
-        <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">Lege fest, welche Informationen berücksichtigt werden.</p>
+        <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">Lege fest, welche Informationen in den Fragen berücksichtigt werden.</p>
         <div style="margin-bottom: 25px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;"><span style="font-size: 0.95rem; color: #334155;">Ursprung</span><label class="switch"><input type="checkbox" id="kat-ursprung" checked><span class="slider round"></span></label></div>
-          <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.95rem; color: #334155;">Ansatz</span><label class="switch"><input type="checkbox" id="kat-ansatz" checked><span class="slider round"></span></label></div>
+          <strong style="display: block; font-size: 0.9rem; color: #1e293b; margin-bottom: 15px;">Bereich abfragen</strong>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <span style="font-size: 0.95rem; color: #334155;">Ursprung</span>
+            <label class="switch"><input type="checkbox" id="kat-ursprung" checked><span class="slider round"></span></label>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.95rem; color: #334155;">Ansatz</span>
+            <label class="switch"><input type="checkbox" id="kat-ansatz" checked><span class="slider round"></span></label>
+          </div>
         </div>
       `;
     } else if (currentHub === 'INN') {
@@ -857,42 +1052,72 @@ function initAnatomyApp() {
     }
     
     styleEl.innerHTML = `
-      body, html { background: #f8fafc !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+      body, html { background: #f8fafc !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
       .header-top { padding: 20px 40px; background: transparent; }
       .main-grid { display: grid; grid-template-columns: 1fr 380px; gap: 30px; padding: 0 40px 40px 40px; max-width: 1400px; margin: 0 auto; align-items: start; }
       .panel-box { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; }
-      .search-bar input { width: 100%; padding: 12px 15px 12px 40px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.95rem; outline: none; box-sizing: border-box; }
+      
+      .search-bar input { width: 100%; padding: 12px 15px 12px 40px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.95rem; outline: none; transition: all 0.2s; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2394a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 15px center; background-size: 16px; box-sizing: border-box; }
+      .search-bar input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+
       .accordion-group { margin-bottom: 10px; border: 1px solid #f1f5f9; border-radius: 10px; overflow: hidden; background: white; }
-      .accordion-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: #f8fafc; cursor: pointer; }
+      .accordion-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: #f8fafc; cursor: pointer; user-select: none; transition: background 0.2s; }
+      .accordion-header:hover { background: #f1f5f9; }
       .accordion-content { padding: 10px 20px 20px 20px; display: none; background: white; }
       .muscle-item { padding: 8px 0; border-bottom: 1px solid #f8fafc; display: flex; align-items: center; }
+      .muscle-item:last-child { border-bottom: none; }
+      
       .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
       .switch input { opacity: 0; width: 0; height: 0; }
       .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .3s; border-radius: 24px; }
       .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
       input:checked + .slider { background-color: #3b82f6; }
       input:checked + .slider:before { transform: translateX(20px); }
-      .btn-blue { background: #3b82f6; color: white; border: none; padding: 16px; border-radius: 10px; width: 100%; font-weight: 600; cursor: pointer; margin-bottom: 10px; }
-      .btn-outline-red { background: white; color: #ef4444; border: 1px solid #fca5a5; padding: 14px; border-radius: 10px; width: 100%; font-weight: 600; cursor: pointer; }
+      
+      .btn-blue { background: #3b82f6; color: white; border: none; padding: 16px; border-radius: 10px; width: 100%; font-weight: 600; font-size: 1rem; cursor: pointer; transition: background 0.2s; margin-bottom: 10px; }
+      .btn-blue:hover { background: #2563eb; }
+      .btn-outline-red { background: white; color: #ef4444; border: 1px solid #fca5a5; padding: 14px; border-radius: 10px; width: 100%; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: background 0.2s; }
+      .btn-outline-red:hover { background: #fef2f2; }
     `;
 
     let html = `
       <div class="fade-in" style="min-height: 100vh;">
+        
         <div class="header-top">
-          <button onclick="window.renderHomeScreen()" style="background:transparent; border:none; color:#64748b; font-size:1rem; cursor:pointer; display:flex; align-items:center; gap:8px;">◀ Zurück zum Trainings-Raum</button>
+          <button onclick="window.renderHomeScreen()" style="background:transparent; border:none; color:#64748b; font-size:1rem; cursor:pointer; display:flex; align-items:center; gap:8px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Zurück zum Trainings-Raum
+          </button>
         </div>
+        
         <div class="main-grid">
+          
           <div class="panel-box">
+            
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-              <h2 style="margin: 0; font-size: 1.4rem; color: #0f172a;">1. Muskelauswahl</h2>
-              <div id="global-counter-text" style="font-size: 0.95rem; font-weight: 600; color: #64748b; background: #f8fafc; padding: 6px 12px; border-radius: 20px; border: 1px solid #e2e8f0;">Lade...</div>
+              <h2 style="margin: 0; font-size: 1.4rem; color: #0f172a; display:flex; align-items:center; gap:10px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="6.5"></line></svg>
+                1. Muskelauswahl
+              </h2>
+              <div id="global-counter-text" style="font-size: 0.95rem; font-weight: 600; color: #64748b; background: #f8fafc; padding: 6px 12px; border-radius: 20px; border: 1px solid #e2e8f0;">
+                Lade...
+              </div>
             </div>
-            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Wähle die gewünschten Muskeln aus.</p>
-            <div class="search-bar" style="margin-bottom: 15px;"><input type="text" id="muscle-search" onkeyup="window.filterMuscles()" placeholder="Suche nach Muskel ..."></div>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Wähle die gewünschten Muskeln aus, um den Trainingsinhalt zu personalisieren.</p>
+            
+            <div class="search-bar" style="margin-bottom: 15px;">
+              <input type="text" id="muscle-search" onkeyup="window.filterMuscles()" placeholder="Suche nach Muskel ...">
+            </div>
+
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: #f8fafc; border-radius: 10px; border: 1px solid #f1f5f9; margin-bottom: 20px;">
-              <label style="font-weight: 600; color: #1e293b; display: flex; align-items: center; cursor: pointer; margin:0;"><input type="checkbox" id="master-cb" onchange="window.toggleMasterCheckbox(this)" checked style="transform: scale(1.4); margin-right: 15px; cursor: pointer;"> Alle auswählen</label>
-              <button onclick="window.selectRandomMuscles()" style="background: white; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">🎲 Zufall</button>
+              <label style="font-weight: 600; color: #1e293b; display: flex; align-items: center; cursor: pointer; margin:0;">
+                <input type="checkbox" id="master-cb" onchange="window.toggleMasterCheckbox(this)" checked style="transform: scale(1.4); margin-right: 15px; cursor: pointer; accent-color: #3b82f6;">
+                Alle auswählen
+              </label>
+              <button onclick="window.selectRandomMuscles()" style="background: white; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; color: #334155; font-size: 0.85rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                🎲 Zufall
+              </button>
             </div>
+            
             <div style="max-height: 500px; overflow-y: auto; padding-right: 5px;">
               ${gruppen.map(g => {
                 const muskeln = muskelDaten.filter(m => m.gruppe === g);
@@ -901,18 +1126,22 @@ function initAnatomyApp() {
                 <div class="accordion-group" data-group="${g}">
                   <div class="accordion-header" onclick="window.toggleAccordion(this)">
                     <div style="font-weight: 600; color: #1e293b; display:flex; align-items:center;">
-                      <input type="checkbox" class="group-check" onchange="window.toggleGroupCheckbox(event, this, '${g}')" checked style="transform: scale(1.4); margin-right: 15px; cursor: pointer;"> ${g}
+                      <input type="checkbox" class="group-check" onchange="window.toggleGroupCheckbox(event, this, '${g}')" checked style="transform: scale(1.4); margin-right: 15px; cursor: pointer; accent-color: #3b82f6;">
+                      ${g}
                     </div>
                     <div style="display: flex; align-items: center; gap: 12px;">
                       <span class="group-count" style="font-size: 0.8rem; font-weight: 600; padding: 3px 10px; border-radius: 20px;">0/0</span>
-                      <span class="chevron" style="transition: transform 0.3s; transform: rotate(${isFirst ? '180deg' : '0deg'});">▼</span>
+                      <svg class="chevron" style="transition: transform 0.3s; transform: rotate(${isFirst ? '180deg' : '0deg'});" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                   </div>
                   <div class="accordion-content" style="display: ${isFirst ? 'block' : 'none'};">
                     ${muskeln.map(m => `
                       <label class="muscle-item">
-                        <input type="checkbox" class="m-check" data-gruppe="${g}" value="${m.muskel}" onchange="window.updateSelectionCount()" checked style="transform: scale(1.4); margin-right: 15px; cursor: pointer;"> 
-                        <span style="font-size: 0.95rem; color: #334155;">${m.muskel}</span>
+                        <input type="checkbox" class="m-check" data-gruppe="${g}" value="${m.muskel}" onchange="window.updateSelectionCount()" checked style="transform: scale(1.4); margin-right: 15px; cursor: pointer; accent-color: #3b82f6;"> 
+                        <div style="display:flex; flex-direction:column;">
+                          <span style="font-size: 0.95rem; color: #334155;">${m.muskel}</span>
+                          <span style="font-size: 0.75rem; color: #94a3b8;">${m.muskel.replace('M. ', '')}</span>
+                        </div>
                       </label>
                     `).join('')}
                   </div>
@@ -922,27 +1151,50 @@ function initAnatomyApp() {
           </div>
 
           <div class="panel-box" style="position: sticky; top: 20px;">
-            <h2 style="margin: 0 0 25px 0; font-size: 1.2rem; color: #0f172a;">${settingsTitle}</h2>
+            <h2 style="margin: 0 0 25px 0; font-size: 1.2rem; color: #0f172a; display:flex; align-items:center; gap:10px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              ${settingsTitle}
+            </h2>
+            
             ${categorySettingsHtml}
+            
             <div style="background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
               <strong style="display: block; font-size: 0.9rem; color: #1e293b; margin-bottom: 15px;">Fragetypen</strong>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;"><span style="font-size: 0.95rem;">Freitext</span><label class="switch"><input type="checkbox" id="type-write" checked><span class="slider round"></span></label></div>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;"><span style="font-size: 0.95rem;">Single Choice</span><label class="switch"><input type="checkbox" id="type-single" checked><span class="slider round"></span></label></div>
-              <div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.95rem;">Zuordnung</span><label class="switch"><input type="checkbox" id="type-match" checked><span class="slider round"></span></label></div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <span style="font-size: 0.95rem; color: #334155;">Freitext (Eintippen)</span>
+                <label class="switch"><input type="checkbox" id="type-write" checked><span class="slider round"></span></label>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <span style="font-size: 0.95rem; color: #334155;">Single Choice</span>
+                <label class="switch"><input type="checkbox" id="type-single" checked><span class="slider round"></span></label>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.95rem; color: #334155;">Zuordnung (Matching)</span>
+                <label class="switch"><input type="checkbox" id="type-match" checked><span class="slider round"></span></label>
+              </div>
             </div>
+            
             <div style="display: flex; justify-content: space-between; align-items: center; border: 1px solid #f1f5f9; border-radius: 10px; padding: 15px 20px; margin-bottom: 25px;">
-              <span style="font-size: 0.95rem;">Max. Fragen (0 = alle)</span>
-              <input type="number" id="limit-input" value="10" min="0" style="width: 60px; text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px;">
+              <span style="font-size: 0.95rem; color: #334155;">Max. Fragen <span style="color:#94a3b8; font-size:0.8rem;">(0 = alle)</span></span>
+              <input type="number" id="limit-input" value="10" min="0" style="width: 60px; text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px; font-size: 0.95rem;">
             </div>
-            <button class="btn-blue" onclick="window.startSession('PRACTICE')">Übung starten</button>
-            <button class="btn-outline-red" onclick="window.startSession('EXAM')">Prüfungsmodus starten</button>
+            
+            <button class="btn-blue" onclick="window.startSession('PRACTICE')">
+              Übung starten
+            </button>
+            <button class="btn-outline-red" onclick="window.startSession('EXAM')">
+              Prüfungsmodus starten
+            </button>
           </div>
+
         </div>
       </div>
     `;
+    
     container.innerHTML = html;
     window.updateSelectionCount();
   };
 
+  // APP START: Lade den Startbildschirm
   window.renderHomeScreen();
 }
