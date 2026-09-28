@@ -2,6 +2,8 @@
 // 🛠️ LOGIK / JAVASCRIPT
 // ==========================================
 
+console.log("Anatomie-Trainer wird geladen...");
+
 // SVG Icons für Haken und Kreuz
 const iconCheck = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 8px;"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
 const iconCross = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 8px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
@@ -16,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function showMaintenancePage() {
-    const container = document.getElementById("app-container");
+    let container = document.getElementById("app-container");
     if(!container) return;
     container.innerHTML = `
       <div class="maintenance-container fade-in" style="text-align: center; padding: 60px 20px;">
@@ -47,6 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function initAnatomyApp() {
   window.appInitialized = true;
+  console.log("App-Initialisierung gestartet...");
 
   // ==========================================
   // DATENBANK 1: MUSKELN
@@ -242,20 +245,31 @@ function initAnatomyApp() {
   ];
 
   // ==========================================
-  // GLOBALE VARIABLEN (WICHTIG! Dürfen nicht fehlen)
+  // GLOBALE VARIABLEN & CONTAINER CHECK
   // ==========================================
   let sessionList = [];
   let currentIndex = 0;
   let userAnswers = {};
   let currentMode = "";
   let currentHub = ""; 
-  let container = document.getElementById("app-container");
 
+  // SICHERHEITSCHECK: Verhindert, dass das Skript abstürzt, falls der Container in HTML fehlt.
+  let container = document.getElementById("app-container");
+  if (!container) {
+    console.warn("Container #app-container nicht gefunden. Erstelle ihn neu.");
+    container = document.createElement("div");
+    container.id = "app-container";
+    document.body.appendChild(container);
+  }
+  container.style.display = "block";
+  container.style.opacity = "1";
+  container.style.visibility = "visible";
 
   // ==========================================
   // 1. DER STARTBILDSCHIRM (FULLSCREEN)
   // ==========================================
   window.renderHomeScreen = function() {
+    console.log("Lade HomeScreen...");
     const cleanStyle = document.getElementById("clean-layout-styles");
     if (cleanStyle) cleanStyle.remove();
 
@@ -267,6 +281,7 @@ function initAnatomyApp() {
       styleEl.id = "fullscreen-bg-style";
       document.head.appendChild(styleEl);
     }
+    
     styleEl.innerHTML = `
       html, body {
         margin: 0 !important;
@@ -306,7 +321,6 @@ function initAnatomyApp() {
     let html = `
       <div class="fade-in" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; width: 100%; padding: 20px; box-sizing: border-box; position: relative;">
         
-        <!-- Das zentrale Frosted Glass-Panel -->
         <div style="background: rgba(15, 23, 42, 0.75) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 24px !important; padding: 45px 30px !important; width: 100% !important; max-width: 440px !important; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(24px) !important; -webkit-backdrop-filter: blur(24px) !important; text-align: center !important; position: relative; z-index: 1;">
           
           <h1 style="font-size: 2rem !important; color: #3b82f6 !important; margin-bottom: 5px !important; font-weight: 700 !important; font-family: sans-serif !important; text-shadow: 0 0 20px rgba(59, 130, 246, 0.6) !important; letter-spacing: 0.5px;">
@@ -318,7 +332,6 @@ function initAnatomyApp() {
 
           <div style="display: flex !important; flex-direction: column !important; gap: 16px !important;">
             
-            <!-- Option 1: Ursprung & Ansatz -->
             <div onclick="window.openHub('UA')"
                  style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(255,255,255,0.05) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;"
                  onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';"
@@ -332,7 +345,6 @@ function initAnatomyApp() {
               </div>
             </div>
 
-            <!-- Option 2: Innervation -->
             <div onclick="window.openHub('INN')"
                  style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(255,255,255,0.05) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;"
                  onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';"
@@ -346,7 +358,6 @@ function initAnatomyApp() {
               </div>
             </div>
 
-            <!-- Option 3: Funktion -->
             <div onclick="window.openHub('FUN')"
                  style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(255,255,255,0.05) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;"
                  onmouseover="this.style.borderColor='rgba(59, 130, 246, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';"
@@ -360,7 +371,6 @@ function initAnatomyApp() {
               </div>
             </div>
 
-            <!-- Option 4: Clinical Reasoning -->
             <div onclick="window.openClinicalReasoning()"
                  style="background: rgba(10, 15, 30, 0.8) !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; border-radius: 16px !important; padding: 18px 24px !important; cursor: pointer !important; transition: all 0.3s ease !important; display: flex !important; align-items: center !important; gap: 18px !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;"
                  onmouseover="this.style.borderColor='rgba(16, 185, 129, 0.6)'; this.style.background='rgba(30, 41, 59, 0.9)'; this.style.transform='translateY(-3px)';"
@@ -400,8 +410,8 @@ function initAnatomyApp() {
       <div class="fade-in" style="padding: 20px; max-width: 950px; margin: 0 auto; color: #f8fafc; text-align: left;">
         
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <button class="btn btn-menu" onclick="window.renderHomeScreen()">◀ Zurück zum Hauptmenü</button>
-            <span style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">ZHAW Clinical Reasoning Formular (WB 1 & 2)</span>
+            <button class="btn btn-menu" onclick="window.renderHomeScreen()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 8px 16px; border-radius: 8px; cursor: pointer;">◀ Zurück zum Hauptmenü</button>
+            <span style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">ZHAW Clinical Reasoning Formular</span>
         </div>
 
         <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); backdrop-filter: blur(12px);">
@@ -477,9 +487,9 @@ function initAnatomyApp() {
           </div>
 
           <!-- Buttons -->
-          <button id="cr-eval-btn" onclick="window.evaluateCR()" class="btn btn-primary" style="width: 100%; margin-top: 20px; padding: 18px; font-size: 1.15rem; background: linear-gradient(135deg, #0ea5e9, #2563eb); border: none; font-weight: bold; cursor: pointer; color: white; border-radius: 8px;">Ergebnisse überprüfen</button>
+          <button id="cr-eval-btn" onclick="window.evaluateCR()" style="width: 100%; margin-top: 20px; padding: 18px; font-size: 1.15rem; background: linear-gradient(135deg, #0ea5e9, #2563eb); border: none; font-weight: bold; cursor: pointer; color: white; border-radius: 8px;">Ergebnisse überprüfen</button>
           
-          <button id="cr-next-btn" onclick="window.openClinicalReasoning()" class="btn btn-menu" style="display: none; width: 100%; margin-top: 15px; padding: 15px; border: 1px solid #10b981; color: #10b981; background: transparent; cursor: pointer; border-radius: 8px;">Nächster Fall ➡</button>
+          <button id="cr-next-btn" onclick="window.openClinicalReasoning()" style="display: none; width: 100%; margin-top: 15px; padding: 15px; border: 1px solid #10b981; color: #10b981; background: transparent; cursor: pointer; border-radius: 8px; font-weight: bold;">Nächster Fall ➡</button>
 
         </div>
       </div>
@@ -491,7 +501,7 @@ function initAnatomyApp() {
   window.evaluateCR = function() {
     const c = window.currentCRCase;
     
-    // 1. Dropdowns sperren und klassisch auswerten
+    // 1. Dropdowns sperren und auswerten
     document.querySelectorAll('select.eval-lock').forEach(el => el.disabled = true);
     
     const typDrop = document.getElementById('cr-schmerztyp');
@@ -631,23 +641,24 @@ function initAnatomyApp() {
 
     let html = `
       <div class="fade-in">
-        <div class="header-bar">
-          <button class="btn btn-menu" onclick="window.renderMenu()">◀ Zurück zur Einstellung</button>
-          <span>Frage ${currentIndex + 1} von ${sessionList.length} <strong style="color:var(--primary);">[${currentMode}]</strong></span>
+        <div class="header-bar" style="background: white; padding: 15px; display: flex; justify-content: space-between; border-bottom: 2px solid #e2e8f0; margin-bottom: 20px;">
+          <button class="btn btn-menu" onclick="window.renderMenu()" style="border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 8px; cursor: pointer; background: transparent;">◀ Zurück zur Einstellung</button>
+          <span>Frage ${currentIndex + 1} von ${sessionList.length} <strong style="color:#3b82f6;">[${currentMode}]</strong></span>
         </div>
-        <div class="progress-bar">
-          <div class="progress-fill" style="width: ${progressPct}%;"></div>
+        <div class="progress-bar" style="height: 10px; background: #e2e8f0; border-radius: 5px; margin-bottom: 20px;">
+          <div class="progress-fill" style="height: 100%; background: #3b82f6; width: ${progressPct}%; border-radius: 5px; transition: width 0.3s;"></div>
         </div>
+        <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
     `;
 
     if (q.type === 'write') {
       html += `
-        <h2 style="font-size:1.8rem; color:var(--primary); margin-bottom:5px;">${q.muskel.muskel}</h2>
-        <p style="color:var(--text-muted); font-size:0.95rem;">Kategorie: <strong style="color:var(--text-main); text-transform:uppercase;">${q.kat}</strong> &nbsp;|&nbsp; Gruppe: ${q.muskel.gruppe}</p>
-        <br><br>
-        <label style="color:var(--text-main); font-weight:600; margin-bottom:10px; font-size:1.1rem;">Deine Antwort:</label>
-        <input type="text" id="write-answer" autofocus autocomplete="off" placeholder="Tippe deine Antwort hier ein...">
-        <button class="btn btn-primary" id="submit-btn" onclick="window.checkWriteAnswer()">Antwort prüfen</button>
+        <h2 style="font-size:1.8rem; color:#0f172a; margin-top:0; margin-bottom:5px;">${q.muskel.muskel}</h2>
+        <p style="color:#64748b; font-size:0.95rem;">Kategorie: <strong style="color:#334155; text-transform:uppercase;">${q.kat}</strong> &nbsp;|&nbsp; Gruppe: ${q.muskel.gruppe}</p>
+        <br>
+        <label style="color:#1e293b; font-weight:600; margin-bottom:10px; display:block; font-size:1.1rem;">Deine Antwort:</label>
+        <input type="text" id="write-answer" autofocus autocomplete="off" placeholder="Tippe deine Antwort hier ein..." style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 1rem; margin-bottom: 15px;">
+        <button id="submit-btn" onclick="window.checkWriteAnswer()" style="background: #3b82f6; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer;">Antwort prüfen</button>
       `;
     } else if (q.type === 'single') {
       const correct = q.muskel[q.kat];
@@ -657,19 +668,19 @@ function initAnatomyApp() {
       options.sort(() => Math.random() - 0.5);
 
       html += `
-        <h2 style="font-size:1.8rem; color:var(--primary); margin-bottom:5px;">${q.muskel.muskel}</h2>
-        <p style="color:var(--text-muted); font-size:0.95rem;">Kategorie: <strong style="color:var(--text-main); text-transform:uppercase;">${q.kat}</strong> &nbsp;|&nbsp; Gruppe: ${q.muskel.gruppe}</p>
+        <h2 style="font-size:1.8rem; color:#0f172a; margin-top:0; margin-bottom:5px;">${q.muskel.muskel}</h2>
+        <p style="color:#64748b; font-size:0.95rem;">Kategorie: <strong style="color:#334155; text-transform:uppercase;">${q.kat}</strong> &nbsp;|&nbsp; Gruppe: ${q.muskel.gruppe}</p>
         <br>
-        <p style="font-weight:600; margin-bottom:15px; font-size:1.1rem; color:var(--text-main);">Wähle die richtige Antwort aus:</p>
-        <div class="option-list">
+        <p style="font-weight:600; margin-bottom:15px; font-size:1.1rem; color:#1e293b;">Wähle die richtige Antwort aus:</p>
+        <div class="option-list" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
         ${options.map((opt) => `
-          <label class="option-item">
+          <label class="option-item" style="border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px;">
             <input type="radio" class="q-radio" name="single-opt" value="${opt.replace(/"/g, '&quot;')}"> 
             <span>${opt}</span>
           </label>
         `).join('')}
         </div>
-        <button class="btn btn-primary" id="submit-btn" onclick="window.checkSingleAnswer()">Auswahl bestätigen</button>
+        <button id="submit-btn" onclick="window.checkSingleAnswer()" style="background: #3b82f6; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer;">Auswahl bestätigen</button>
       `;
     } else if (q.type === 'match') {
       const currentCategory = q.kat;
@@ -679,30 +690,28 @@ function initAnatomyApp() {
       const leftSide = [...subSet].sort(() => Math.random() - 0.5);
       const rightSide = subSet.map(m => m[currentCategory]).sort(() => Math.random() - 0.5);
 
-      q.matchingSubSet = subSet;
-
       html += `
-        <h2 style="font-size:1.8rem; color:var(--primary); margin-bottom:5px;">🔗 Zuordnung (Matching)</h2>
-        <p style="color:var(--text-muted); font-size:0.95rem;">Kategorie: <strong style="color:var(--text-main); text-transform:uppercase;">${currentCategory}</strong></p>
+        <h2 style="font-size:1.8rem; color:#0f172a; margin-top:0; margin-bottom:5px;">🔗 Zuordnung (Matching)</h2>
+        <p style="color:#64748b; font-size:0.95rem;">Kategorie: <strong style="color:#334155; text-transform:uppercase;">${currentCategory}</strong></p>
         <br>
-        <p style="font-weight:600; margin-bottom:15px; font-size:1.1rem; color:var(--text-main);">Ordne jedem Muskel den passenden Wert zu:</p>
+        <p style="font-weight:600; margin-bottom:15px; font-size:1.1rem; color:#1e293b;">Ordne jedem Muskel den passenden Wert zu:</p>
         
-        <div class="match-list">
+        <div class="match-list" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;">
           ${leftSide.map((m) => `
-            <div class="match-item">
-              <strong>${m.muskel}</strong>
-              <select class="match-select" data-muskel="${m.muskel}">
+            <div class="match-item" style="border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px;">
+              <strong style="display: block; margin-bottom: 8px;">${m.muskel}</strong>
+              <select class="match-select" data-muskel="${m.muskel}" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1;">
                 <option value="">-- Bitte wählen --</option>
                 ${rightSide.map(val => `<option value="${val.replace(/"/g, '&quot;')}">${val}</option>`).join('')}
               </select>
             </div>
           `).join('')}
         </div>
-        <button class="btn btn-primary" id="submit-btn" onclick="window.checkMatchAnswer()">Zuordnung prüfen</button>
+        <button id="submit-btn" onclick="window.checkMatchAnswer()" style="background: #3b82f6; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer;">Zuordnung prüfen</button>
       `;
     }
 
-    html += `<div id="feedback-area"></div></div>`;
+    html += `<div id="feedback-area" style="margin-top: 20px; padding: 15px; border-radius: 8px; display: none;"></div></div></div>`;
     container.innerHTML = html;
   }
 
@@ -727,7 +736,8 @@ function initAnatomyApp() {
 
     if (currentMode === "PRACTICE" && inputEl) {
       inputEl.disabled = true;
-      inputEl.classList.add(isCorrect ? 'correct' : 'wrong');
+      inputEl.style.borderColor = isCorrect ? '#10b981' : '#ef4444';
+      inputEl.style.backgroundColor = isCorrect ? '#d1fae5' : '#fee2e2';
     }
 
     saveAndRoute(userAns, correct, isCorrect);
@@ -749,9 +759,9 @@ function initAnatomyApp() {
         const radio = lbl.querySelector('input');
         radio.disabled = true;
         if (radio.value === correct) {
-          lbl.classList.add('correct');
+          lbl.style.borderColor = '#10b981'; lbl.style.backgroundColor = '#d1fae5';
         } else if (radio.checked && radio.value !== correct) {
-          lbl.classList.add('wrong');
+          lbl.style.borderColor = '#ef4444'; lbl.style.backgroundColor = '#fee2e2';
         }
       });
     }
@@ -782,7 +792,8 @@ function initAnatomyApp() {
 
       if (currentMode === "PRACTICE") {
         sel.disabled = true;
-        sel.classList.add(selectedVal === correctVal ? 'correct' : 'wrong');
+        sel.style.borderColor = selectedVal === correctVal ? '#10b981' : '#ef4444';
+        sel.style.backgroundColor = selectedVal === correctVal ? '#d1fae5' : '#fee2e2';
       }
     });
 
@@ -799,16 +810,15 @@ function initAnatomyApp() {
 
       const feedbackArea = document.getElementById("feedback-area");
       feedbackArea.style.display = "block";
-      feedbackArea.className = isCorrect ? "feedback correct" : "feedback wrong";
+      feedbackArea.style.backgroundColor = isCorrect ? "#ecfdf5" : "#fef2f2";
+      feedbackArea.style.borderLeft = isCorrect ? "4px solid #10b981" : "4px solid #ef4444";
 
       feedbackArea.innerHTML = isCorrect 
-        ? `<div style="display:flex; align-items:center;">${iconCheck} <span><strong>Exzellent!</strong> Die Antwort ist richtig.</span></div>` 
-        : `<div style="display:flex; align-items:center; margin-bottom:10px;">${iconCross} <span><strong>Leider falsch.</strong></span></div><span style="color:#991b1b; font-size:0.9rem; text-transform:uppercase; display:block; margin-top:10px;">Richtige Lösung:</span><span style="font-size:1.05rem; display:block; margin-top:4px;">${correctAns}</span>`;
+        ? `<div style="display:flex; align-items:center; color: #065f46;">${iconCheck} <span><strong>Exzellent!</strong> Die Antwort ist richtig.</span></div>` 
+        : `<div style="display:flex; align-items:center; margin-bottom:10px; color: #991b1b;">${iconCross} <span><strong>Leider falsch.</strong></span></div><span style="color:#991b1b; font-size:0.9rem; text-transform:uppercase; display:block; margin-top:10px;">Richtige Lösung:</span><span style="font-size:1.05rem; display:block; margin-top:4px; color: #7f1d1d;">${correctAns}</span>`;
       
       const nextBtn = document.createElement("button");
-      nextBtn.className = "btn";
-      nextBtn.style.background = "#0f172a";
-      nextBtn.style.marginTop = "20px";
+      nextBtn.style = "background: #0f172a; color: white; padding: 12px 20px; border-radius: 8px; border: none; font-weight: bold; margin-top: 20px; cursor: pointer;";
       nextBtn.innerText = "Nächste Frage ➡";
       nextBtn.onclick = () => { currentIndex++; showQuestion(); };
       feedbackArea.appendChild(nextBtn);
@@ -825,42 +835,42 @@ function initAnatomyApp() {
     const scorePct = total > 0 ? Math.round((correctCount / total) * 100) : 0;
 
     let html = `
-      <div class="fade-in">
-        <div style="text-align:center; padding: 20px 0; border-bottom: 2px solid var(--bg-color); margin-bottom: 25px;">
-          <h1 style="background: none; -webkit-text-fill-color: var(--text-main); margin-bottom:15px; font-size:2.2rem;">🏁 Session beendet</h1>
-          <div style="font-size:4rem; font-weight:700; color: var(--primary); margin-bottom: 10px; line-height:1;">${scorePct}%</div>
-          <p style="color:var(--text-muted); font-size:1.1rem;">Du hast <strong>${correctCount}</strong> von <strong>${total}</strong> Fragen richtig beantwortet.</p>
+      <div class="fade-in" style="background: white; padding: 40px; border-radius: 16px; max-width: 800px; margin: 20px auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+        <div style="text-align:center; padding: 20px 0; border-bottom: 2px solid #f1f5f9; margin-bottom: 25px;">
+          <h1 style="margin-bottom:15px; font-size:2.2rem; color: #0f172a;">🏁 Session beendet</h1>
+          <div style="font-size:4rem; font-weight:700; color: #3b82f6; margin-bottom: 10px; line-height:1;">${scorePct}%</div>
+          <p style="color:#64748b; font-size:1.1rem;">Du hast <strong>${correctCount}</strong> von <strong>${total}</strong> Fragen richtig beantwortet.</p>
         </div>
     `;
 
     if (wrongQuestions.length > 0) {
       html += `
-        <button class="btn btn-repeat" onclick="window.startRepetition()" style="font-size:1.1rem; padding:16px;">
+        <button onclick="window.startRepetition()" style="background: white; border: 2px solid #3b82f6; color: #3b82f6; padding: 15px; border-radius: 8px; font-weight: bold; width: 100%; font-size: 1.1rem; cursor: pointer; margin-bottom: 20px;">
           🔄 Falsche Fragen wiederholen (${wrongQuestions.length})
         </button>
       `;
     }
 
     html += `
-        <div class="results-list">
+        <div class="results-list" style="display: flex; flex-direction: column; gap: 15px;">
           ${sessionList.map((q, i) => {
             const ans = userAnswers[i] || { user: "Keine Antwort", correct: "-", success: false };
             return `
-              <div class="result-box ${ans.success ? 'result-correct' : 'result-wrong'}">
-                <div style="font-size:1.1rem; margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-start;">
+              <div style="background: ${ans.success ? '#f8fafc' : '#fef2f2'}; border: 1px solid ${ans.success ? '#e2e8f0' : '#fecaca'}; padding: 20px; border-radius: 12px;">
+                <div style="font-size:1.1rem; margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-start; color: #0f172a;">
                   <strong style="display:flex; align-items:center;">
                     ${ans.success ? iconCheck : iconCross} 
                     Frage ${i+1}:${q.muskel ? q.muskel.muskel : 'Zuordnung'}
                   </strong> 
-                  <span style="color:#64748b; font-size:0.85rem; background:#f1f5f9; padding:4px 8px; border-radius:6px; font-weight:600; margin-left:10px;">${q.type.toUpperCase()}</span>
+                  <span style="color:#64748b; font-size:0.85rem; background:white; padding:4px 8px; border-radius:6px; border: 1px solid #cbd5e1; font-weight:600; margin-left:10px;">${q.type.toUpperCase()}</span>
                 </div>
                 <small style="color:#64748b; display:block; margin-bottom:12px; font-weight:600; letter-spacing:0.5px;">KATEGORIE: ${q.kat.toUpperCase()}</small>
-                <div class="user-ans" style="margin-bottom:8px; line-height:1.5;">Deine Antwort:<br><strong style="color:var(--text-main); font-style:normal;">${ans.user}</strong></div>${!ans.success ? `<div class="correct-ans" style="padding-top:8px; border-top:1px dashed #fecaca; line-height:1.5; margin-top:10px;">Richtige Lösung:<br><span style="color:#b91c1c;">${ans.correct}</span></div>` : ''}
+                <div style="margin-bottom:8px; line-height:1.5; color: #334155;">Deine Antwort:<br><strong style="color:#0f172a;">${ans.user}</strong></div>${!ans.success ? `<div style="padding-top:8px; border-top:1px dashed #fca5a5; line-height:1.5; margin-top:10px; color: #991b1b;">Richtige Lösung:<br><span style="color:#7f1d1d; font-weight: bold;">${ans.correct}</span></div>` : ''}
               </div>
             `;
           }).join('')}
         </div>
-        <button class="btn" onclick="window.renderHomeScreen()" style="background:#0f172a; margin-top:25px; padding:18px; font-size:1.1rem; box-shadow:0 10px 15px -3px rgba(15, 23, 42, 0.3);">🏠 Zurück zum Trainings-Raum</button>
+        <button onclick="window.renderHomeScreen()" style="background:#0f172a; color: white; margin-top:25px; padding:18px; font-size:1.1rem; border-radius: 12px; font-weight: bold; width: 100%; border: none; cursor: pointer;">🏠 Zurück zum Trainings-Raum</button>
       </div>
     `;
 
@@ -973,14 +983,12 @@ function initAnatomyApp() {
 
   window.toggleAccordion = function(element) {
     const content = element.nextElementSibling;
-    const chevron = element.querySelector('.chevron');
-    
     if (content.style.display === 'none') {
       content.style.display = 'block';
-      chevron.style.transform = 'rotate(180deg)';
+      element.innerHTML = element.innerHTML.replace('▶', '▼');
     } else {
       content.style.display = 'none';
-      chevron.style.transform = 'rotate(0deg)';
+      element.innerHTML = element.innerHTML.replace('▼', '▶');
     }
   };
 
@@ -1003,15 +1011,14 @@ function initAnatomyApp() {
       groupDiv.style.display = hasVisibleItem ? 'block' : 'none';
       
       const content = groupDiv.querySelector('.accordion-content');
-      const chevron = groupDiv.querySelector('.chevron');
       if (term.length > 0 && hasVisibleItem) {
         content.style.display = 'block';
-        chevron.style.transform = 'rotate(180deg)';
       }
     });
   };
 
   window.renderMenu = function() {
+    console.log("Lade Menü...");
     const homeStyle = document.getElementById("fullscreen-bg-style");
     if (homeStyle) homeStyle.remove();
 
@@ -1028,11 +1035,11 @@ function initAnatomyApp() {
           <strong style="display: block; font-size: 0.9rem; color: #1e293b; margin-bottom: 15px;">Bereich abfragen</strong>
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
             <span style="font-size: 0.95rem; color: #334155;">Ursprung</span>
-            <label class="switch"><input type="checkbox" id="kat-ursprung" checked><span class="slider round"></span></label>
+            <input type="checkbox" id="kat-ursprung" checked style="transform: scale(1.4); cursor: pointer; accent-color: #3b82f6;">
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 0.95rem; color: #334155;">Ansatz</span>
-            <label class="switch"><input type="checkbox" id="kat-ansatz" checked><span class="slider round"></span></label>
+            <input type="checkbox" id="kat-ansatz" checked style="transform: scale(1.4); cursor: pointer; accent-color: #3b82f6;">
           </div>
         </div>
       `;
@@ -1052,12 +1059,12 @@ function initAnatomyApp() {
     }
     
     styleEl.innerHTML = `
-      body, html { background: #f8fafc !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+      body, html { background: #f8fafc !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin:0; padding:0; }
       .header-top { padding: 20px 40px; background: transparent; }
       .main-grid { display: grid; grid-template-columns: 1fr 380px; gap: 30px; padding: 0 40px 40px 40px; max-width: 1400px; margin: 0 auto; align-items: start; }
       .panel-box { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; }
       
-      .search-bar input { width: 100%; padding: 12px 15px 12px 40px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.95rem; outline: none; transition: all 0.2s; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2394a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 15px center; background-size: 16px; box-sizing: border-box; }
+      .search-bar input { width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.95rem; outline: none; transition: all 0.2s; box-sizing: border-box; }
       .search-bar input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
 
       .accordion-group { margin-bottom: 10px; border: 1px solid #f1f5f9; border-radius: 10px; overflow: hidden; background: white; }
@@ -1066,13 +1073,6 @@ function initAnatomyApp() {
       .accordion-content { padding: 10px 20px 20px 20px; display: none; background: white; }
       .muscle-item { padding: 8px 0; border-bottom: 1px solid #f8fafc; display: flex; align-items: center; }
       .muscle-item:last-child { border-bottom: none; }
-      
-      .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-      .switch input { opacity: 0; width: 0; height: 0; }
-      .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .3s; border-radius: 24px; }
-      .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-      input:checked + .slider { background-color: #3b82f6; }
-      input:checked + .slider:before { transform: translateX(20px); }
       
       .btn-blue { background: #3b82f6; color: white; border: none; padding: 16px; border-radius: 10px; width: 100%; font-weight: 600; font-size: 1rem; cursor: pointer; transition: background 0.2s; margin-bottom: 10px; }
       .btn-blue:hover { background: #2563eb; }
@@ -1085,17 +1085,15 @@ function initAnatomyApp() {
         
         <div class="header-top">
           <button onclick="window.renderHomeScreen()" style="background:transparent; border:none; color:#64748b; font-size:1rem; cursor:pointer; display:flex; align-items:center; gap:8px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Zurück zum Trainings-Raum
+            ◀ Zurück zum Trainings-Raum
           </button>
         </div>
         
         <div class="main-grid">
-          
           <div class="panel-box">
             
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
               <h2 style="margin: 0; font-size: 1.4rem; color: #0f172a; display:flex; align-items:center; gap:10px;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="6.5"></line></svg>
                 1. Muskelauswahl
               </h2>
               <div id="global-counter-text" style="font-size: 0.95rem; font-weight: 600; color: #64748b; background: #f8fafc; padding: 6px 12px; border-radius: 20px; border: 1px solid #e2e8f0;">
@@ -1131,7 +1129,7 @@ function initAnatomyApp() {
                     </div>
                     <div style="display: flex; align-items: center; gap: 12px;">
                       <span class="group-count" style="font-size: 0.8rem; font-weight: 600; padding: 3px 10px; border-radius: 20px;">0/0</span>
-                      <svg class="chevron" style="transition: transform 0.3s; transform: rotate(${isFirst ? '180deg' : '0deg'});" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      <span style="font-size: 0.8rem;">${isFirst ? '▼' : '▶'}</span>
                     </div>
                   </div>
                   <div class="accordion-content" style="display: ${isFirst ? 'block' : 'none'};">
@@ -1152,7 +1150,6 @@ function initAnatomyApp() {
 
           <div class="panel-box" style="position: sticky; top: 20px;">
             <h2 style="margin: 0 0 25px 0; font-size: 1.2rem; color: #0f172a; display:flex; align-items:center; gap:10px;">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
               ${settingsTitle}
             </h2>
             
@@ -1162,15 +1159,15 @@ function initAnatomyApp() {
               <strong style="display: block; font-size: 0.9rem; color: #1e293b; margin-bottom: 15px;">Fragetypen</strong>
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <span style="font-size: 0.95rem; color: #334155;">Freitext (Eintippen)</span>
-                <label class="switch"><input type="checkbox" id="type-write" checked><span class="slider round"></span></label>
+                <input type="checkbox" id="type-write" checked style="transform: scale(1.4); cursor: pointer; accent-color: #3b82f6;">
               </div>
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <span style="font-size: 0.95rem; color: #334155;">Single Choice</span>
-                <label class="switch"><input type="checkbox" id="type-single" checked><span class="slider round"></span></label>
+                <input type="checkbox" id="type-single" checked style="transform: scale(1.4); cursor: pointer; accent-color: #3b82f6;">
               </div>
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <span style="font-size: 0.95rem; color: #334155;">Zuordnung (Matching)</span>
-                <label class="switch"><input type="checkbox" id="type-match" checked><span class="slider round"></span></label>
+                <input type="checkbox" id="type-match" checked style="transform: scale(1.4); cursor: pointer; accent-color: #3b82f6;">
               </div>
             </div>
             
